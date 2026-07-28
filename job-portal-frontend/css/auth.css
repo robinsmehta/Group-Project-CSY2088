@@ -1,0 +1,35 @@
+/* ============================================================
+   css/auth.css — Styles for Register & Login Pages
+   Imported by: auth/register.html, auth/login.html
+   (Do NOT put styles here that are needed on other pages —
+    put those in style.css instead.)
+
+   Contains:
+   - .auth-page layout (centred, padded container)
+   - .auth-container card (white box, shadow, border-radius)
+   - .auth-tabs tab switcher buttons
+   - .auth-form form layout (stacked labels + inputs)
+   - .form-group label + input grouping
+   - .auth-subtitle subtitle text
+   - .auth-switch "already have an account?" text
+   - .info-notice warning/info box inside forms
+============================================================ */
+
+/* TODO: Style .auth-page — full-height, centred layout (flexbox or grid) */
+
+/* TODO: Style .auth-container — white card, max-width ~420px, shadow, border-radius, padding */
+
+/* TODO: Style .auth-tabs — flex row of tab buttons, border-bottom divider
+         .tab-btn         — base tab button style (no background, border-bottom)
+         .tab-btn.active  — active tab (underline or filled background)
+*/
+
+/* TODO: Style .auth-form — stacked form layout (flex column, gap between groups) */
+
+/* TODO: Style .form-group — label above input, full-width input, padding, border, focus state */
+
+/* TODO: Style .auth-subtitle — smaller, muted-colour paragraph under the heading */
+
+/* TODO: Style .auth-switch — small text at the bottom of the form with link */
+
+/* TODO: Style .info-notice — light yellow/orange box with border for the company approval warning */

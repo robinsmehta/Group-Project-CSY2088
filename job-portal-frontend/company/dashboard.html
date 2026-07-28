@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company Dashboard — Job Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+<body>
+
+    <!-- TODO: Add shared navbar here -->
+    <header id="navbar"></header>
+
+    <main>
+        <!-- 
+            COMPANY DASHBOARD
+            This page is only for logged-in, approved companies.
+            TODO: Check if user is logged in as a company (via shared.js / session).
+                  If not logged in or not approved, redirect to login.html.
+
+            TODO: Display a welcome message with the company's name.
+
+            TODO: Fetch and display the company's own job listings via
+                  GET /api/jobs (filtered by company) using jobs.js.
+                  Render as a table or card list with Edit and Delete buttons.
+
+            TODO: "Edit" button opens post-job.html pre-filled with that job's data.
+            TODO: "Delete" button calls DELETE /api/jobs/<id> via jobs.js.
+            TODO: "View Applicants" button links to applicants.html?job_id=<id>
+        -->
+
+        <h1>Company Dashboard</h1>
+
+        <div id="company-jobs-section">
+            <!-- TODO: Job listings table/cards will be rendered here by jobs.js -->
+        </div>
+    </main>
+
+    <!-- TODO: Add shared footer here -->
+    <footer id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/jobs.js"></script>
+
+</body>
+</html>

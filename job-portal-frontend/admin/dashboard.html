@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard — Job Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+<body>
+
+    <!-- TODO: Add shared navbar here -->
+    <header id="navbar"></header>
+
+    <main>
+        <!--
+            ADMIN DASHBOARD (Admin only)
+            Central control panel for platform moderation.
+            TODO: Check login status — redirect to login.html if not logged in as admin.
+
+            SECTION 1 — Pending Companies
+            TODO: Fetch via GET /api/admin/companies/pending using admin.js.
+                  Display each pending company with: name, email, description.
+                  Provide Approve and Reject buttons per company.
+                  - Approve → PUT /api/admin/companies/<id>/approve
+                  - Reject  → PUT /api/admin/companies/<id>/reject
+
+            SECTION 2 — Manage Jobs
+            TODO: List all jobs with a Delete button per job.
+                  Delete → DELETE /api/admin/jobs/<id> via admin.js.
+
+            SECTION 3 — Manage Users
+            TODO: List all users with a Delete button per user.
+                  Delete → DELETE /api/admin/users/<id> via admin.js.
+
+            SECTION 4 — Manage Companies
+            TODO: List all companies with a Delete button per company.
+                  Delete → DELETE /api/admin/companies/<id> via admin.js.
+        -->
+
+        <h1>Admin Dashboard</h1>
+
+        <section id="pending-companies-section">
+            <h2>Pending Company Approvals</h2>
+            <!-- TODO: Pending company rows will be rendered here by admin.js -->
+        </section>
+
+        <section id="manage-jobs-section">
+            <h2>All Jobs</h2>
+            <!-- TODO: Job rows with delete buttons will be rendered here by admin.js -->
+        </section>
+
+        <section id="manage-users-section">
+            <h2>All Users</h2>
+            <!-- TODO: User rows with delete buttons will be rendered here by admin.js -->
+        </section>
+
+        <section id="manage-companies-section">
+            <h2>All Companies</h2>
+            <!-- TODO: Company rows with delete buttons will be rendered here by admin.js -->
+        </section>
+    </main>
+
+    <!-- TODO: Add shared footer here -->
+    <footer id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/admin.js"></script>
+
+</body>
+</html>

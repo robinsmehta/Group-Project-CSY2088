@@ -1,0 +1,51 @@
+/* ============================================================
+   css/jobs.css — Styles for Job Listing & Job Detail Pages
+   Imported by: jobs/listing.html, jobs/detail.html, index.html
+   (Do NOT put styles here that are needed on other pages —
+    put those in style.css instead.)
+
+   Contains:
+   - .jobs-grid — responsive card grid layout
+   - .job-card — individual job listing card (hover effect, shadow)
+   - .job-card title, company, location, category badge, salary
+   - #search-filter-bar — search input + filter dropdowns row
+   - Job detail page layout (title, meta info, description body)
+   - Apply button / resume upload area on detail page
+   - Status badge styles (.badge-applied, .badge-shortlisted, etc.)
+============================================================ */
+
+/* TODO: Style .jobs-grid — CSS Grid, responsive columns
+         (e.g. repeat(auto-fill, minmax(300px, 1fr)), gap)
+*/
+
+/* TODO: Style .job-card — white card, border-radius, box-shadow,
+         padding, hover: lift effect (transform + shadow)
+*/
+
+/* TODO: Style job card inner elements:
+   .job-card h3      — job title
+   .job-card .company — company name (muted colour)
+   .job-card .location — location text with icon
+   .job-card .category-badge — coloured pill/badge
+   .job-card .salary — salary text
+*/
+
+/* TODO: Style #search-filter-bar — flex row, gap, margin-bottom
+         Input and select elements should match the global form style
+*/
+
+/* TODO: Style the job detail page layout:
+   #job-detail-content — max-width, centred, padding
+   .job-meta           — flex row of location, category, salary chips
+   .job-description    — prose text area with proper line-height
+*/
+
+/* TODO: Style #apply-section — sticky or inline apply button area */
+
+/* TODO: Style status badges (reused on user dashboard too):
+   .badge              — base pill/badge (small, rounded, bold)
+   .badge-applied      — blue
+   .badge-under-review — yellow/orange
+   .badge-shortlisted  — green
+   .badge-rejected     — red
+*/

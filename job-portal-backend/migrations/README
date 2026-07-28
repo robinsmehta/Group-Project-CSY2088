@@ -1,0 +1,23 @@
+# ============================================================
+# migrations/README
+#
+# This folder is managed by Flask-Migrate (which uses Alembic internally).
+# You should NOT manually create or edit files here.
+#
+# HOW TO USE:
+#
+# 1. Run this ONCE to initialise the migrations folder:
+#       flask --app run db init
+#
+# 2. Whenever you change a model (add/remove a column, new table, etc.):
+#       flask --app run db migrate -m "describe what changed"
+#    This auto-generates a new migration script in migrations/versions/
+#
+# 3. To apply all pending migrations to your MySQL database:
+#       flask --app run db upgrade
+#
+# 4. To roll back the last migration:
+#       flask --app run db downgrade
+#
+# Think of migrations as "git commits for your database schema."
+# ============================================================
