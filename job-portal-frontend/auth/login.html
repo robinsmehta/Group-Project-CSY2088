@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — Job Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/auth.css" />
+</head>
+<body>
+
+    <!-- TODO: Add shared navbar here -->
+    <header id="navbar"></header>
+
+    <main class="auth-page">
+        <!--
+            LOGIN PAGE (User, Company, Admin)
+            Shared sign-in page for all three user roles.
+
+            TODO: Role selector tabs (Job Seeker, Company, Admin) to set login role.
+            TODO: Login form — email and password inputs.
+                  Submits via auth.js -> loginUser() to POST /api/auth/login.
+                  On success: redirect to corresponding dashboard (user, company, or admin).
+            TODO: Link to register page (register.html) for new users.
+        -->
+
+        <h1>Sign In</h1>
+
+        <div id="login-message">
+            <!-- TODO: Display error/feedback messages here via auth.js -->
+        </div>
+
+        <div id="login-container">
+            <!-- TODO: Login form & role tabs go here -->
+        </div>
+    </main>
+
+    <!-- TODO: Add shared footer here -->
+    <footer id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/auth.js"></script>
+
+</body>
+</html>
+

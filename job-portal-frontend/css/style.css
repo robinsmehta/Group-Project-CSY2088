@@ -1,0 +1,49 @@
+/* ============================================================
+   css/style.css — Global / Shared Styles
+   Used by every page in the frontend.
+
+   Contains:
+   - CSS custom properties (colour palette, fonts, spacing)
+   - CSS reset / base styles
+   - Navbar styles
+   - Footer styles
+   - Shared button classes (.btn, .btn-primary, .btn-secondary, etc.)
+   - Shared utility classes (.hidden, .loading-message, etc.)
+============================================================ */
+
+/* TODO: Import a Google Font here, e.g.:
+   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+*/
+
+/* TODO: Define CSS custom properties (design tokens) here, e.g.:
+:root {
+    --color-primary: #3b82f6;
+    --color-text: #1f2937;
+    --font-base: 'Inter', sans-serif;
+    --spacing-md: 1rem;
+    --border-radius: 8px;
+}
+*/
+
+/* TODO: Add a CSS reset (box-sizing, margin/padding reset, etc.) */
+
+/* TODO: Style the <body> — font, background colour, line-height */
+
+/* TODO: Style #navbar — logo on the left, links on the right, sticky positioning */
+
+/* TODO: Style #footer — background, text colour, centred text, padding */
+
+/* TODO: Define shared button styles:
+   .btn             — base button (padding, border-radius, cursor, font-size)
+   .btn-primary     — filled primary colour
+   .btn-secondary   — outlined secondary colour
+   .btn-outline     — transparent with border
+   .btn-full        — full-width button (for forms)
+   .btn-danger      — red button for delete actions
+*/
+
+/* TODO: Style .hidden { display: none; } utility class */
+
+/* TODO: Style .loading-message — greyed-out text shown while data is loading */
+
+/* TODO: Style form-message / alert areas (success = green, error = red) */

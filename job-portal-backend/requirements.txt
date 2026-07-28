@@ -1,0 +1,13 @@
+# ============================================================
+# requirements.txt
+# Lists all Python packages needed for the Job Portal backend.
+# Install with: pip install -r requirements.txt
+# ============================================================
+
+flask                # Core web framework
+flask-sqlalchemy     # ORM — lets us work with the database using Python classes instead of raw SQL
+flask-cors           # Enables Cross-Origin Resource Sharing (needed when frontend is on a different port/domain)
+pymysql              # MySQL driver — SQLAlchemy uses this to talk to MySQL
+python-dotenv        # Reads .env files so we can store secrets outside of code
+flask-bcrypt         # Password hashing utility (wraps bcrypt)
+flask-migrate        # Database migration tool — tracks and applies schema changes (like git for your DB)

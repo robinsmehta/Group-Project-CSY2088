@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Browse Jobs — Job Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/jobs.css" />
+</head>
+<body>
+
+    <!-- TODO: Add shared navbar here -->
+    <header id="navbar"></header>
+
+    <main>
+        <!--
+            JOB LISTING PAGE (Public — no login required)
+            Displays all approved job listings with search and filter controls.
+
+            TODO: On page load, call jobs.js → loadJobs() to fetch all jobs
+                  from GET /api/jobs and render them as cards in #jobs-grid.
+
+            TODO: Search bar — on input/submit, call jobs.js → searchJobs(query)
+                  which filters results by title, company, or location.
+
+            TODO: Filter controls — allow filtering by category or location.
+                  Call jobs.js → filterJobs() when filters change.
+
+            TODO: Each job card links to /jobs/detail.html?job_id=<id>
+        -->
+
+        <h1>Browse Jobs</h1>
+
+        <!-- TODO: Add search input and filter dropdowns here -->
+        <div id="search-filter-bar">
+            <!-- Search input and filter controls go here -->
+        </div>
+
+        <!-- TODO: jobs.js → loadJobs() renders job cards into this grid -->
+        <div id="jobs-grid">
+            <!-- Job cards will be rendered here dynamically -->
+        </div>
+    </main>
+
+    <!-- TODO: Add shared footer here -->
+    <footer id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/jobs.js"></script>
+
+</body>
+</html>

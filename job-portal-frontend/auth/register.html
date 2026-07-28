@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register — Job Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/auth.css" />
+</head>
+<body>
+
+    <!-- TODO: Add shared navbar here -->
+    <header id="navbar"></header>
+
+    <main class="auth-page">
+        <!--
+            REGISTER PAGE (Job Seeker & Company)
+            Allows new users to create accounts for both roles.
+
+            TODO: Account type tab switcher (User vs Company registration).
+            TODO: Form 1 — Job Seeker registration (name, email, password, confirm password).
+                  Submits via auth.js -> registerUser() to POST /api/auth/register/user.
+            TODO: Form 2 — Company registration (company_name, email, password, confirm password, description).
+                  Submits via auth.js -> registerCompany() to POST /api/auth/register/company.
+                  Note: Company accounts require admin approval (status = pending).
+            TODO: Link to login page (login.html) for existing users.
+        -->
+
+        <h1>Create an Account</h1>
+
+        <div id="register-message">
+            <!-- TODO: Display feedback/error messages here via auth.js -->
+        </div>
+
+        <div id="register-container">
+            <!-- TODO: Place user & company registration forms here -->
+        </div>
+    </main>
+
+    <!-- TODO: Add shared footer here -->
+    <footer id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/auth.js"></script>
+
+</body>
+</html>
+

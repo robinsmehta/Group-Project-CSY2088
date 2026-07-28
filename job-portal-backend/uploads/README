@@ -1,0 +1,21 @@
+# ============================================================
+# uploads/README
+#
+# This folder stores résumé files uploaded by job seekers.
+#
+# File organisation (to implement in application_service.py):
+#   uploads/
+#     resumes/
+#       user_<id>_<uuid>.pdf    ← one PDF per application
+#
+# SECURITY NOTES:
+#   - Always use werkzeug.utils.secure_filename() before saving uploads
+#     to prevent directory traversal attacks.
+#   - Validate file extension (.pdf only) before saving.
+#   - Consider setting a max file size (already configured in config.py).
+#   - In production, store files in cloud storage (e.g., AWS S3, Google Cloud)
+#     rather than the local filesystem.
+#
+# This directory is intentionally kept in git with just this README.
+# Actual uploaded files are excluded via .gitignore.
+# ============================================================

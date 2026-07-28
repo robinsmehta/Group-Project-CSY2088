@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Applications — Job Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+<body>
+
+    <!-- TODO: Add shared navbar here -->
+    <header id="navbar"></header>
+
+    <main>
+        <!--
+            USER DASHBOARD (Job Seeker only)
+            Shows all jobs this user has applied for, and their current status.
+            TODO: Check login status — redirect to login.html if not logged in as a user.
+
+            TODO: Fetch applications via GET /api/applications/mine using applications.js.
+                  Render each application with:
+                  - Job title (links to /jobs/detail.html?job_id=<id>)
+                  - Company name
+                  - Date applied
+                  - Current status badge: applied | under_review | shortlisted | rejected
+        -->
+
+        <h1>My Applications</h1>
+
+        <div id="applications-list">
+            <!-- TODO: Application rows/cards will be rendered here by applications.js -->
+        </div>
+    </main>
+
+    <!-- TODO: Add shared footer here -->
+    <footer id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/applications.js"></script>
+
+</body>
+</html>

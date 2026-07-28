@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Applicants — Job Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+<body>
+
+    <!-- TODO: Add shared navbar here -->
+    <header id="navbar"></header>
+
+    <main>
+        <!--
+            APPLICANTS PAGE (Company only)
+            Shows all applicants who applied to a specific job listing.
+            TODO: Read the job_id from the URL query string: ?job_id=<id>
+
+            TODO: Fetch applicants via GET /api/jobs/<id>/applications using applications.js.
+                  Display each applicant with: name, email, resume download link, current status.
+
+            TODO: For each applicant, add a status dropdown or buttons to change their
+                  application status: applied → under_review → shortlisted / rejected.
+                  Calls PUT /api/applications/<id>/status via applications.js.
+        -->
+
+        <h1>Applicants</h1>
+        <p id="job-title-display">
+            <!-- TODO: Show the job title here, e.g. "Applicants for: Software Engineer" -->
+        </p>
+
+        <div id="applicants-list">
+            <!-- TODO: Applicant rows will be rendered here by applications.js -->
+        </div>
+    </main>
+
+    <!-- TODO: Add shared footer here -->
+    <footer id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/applications.js"></script>
+
+</body>
+</html>

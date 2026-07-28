@@ -1,0 +1,48 @@
+# ============================================================
+# .gitignore — Files Git Should NOT Track
+#
+# Add file patterns here that contain secrets, generated files,
+# or local-only data that should never be committed to a repository.
+# ============================================================
+
+# --- Environment / Secrets ---
+# .env contains your real database password and secret key — NEVER commit this!
+.env
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# --- Virtual Environment ---
+# The venv folder contains your installed Python packages.
+# Other developers run `pip install -r requirements.txt` instead.
+venv/
+env/
+.venv/
+.env/
+
+# --- Uploaded Files ---
+# Real résumé uploads are private — don't commit them.
+uploads/*.pdf
+uploads/resumes/
+
+# --- Flask-Migrate / Alembic ---
+# The compiled migration environment file is auto-generated.
+# (Keep the /migrations folder itself in git, just not the .pyc files)
+
+# --- IDEs & OS ---
+.idea/
+.vscode/
+*.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log

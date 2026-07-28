@@ -1,0 +1,47 @@
+/* ============================================================
+   css/dashboard.css — Shared Styles for Dashboard Pages
+   Imported by: company/dashboard.html, company/post-job.html,
+                company/applicants.html, user/dashboard.html,
+                admin/dashboard.html
+   (Do NOT put styles here that are needed on other pages —
+    put those in style.css instead.)
+
+   Contains:
+   - Dashboard page layout (sidebar or top-nav + content area)
+   - .dashboard-header — welcome banner with user/company name
+   - .dashboard-section — each section block (heading + content)
+   - Table styles for applicant lists, job lists, user lists
+   - Status update dropdown/button styles
+   - .form-group styles for post-job form (if not already in auth.css)
+   - Admin-specific: approve/reject button row styles
+============================================================ */
+
+/* TODO: Style the overall dashboard layout:
+         Option A — full-width stacked sections
+         Option B — sidebar navigation + main content area
+*/
+
+/* TODO: Style .dashboard-header — greeting text, company/user name, logout button */
+
+/* TODO: Style .dashboard-section — margin-bottom, border-bottom divider, heading style */
+
+/* TODO: Style dashboard tables:
+   table      — full width, border-collapse
+   th         — background colour, text-align left, padding
+   td         — padding, border-bottom
+   tr:hover   — light background highlight
+*/
+
+/* TODO: Style action button groups inside tables:
+   .action-btn-group — flex row, gap
+   Edit button, Delete button, View Applicants button
+*/
+
+/* TODO: Style the post-job form (similar to auth form but wider):
+   form max-width, label + input groups, textarea, submit button
+*/
+
+/* TODO: Style admin approve/reject buttons:
+   .btn-approve — green
+   .btn-reject  — red
+*/

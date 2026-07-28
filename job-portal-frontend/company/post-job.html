@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Post a Job — Job Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+<body>
+
+    <!-- TODO: Add shared navbar here -->
+    <header id="navbar"></header>
+
+    <main>
+        <!--
+            POST A NEW JOB (Company only)
+            This form lets an approved company create a new job listing.
+            TODO: Check login + company approval status. Redirect if not authorised.
+
+            TODO: On form submit, call jobs.js → postJob() which sends
+                  POST /api/jobs with fields: title, description, location, category, salary.
+
+            TODO: On success, redirect back to company/dashboard.html.
+            TODO: On error, display the error message from the API response.
+
+            NOTE: This same page will be reused for editing a job.
+                  TODO: If URL has ?job_id=<id>, pre-fill the form with existing data
+                  (fetch from GET /api/jobs/<id>) and submit to PUT /api/jobs/<id> instead.
+        -->
+
+        <h1>Post a New Job</h1>
+
+        <div id="post-job-message">
+            <!-- TODO: Success/error messages will appear here via jobs.js -->
+        </div>
+
+        <form id="post-job-form">
+            <!-- TODO: Add fields: Job Title, Description, Location, Category, Salary -->
+            <!-- TODO: Add a Submit button that calls jobs.js → postJob() -->
+        </form>
+    </main>
+
+    <!-- TODO: Add shared footer here -->
+    <footer id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/jobs.js"></script>
+
+</body>
+</html>

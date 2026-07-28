@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Detail — Job Portal</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/jobs.css" />
+</head>
+<body>
+
+    <!-- TODO: Add shared navbar here -->
+    <header id="navbar"></header>
+
+    <main>
+        <!--
+            JOB DETAIL PAGE (Public — no login required to view)
+            Shows full details for a single job listing and an Apply button.
+
+            TODO: Read job_id from URL query string: ?job_id=<id>
+            TODO: Fetch job data via GET /api/jobs/<id> using jobs.js → loadJobDetail()
+                  and populate all the fields below.
+
+            TODO: Display: job title, company name, location, category, salary, full description.
+
+            TODO: Show an "Apply Now" button if the user is logged in as a job seeker.
+                  Clicking it opens a small form/modal to upload their resume.
+                  On submit, call applications.js → applyToJob() which sends
+                  POST /api/applications with job_id and the resume file.
+
+            TODO: If user is NOT logged in, the "Apply Now" button redirects to login.html.
+        -->
+
+        <div id="job-detail-content">
+            <!-- TODO: Job title, company, location, salary, description go here -->
+        </div>
+
+        <div id="apply-section">
+            <!-- TODO: Apply button / resume upload form goes here -->
+            <!-- TODO: Show success/error message after applying -->
+        </div>
+    </main>
+
+    <!-- TODO: Add shared footer here -->
+    <footer id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/jobs.js"></script>
+    <script src="../js/applications.js"></script>
+
+</body>
+</html>
