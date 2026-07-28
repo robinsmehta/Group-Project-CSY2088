@@ -34,56 +34,76 @@ job-portal-backend/
 └── .gitignore               ← Files git should ignore (venv, .env, __pycache__, etc.)
 ```
 
-## How to Run Locally
+## How to Run & Connect Database Locally
 
-### 1. Clone the repo and navigate here
-```bash
-cd job-portal-backend
+Follow these step-by-step instructions to set up the MySQL database, configure your environment, initialize tables, and verify the backend server.
+
+### Step 1: Make sure MySQL is running & create the database
+Open your MySQL terminal or GUI client (such as MySQL Workbench or phpMyAdmin) and run:
+```sql
+CREATE DATABASE job_portal;
 ```
 
-### 2. Create and activate the virtual environment
+### Step 2: Create and activate your Python virtual environment
 ```bash
-# Create (only needed once)
+# Navigate to the backend directory (if not already there)
+cd job-portal-backend
+
+# Create virtual environment (only needed once)
 python3 -m venv venv
 
-# Activate (do this every time you open a new terminal)
+# Activate virtual environment (run this every time you open a new terminal)
 source venv/bin/activate       # macOS / Linux
 venv\Scripts\activate          # Windows
 ```
 
-### 3. Install dependencies
+### Step 3: Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set up your environment variables
+### Step 4: Set up environment variables (`.env`)
 ```bash
-# Copy the example file
+# Copy the template file to create your local .env file
 cp .env.example .env
 
-# Open .env and fill in your MySQL credentials:
-# DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, SECRET_KEY
+# Open .env in your code editor and fill in your real MySQL password:
+# DB_USER=root
+# DB_PASSWORD=your_actual_mysql_password
+# DB_HOST=localhost
+# DB_PORT=3306
+# DB_NAME=job_portal
+# SECRET_KEY=your_secret_key_here
 ```
 
-### 5. Make sure MySQL is running and create the database
-```sql
-CREATE DATABASE job_portal_db;
-```
-
-### 6. Run database migrations
+### Step 5: Run the table creation script
+To automatically generate all 5 database tables (`users`, `companies`, `jobs`, `applications`, `admins`) in your MySQL database:
 ```bash
-flask db upgrade
+python init_db.py
 ```
-> If this is your first time, run `flask db init` then `flask db migrate -m "initial"` first.
+*(Alternatively, you can also use the Flask CLI command: `flask init-db` or Flask-Migrate: `flask db upgrade`)*
 
-### 7. Start the Flask development server
+### Step 6: Start the Flask server
 ```bash
 python run.py
 ```
+The Flask API server will start on: **http://localhost:5001/api**
 
-The API will be available at: **http://localhost:5001/api**
+### Step 7: Confirm database connection via health check endpoint
+Open your browser or Postman and visit:
+```http
+GET http://localhost:5001/api/health
+```
+If the database connection is wired up correctly, you will receive a `200 OK` JSON response:
+```json
+{
+  "status": "ok",
+  "database": "connected",
+  "message": "Flask server and MySQL database are successfully connected!"
+}
+```
 
-Test it with: **http://localhost:5001/api/health** — should return `{"status": "ok"}`
+---
 
 ## API Endpoints Summary
 

@@ -15,7 +15,8 @@
 # ============================================================
 
 import os
-from flask import Flask
+from flask import Flask, jsonify
+from sqlalchemy import text
 from .config import config_by_name
 from .extensions import db, bcrypt, migrate, cors
 
@@ -83,23 +84,54 @@ def create_app(config_name: str = None) -> Flask:
     app.register_blueprint(admin_bp,       url_prefix='/api/admin')
 
     # --------------------------------------------------------
-    # 5. Import all models so Flask-Migrate can detect them
+    # 5. Import all models so Flask-Migrate & db.create_all() detect them
     # --------------------------------------------------------
     # Even though we don't use the models directly here,
     # SQLAlchemy needs to "see" them before it can create/migrate tables.
     from .models import user, company, job, application, admin  # noqa: F401
 
     # --------------------------------------------------------
-    # 6. Simple health-check route
+    # 6. Database Health-Check Route
     # --------------------------------------------------------
-    @app.route('/api/health')
+    # Health check route — safe to keep during development, consider removing or securing before final submission.
+    #
+    # Purpose: This endpoint allows developers, testers, and automated tools to verify
+    # that the full connection chain (Flask API → SQLAlchemy ORM → MySQL Database) is working.
+    # It attempts a simple query ('SELECT 1') against the database and returns the result.
+    @app.route('/api/health', methods=['GET'])
     def health_check():
         """
-        Health Check Endpoint.
-        GET /api/health
-        Returns a simple JSON response to confirm the server is running.
-        Useful for testing that the server started correctly.
+        GET /api/health — Database & API Health Check Endpoint.
+
+        Attempts to query the MySQL database.
+        Returns:
+            200 OK: {"status": "ok", "database": "connected"} if DB query succeeds.
+            500 Error: {"status": "error", "database": "disconnected", "error": "..."} if DB query fails.
         """
-        return {'status': 'ok', 'message': 'Job Portal API is running'}, 200
+        try:
+            # Execute a simple lightweight query to verify active MySQL connectivity
+            db.session.execute(text("SELECT 1"))
+            return jsonify({
+                "status": "ok",
+                "database": "connected",
+                "message": "Flask server and MySQL database are successfully connected!"
+            }), 200
+        except Exception as e:
+            # Return detailed error message if connection fails (e.g. wrong credentials, DB not running)
+            return jsonify({
+                "status": "error",
+                "database": "disconnected",
+                "error": str(e),
+                "message": "Failed to connect to MySQL database. Check your .env settings and ensure MySQL server is running."
+            }), 500
+
+    # --------------------------------------------------------
+    # 7. Register Flask CLI Commands
+    # --------------------------------------------------------
+    @app.cli.command("init-db")
+    def init_db_command():
+        """Flask CLI command to initialize database tables: flask init-db"""
+        from init_db import init_database
+        init_database()
 
     return app

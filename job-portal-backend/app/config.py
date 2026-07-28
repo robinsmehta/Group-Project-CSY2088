@@ -11,6 +11,8 @@
 import os
 from dotenv import load_dotenv
 
+import urllib.parse
+
 # Load variables from .env file into os.environ
 load_dotenv()
 
@@ -25,20 +27,36 @@ class Config:
     # --- Security ---
     # SECRET_KEY is used by Flask to sign session cookies and CSRF tokens.
     # If someone knows this key, they can forge session data — keep it secret!
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-dev-secret-change-this')
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'your_secret_key_here')
 
-    # --- Database ---
-    # Build the SQLAlchemy connection URI from individual env variables.
-    # Format: mysql+pymysql://user:password@host:port/database_name
-    # pymysql is the driver that actually speaks to MySQL.
+    # --- Database Configuration ---
+    # We read database connection details from environment variables (.env file).
+    # This keeps credentials secure and allows different settings in dev vs. production.
+    #
+    # DB_USER: MySQL database username (default: 'root')
+    # DB_PASSWORD: Password for your MySQL user account (default: empty string '')
+    # DB_HOST: Hostname or IP where MySQL is running (default: 'localhost')
+    # DB_PORT: Port number MySQL server listens on (default: '3306')
+    # DB_NAME: Database name created in MySQL (default: 'job_portal')
     DB_USER     = os.environ.get('DB_USER', 'root')
     DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
     DB_HOST     = os.environ.get('DB_HOST', 'localhost')
     DB_PORT     = os.environ.get('DB_PORT', '3306')
-    DB_NAME     = os.environ.get('DB_NAME', 'job_portal_db')
+    DB_NAME     = os.environ.get('DB_NAME', 'job_portal')
 
+    # --- Connection String Structure Explanation ---
+    # SQLAlchemy requires a connection string (Database URI) to know how to connect.
+    # Structure:  mysql+pymysql://<user>:<password>@<host>:<port>/<db_name>
+    #
+    # Breakdown:
+    # 1. mysql+pymysql  -> Engine dialect (MySQL) + Python connector driver (PyMySQL).
+    # 2. <user>:<password> -> Your MySQL authentication credentials.
+    #                       (We use urllib.parse.quote_plus so special chars in passwords like '@' don't break the URL)
+    # 3. @<host>:<port>  -> Location and network port of the MySQL database server.
+    # 4. /<db_name>      -> The target database schema created in MySQL.
+    _encoded_password = urllib.parse.quote_plus(DB_PASSWORD) if DB_PASSWORD else ''
     SQLALCHEMY_DATABASE_URI = (
-        f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        f"mysql+pymysql://{DB_USER}:{_encoded_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
     # Disable SQLAlchemy's event system for object modifications (saves memory).
