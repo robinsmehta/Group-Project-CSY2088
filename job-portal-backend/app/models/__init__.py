@@ -1,10 +1,16 @@
 # ============================================================
 # app/models/__init__.py
 #
-# This file makes `models` a Python package.
-# It's intentionally left mostly empty — each model lives in
-# its own file for clarity and separation of concerns.
-#
-# All models are imported in app/__init__.py so that
-# Flask-Migrate (Alembic) can detect them when generating migrations.
+# This file makes `models` a Python package and exports all model classes.
+# Re-exporting them here allows clean imports such as:
+#   from app.models import User, Company, Job, Application, Admin
 # ============================================================
+
+from .user import User
+from .company import Company
+from .job import Job
+from .application import Application
+from .admin import Admin
+
+__all__ = ['User', 'Company', 'Job', 'Application', 'Admin']
+
