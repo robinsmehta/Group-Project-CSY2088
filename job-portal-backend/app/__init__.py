@@ -133,6 +133,13 @@ def create_app(config_name: str = None) -> Flask:
                 "message": "Failed to connect to MySQL database. Check your .env settings and ensure MySQL server is running."
             }), 500
 
+    @app.route('/api/uploads/resumes/<filename>', methods=['GET'])
+    def download_resume_direct(filename):
+        from flask import send_from_directory
+        upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads/resumes')
+        return send_from_directory(os.path.abspath(upload_folder), filename, as_attachment=False)
+
+
     # --------------------------------------------------------
     # 7. Register Flask CLI Commands
     # --------------------------------------------------------

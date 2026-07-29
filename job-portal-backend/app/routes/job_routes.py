@@ -191,3 +191,23 @@ def delete_job(job_id):
         is_admin=is_admin
     )
     return jsonify(result), status_code
+
+
+# ============================================================
+# 6. GET /api/jobs/<id>/applications — Get applicants for a job (Company)
+# ============================================================
+@job_bp.route('/<int:job_id>/applications', methods=['GET'])
+@role_required('company')
+def get_job_applications(job_id):
+    """
+    Retrieve all applications for a specific job listing (sub-resource route).
+    Only the COMPANY THAT POSTED THE JOB can view its applicants.
+    """
+    from app.services import application_service
+    company_id = session.get('company_id') or session.get('user_id')
+    result, status_code = application_service.get_applicants_for_job(
+        job_id=job_id,
+        company_id=company_id
+    )
+    return jsonify(result), status_code
+

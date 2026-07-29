@@ -1,22 +1,20 @@
 # ============================================================
 # app/routes/application_routes.py — Application Routes (Presentation Layer)
 #
-# Handles job application submissions and status management.
+# Handles job application submissions, candidate retrieval,
+# application status updates, and secure resume file serving.
 #
-# Blueprint: application_bp
-# URL Prefix (set in app/__init__.py): /api/applications
-# Full endpoint URLs:
-#   POST /api/applications                        → submit a new application
-#   GET  /api/applications/mine                   → get all my applications (user)
-#   GET  /api/jobs/<id>/applications              → get all applicants for a job (company)
-#   PUT  /api/applications/<id>/status            → update application status (company)
-#
-# NOTE: GET /api/jobs/<id>/applications is defined in job_routes.py
-#       to keep job-related sub-resources together — or here, your choice.
-#       We define it here for clarity.
+# Blueprint: application_bp (URL prefix: /api/applications)
+# Endpoints:
+#   POST /api/applications                    → Apply to job with resume upload (user)
+#   GET  /api/applications/mine               → View my submitted applications (user)
+#   GET  /api/applications/job/<job_id>       → View applicants for a job (company)
+#   PUT  /api/applications/<id>/status        → Update application status (company)
+#   GET  /api/applications/resumes/<filename> → Serve/download uploaded resume file
 # ============================================================
 
-from flask import Blueprint, request, jsonify
+import os
+from flask import Blueprint, request, jsonify, session, send_from_directory, current_app
 from app.services import application_service
 from app.utils.decorators import role_required
 
@@ -24,155 +22,151 @@ application_bp = Blueprint('applications', __name__)
 
 
 # ============================================================
-# POST /api/applications
+# 1. POST /api/applications
 # ============================================================
 @application_bp.route('/', methods=['POST'])
-# @role_required('user')  # TODO: Uncomment once role_required decorator is implemented
+@role_required('user')
 def submit_application():
     """
-    Submit a new job application with an optional résumé file upload.
+    Submit a new job application with a résumé file upload.
     Only authenticated USERS (job seekers) can apply.
 
-    Expected request (multipart/form-data to support file upload):
-        job_id (int, form field): The ID of the job to apply for.
-        resume  (file, optional): The résumé PDF to upload.
+    Accepts multipart/form-data:
+        job_id (form field): ID of the job listing.
+        resume  (file field): Résumé file (.pdf, .doc, .docx).
 
-    Or as JSON (if not uploading a file):
-        { "job_id": 5 }
-
-    Success response (201 Created):
-        { "message": "Application submitted", "application": { ... } }
-
-    Error responses:
-        400 — Missing job_id, or already applied to this job
-        401 — Not logged in as a user
-        404 — Job not found
+    Returns:
+        201 Created — Application submitted successfully
+        400 Bad Request — Missing job_id or invalid file type
+        403 Forbidden — User role missing
+        404 Not Found — Job does not exist
+        409 Conflict — User already applied to this job
     """
-    # TODO: Get the logged-in user's ID from the session
-    # user_id = session.get('user_id')
+    user_id = session.get('user_id')
 
-    # TODO: Get job_id from form data or JSON body
-    # job_id = request.form.get('job_id') or request.get_json().get('job_id')
+    # Parse job_id from multipart form-data or fallback to JSON payload
+    job_id = None
+    if request.form:
+        job_id = request.form.get('job_id')
+    elif request.is_json:
+        data = request.get_json(silent=True) or {}
+        job_id = data.get('job_id')
 
-    # TODO: Handle file upload (if a résumé was attached)
-    # resume_file = request.files.get('resume')
-    # If file exists:
-    #   - Use werkzeug.utils.secure_filename() to sanitise the filename
-    #   - Save it to app.config['UPLOAD_FOLDER']
-    #   - Store the file path in resume_path variable
+    # Get resume file from request.files
+    resume_file = request.files.get('resume')
 
-    # TODO: Call application_service.submit_application(user_id, job_id, resume_path)
-    #         - Check the job exists
-    #         - Check user hasn't already applied to this job (prevent duplicates)
-    #         - Create and save Application record
-    # result, status_code = application_service.submit_application(user_id, job_id, resume_path)
-    # return jsonify(result), status_code
+    # Call service layer business logic
+    result, status_code = application_service.apply_to_job(
+        user_id=user_id,
+        job_id=job_id,
+        resume_file=resume_file
+    )
 
-    return jsonify({'message': 'submit_application route stub — not yet implemented'}), 200
+    return jsonify(result), status_code
 
 
 # ============================================================
-# GET /api/applications/mine
+# 2. GET /api/applications/mine
 # ============================================================
 @application_bp.route('/mine', methods=['GET'])
-# @role_required('user')  # TODO: Uncomment once role_required decorator is implemented
+@role_required('user')
 def get_my_applications():
     """
-    Retrieve all applications submitted by the currently logged-in user.
-    Useful for the "My Applications" dashboard page.
+    Retrieve all applications submitted by the logged-in user.
 
-    Success response (200 OK):
-        { "applications": [ { app1 }, { app2 }, ... ] }
-
-    Error responses:
-        401 — Not logged in as a user
+    Returns:
+        200 OK — List of applications with job title and company details
+        401 Unauthorized — User not logged in
+        403 Forbidden — Requires 'user' role
     """
-    # TODO: Get user_id from session
-    # user_id = session.get('user_id')
-
-    # TODO: Call application_service.get_applications_by_user(user_id) which will:
-    #         - Query Application.query.filter_by(user_id=user_id).all()
-    #         - Optionally include job title/company info in each result
-    # result, status_code = application_service.get_applications_by_user(user_id)
-    # return jsonify(result), status_code
-
-    return jsonify({'message': 'get_my_applications route stub — not yet implemented'}), 200
+    user_id = session.get('user_id')
+    result, status_code = application_service.get_my_applications(user_id)
+    return jsonify(result), status_code
 
 
 # ============================================================
-# GET /api/jobs/<id>/applications
-# (technically a sub-resource of jobs, but managed here)
+# 3. GET /api/applications/job/<job_id>
 # ============================================================
 @application_bp.route('/job/<int:job_id>', methods=['GET'])
-# @role_required('company')  # TODO: Uncomment once role_required is implemented
+@role_required('company')
 def get_applications_for_job(job_id):
     """
     Retrieve all applications for a specific job listing.
-    Only the COMPANY THAT POSTED THIS JOB can view its applications.
+    Only the COMPANY THAT POSTED THE JOB can view its applicants.
 
-    Path parameter:
-        job_id (int): The ID of the job.
-
-    Success response (200 OK):
-        { "applications": [ { app1 }, { app2 }, ... ] }
-
-    Error responses:
-        401 — Not logged in as a company
-        403 — Not the job's owning company
-        404 — Job not found
+    Returns:
+        200 OK — List of applicants with user details and resume links
+        403 Forbidden — Requesting company does not own the job
+        404 Not Found — Job not found
     """
-    # TODO: Get logged-in company_id from session
-    # company_id = session.get('company_id')
-
-    # TODO: Call application_service.get_applications_for_job(job_id, company_id) which will:
-    #         - Find the Job (404 if not found)
-    #         - Verify job.company_id == company_id (403 if mismatch)
-    #         - Return all Application records for this job
-    # result, status_code = application_service.get_applications_for_job(job_id, company_id)
-    # return jsonify(result), status_code
-
-    return jsonify({'message': f'get_applications_for_job({job_id}) stub — not yet implemented'}), 200
+    company_id = session.get('company_id') or session.get('user_id')
+    result, status_code = application_service.get_applicants_for_job(
+        job_id=job_id,
+        company_id=company_id
+    )
+    return jsonify(result), status_code
 
 
 # ============================================================
-# PUT /api/applications/<id>/status
+# 4. PUT /api/applications/<id>/status
 # ============================================================
 @application_bp.route('/<int:application_id>/status', methods=['PUT'])
-# @role_required('company')  # TODO: Uncomment once role_required is implemented
+@role_required('company')
 def update_application_status(application_id):
     """
-    Update the review status of a job application.
-    Only the COMPANY that posted the job can change an application's status.
+    Update the review status of an application.
+    Only the COMPANY THAT POSTED THE JOB can update applicant status.
+
+    Expected JSON payload:
+        { "status": "shortlisted" }  # valid: applied, under_review, shortlisted, rejected
+
+    Returns:
+        200 OK — Application status updated successfully
+        400 Bad Request — Invalid status value
+        403 Forbidden — Requesting company does not own the application's job
+        404 Not Found — Application not found
+    """
+    company_id = session.get('company_id') or session.get('user_id')
+
+    data = request.get_json(silent=True) or {}
+    new_status = data.get('status') or data.get('new_status')
+
+    result, status_code = application_service.update_application_status(
+        application_id=application_id,
+        company_id=company_id,
+        new_status=new_status
+    )
+    return jsonify(result), status_code
+
+
+# ============================================================
+# 5. GET /api/applications/resumes/<filename> — Secure Resume File Serving
+# ============================================================
+@application_bp.route('/resumes/<filename>', methods=['GET'])
+
+def download_resume(filename):
+    """
+    Securely serve/download an uploaded resume file.
+
+    SECURITY & PATH TRAVERSAL PROTECTION:
+    Flask's `send_from_directory()` function ensures that files are strictly served from
+    the configured UPLOAD_FOLDER directory. It automatically sanitizes filenames and rejects
+    any path traversal attempts (such as '../../etc/passwd' or encoded slashes) by returning
+    a 404 or 400 error if the resulting path escapes the target directory.
 
     Path parameter:
-        application_id (int): The ID of the application to update.
-
-    Expected JSON body:
-        { "status": "shortlisted" }
-        # Valid values: "applied", "under_review", "shortlisted", "rejected"
-
-    Success response (200 OK):
-        { "message": "Status updated", "application": { ... } }
-
-    Error responses:
-        400 — Invalid status value
-        401 — Not logged in as a company
-        403 — This application's job does not belong to your company
-        404 — Application not found
+        filename (str): Sanitized unique filename stored in DB.
     """
-    # TODO: Get logged-in company_id from session
-    # company_id = session.get('company_id')
+    upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads/resumes')
 
-    # TODO: Extract new status from request body
-    # data = request.get_json()
-    # new_status = data.get('status')
+    # Convert relative path to absolute directory for send_from_directory
+    abs_upload_folder = os.path.abspath(upload_folder)
 
-    # TODO: Call application_service.update_status(application_id, company_id, new_status) which will:
-    #         - Find Application by ID (404 if not found)
-    #         - Verify the application's job belongs to this company (403 if not)
-    #         - Validate new_status is one of the allowed enum values
-    #         - Update application.status and commit to DB
-    # result, status_code = application_service.update_status(application_id, company_id, new_status)
-    # return jsonify(result), status_code
-
-    return jsonify({'message': f'update_application_status({application_id}) stub — not yet implemented'}), 200
+    try:
+        return send_from_directory(
+            abs_upload_folder,
+            filename,
+            as_attachment=False
+        )
+    except FileNotFoundError:
+        return jsonify({'error': 'Resume file not found'}), 404
