@@ -7,88 +7,60 @@
 # In Flask, decorators are applied to route handler functions
 # using the @ syntax, e.g.:
 #
-#   @app.route('/protected')
-#   @role_required('admin')
-#   def protected_route():
+#   @auth_bp.route('/company/test')
+#   @role_required('company')
+#   def company_test_route():
 #       ...
-#
-# The role_required decorator below will (once implemented) check
-# that the current user has the correct role before allowing the
-# route handler to execute. If not, it returns a 401/403 response.
 # ============================================================
 
 from functools import wraps
-from flask import jsonify  # , session  ← Uncomment when implementing
+from flask import session, jsonify
 
 
 def role_required(role: str):
     """
     Route protection decorator factory.
 
-    Usage:
-        @role_required('user')       ← only logged-in users can access
-        @role_required('company')    ← only logged-in companies can access
-        @role_required('admin')      ← only logged-in admins can access
-
-    Args:
-        role (str): The required role. Must be 'user', 'company', or 'admin'.
+    Checks:
+      1. Is there an active session? (user_id and role present in session)
+      2. Does the session role match the required role argument?
 
     Returns:
-        A decorator function that wraps the route handler.
-
-    How it will work (once implemented):
-        1. Check if there is an active session (i.e., someone is logged in).
-        2. Check if session['role'] matches the required role.
-        3. If yes → allow the route handler to run normally.
-        4. If no session → return 401 Unauthorized ("You must be logged in").
-        5. If wrong role → return 403 Forbidden ("You don't have permission").
+      - 401 Unauthorized: If no active login session exists
+      - 403 Forbidden: If logged-in user lacks the required role
+      - Route Handler Result: If authentication and authorization checks pass
     """
 
     def decorator(f):
-        """
-        The actual decorator returned by role_required(role).
-        @wraps(f) preserves the original function's name and docstring —
-        important for Flask to correctly identify route handlers.
-        """
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            """
-            This inner function runs BEFORE the route handler every time
-            the endpoint is called.
-            """
+            # ------------------------------------------------
+            # Step 1: Check if the user is logged in (active session)
+            # ------------------------------------------------
+            # When a user logs in, auth_service sets session['user_id'] and session['role'].
+            # If these session keys are missing, the user has not authenticated.
+            user_id = session.get('user_id')
+            user_role = session.get('role')
+
+            if not user_id or not user_role:
+                return jsonify({
+                    'error': 'Authentication required. Please log in to access this resource.'
+                }), 401
 
             # ------------------------------------------------
-            # TODO: Step 1 — Check if the user is logged in
+            # Step 2: Check if the user has the required role
             # ------------------------------------------------
-            # We store login state in the Flask session dictionary.
-            # If 'role' is not in the session, nobody is logged in.
-            #
-            # from flask import session
-            # if 'role' not in session:
-            #     return jsonify({'error': 'Authentication required. Please log in.'}), 401
+            # Even if authenticated, a job seeker ('user') should not access company or admin endpoints.
+            # Compare current session role against the required decorator parameter.
+            if user_role != role:
+                return jsonify({
+                    'error': f'Access denied. Required role: {role}, your role: {user_role}'
+                }), 403
 
             # ------------------------------------------------
-            # TODO: Step 2 — Check if the user has the right role
+            # Step 3: Allow the request to proceed to the route handler
             # ------------------------------------------------
-            # Even if logged in, the role must match what this route requires.
-            #
-            # if session.get('role') != role:
-            #     return jsonify({
-            #         'error': f'Access denied. This endpoint requires role: {role}'
-            #     }), 403
-
-            # ------------------------------------------------
-            # TODO: Step 3 — Allow the request to proceed
-            # ------------------------------------------------
-            # If we passed both checks above, call the original route handler.
-            # *args and **kwargs pass through any URL parameters (e.g. job_id).
-            #
-            # return f(*args, **kwargs)
-
-            # ------------------------------------------------
-            # Temporary: pass-through (no protection yet)
-            # Remove this line once you implement the TODOs above!
-            # ------------------------------------------------
+            # Both authentication and authorization checks passed cleanly.
             return f(*args, **kwargs)
 
         return decorated_function
