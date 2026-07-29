@@ -95,13 +95,14 @@ class Job(db.Model):
     def to_dict(self):
         """Serialise to dict for JSON API responses."""
         return {
-            'id':          self.id,
-            'company_id':  self.company_id,
-            'title':       self.title,
-            'description': self.description,
-            'location':    self.location,
-            'category':    self.category,
-            'salary':      self.salary,
-            'created_at':  self.created_at.isoformat() if self.created_at else None,
-            'updated_at':  self.updated_at.isoformat() if self.updated_at else None,
+            'id':           self.id,
+            'company_id':   self.company_id,
+            'company_name': self.company.company_name if self.company else None,
+            'title':        self.title,
+            'description':  self.description,
+            'location':     self.location,
+            'category':     self.category,
+            'salary':       self.salary,
+            'created_at':   self.created_at.isoformat() if self.created_at else None,
+            'updated_at':   self.updated_at.isoformat() if self.updated_at else None,
         }

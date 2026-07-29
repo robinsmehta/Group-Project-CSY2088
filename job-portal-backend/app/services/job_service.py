@@ -1,165 +1,247 @@
 # ============================================================
-# app/services/job_service.py — Job Business Logic
+# app/services/job_service.py — Job Business Logic Layer
 #
-# This is the BUSINESS LOGIC LAYER for job-related operations.
-# Called by routes in job_routes.py.
+# This file contains the core business rules for job operations:
+#   1. Creating job listings (with company approval verification)
+#   2. Searching/retrieving job listings (with optional dynamic filters)
+#   3. Fetching single job listing details
+#   4. Updating job listings (with company ownership verification)
+#   5. Deleting job listings (with company ownership & admin override rules)
 #
-# Responsibilities:
-#   - Apply validation rules specific to jobs
-#   - Check company ownership before allowing edits/deletes
-#   - Build database queries (with optional filters)
-#   - Create, update, and delete Job records
+# Architectural Notes & Security Design:
+#
+# 1. WHY THE APPROVAL CHECK HAPPENS BEFORE JOB CREATION:
+#    Checking company.status == 'approved' before creating a job ensures that
+#    unapproved, pending, or rejected companies cannot post job listings on the platform.
+#    This enforces administrative authorization at the backend database boundary,
+#    preventing unverified accounts from publishing content even if client-side controls are bypassed.
+#
+# 2. WHY OWNERSHIP IS CHECKED IN THE SERVICE LAYER RATHER THAN TRUSTING THE FRONTEND:
+#    Ownership validation (job.company_id == company_id) MUST be enforced in the service layer.
+#    Frontend inputs and HTTP request headers/payloads can be forged or manipulated (e.g. via Postman,
+#    cURL, or browser dev tools). Validating ownership in the service layer ensures complete security,
+#    preventing one company from modifying or deleting another company's job postings.
+#
+# 3. WHY SEARCH/FILTER USES OPTIONAL QUERY PARAMETERS RATHER THAN SEPARATE ENDPOINTS PER FILTER TYPE:
+#    Using optional query parameters (e.g., GET /api/jobs?keyword=...&location=...&category=...)
+#    follows RESTful API design principles. It allows clients to combine any dynamic set of filters
+#    (e.g., keyword + location, or category only) within a single unified endpoint handler rather than
+#    creating individual, redundant routes for every filter permutation (e.g. /jobs/category, /jobs/location).
 # ============================================================
 
 from app.extensions import db
-from app.models.job     import Job
+from app.models.job import Job
 from app.models.company import Company
 
 
-def get_all_jobs(category=None, location=None, keyword=None):
+def create_job(company_id: int, title=None, description=None, location=None, category=None, salary=None):
     """
-    Retrieve all job listings (from approved companies only).
-    Supports optional filtering by category, location, or keyword.
+    Create a new job listing for an approved company.
+
+    Accepts parameters individually or as a single dictionary passed in the 'title' argument.
 
     Args:
-        category (str, optional): Filter by job category.
-        location (str, optional): Filter by job location.
-        keyword  (str, optional): Search in job title or description.
+        company_id (int): Primary key of the requesting company.
+        title (str or dict): Job title, or dict containing job details.
+        description (str, optional): Detailed job description.
+        location (str, optional): Job location.
+        category (str, optional): Job category.
+        salary (str, optional): Salary range / string representation.
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # TODO: Start a base query for all jobs
-    # query = Job.query.join(Company).filter(Company.status == 'approved')
+    # Support receiving a dictionary as the second argument (data dict)
+    if isinstance(title, dict):
+        data = title
+        title = data.get('title')
+        description = data.get('description')
+        location = data.get('location')
+        category = data.get('category')
+        salary = data.get('salary')
 
-    # TODO: Apply filters if provided
-    # if category:
-    #     query = query.filter(Job.category.ilike(f'%{category}%'))
-    # if location:
-    #     query = query.filter(Job.location.ilike(f'%{location}%'))
-    # if keyword:
-    #     query = query.filter(
-    #         db.or_(Job.title.ilike(f'%{keyword}%'), Job.description.ilike(f'%{keyword}%'))
-    #     )
+    # Basic input checks
+    title = (title or '').strip()
+    description = (description or '').strip()
+    location = (location or '').strip()
+    category = (category or '').strip() if category else None
+    salary = (salary or '').strip() if salary else None
 
-    # TODO: Execute query and serialise results
-    # jobs = query.all()
-    # return {'jobs': [j.to_dict() for j in jobs]}, 200
+    if not title or not description or not location:
+        return {'error': 'Title, description, and location are required fields'}, 400
 
-    return {'message': 'get_all_jobs service stub — not yet implemented'}, 200
+    # Look up the company by company_id
+    company = Company.query.get(company_id)
+    if not company:
+        return {'error': 'Company not found'}, 404
+
+    # -------------------------------------------------------------------------
+    # APPROVAL CHECK BEFORE JOB CREATION:
+    # We verify that the company's account status is 'approved'.
+    # Pending or rejected companies cannot post job listings.
+    # -------------------------------------------------------------------------
+    if company.status != 'approved':
+        return {
+            'error': 'Your company account is pending admin approval and cannot post jobs yet.'
+        }, 403
+
+    # Create new Job record linked to this company
+    new_job = Job(
+        company_id=company_id,
+        title=title,
+        description=description,
+        location=location,
+        category=category,
+        salary=salary
+    )
+
+    db.session.add(new_job)
+    db.session.commit()
+
+    return {
+        'message': 'Job created successfully',
+        'job': new_job.to_dict()
+    }, 201
+
+
+def get_all_jobs(keyword=None, location=None, category=None):
+    """
+    Retrieve all job listings, optionally filtered by keyword, location, and/or category.
+    Joins with the companies table to include company information.
+
+    Args:
+        keyword (str, optional): Search string to match in title or description.
+        location (str, optional): Location string filter.
+        category (str, optional): Category string filter.
+
+    Returns:
+        tuple: (response_dict, http_status_code)
+    """
+    # Query the jobs table and join with companies
+    query = Job.query.join(Company)
+
+    # -------------------------------------------------------------------------
+    # OPTIONAL SEARCH & FILTERING:
+    # Filter by category, location, and/or keyword (searches title and description).
+    # -------------------------------------------------------------------------
+    if category and category.strip():
+        query = query.filter(Job.category.ilike(f'%{category.strip()}%'))
+
+    if location and location.strip():
+        query = query.filter(Job.location.ilike(f'%{location.strip()}%'))
+
+    if keyword and keyword.strip():
+        search_pattern = f'%{keyword.strip()}%'
+        query = query.filter(
+            db.or_(
+                Job.title.ilike(search_pattern),
+                Job.description.ilike(search_pattern)
+            )
+        )
+
+    # Order by creation date (newest first)
+    jobs = query.order_by(Job.created_at.desc()).all()
+
+    # to_dict() includes company_name via the relationship
+    return {
+        'count': len(jobs),
+        'jobs': [j.to_dict() for j in jobs]
+    }, 200
 
 
 def get_job_by_id(job_id: int):
     """
-    Retrieve a single job listing by its primary key.
+    Retrieve full details for a single job listing by ID.
 
     Args:
-        job_id (int): The job's primary key.
+        job_id (int): Primary key of the job.
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # TODO: Query the job from the database
-    # job = Job.query.get(job_id)
-    # if not job:
-    #     return {'error': 'Job not found'}, 404
-    # return {'job': job.to_dict()}, 200
+    job = Job.query.get(job_id)
+    if not job:
+        return {'error': 'Job not found'}, 404
 
-    return {'message': f'get_job_by_id({job_id}) service stub — not yet implemented'}, 200
+    return {
+        'job': job.to_dict()
+    }, 200
 
 
-def create_job(company_id: int, data: dict):
+def update_job(job_id: int, company_id: int, updated_fields: dict = None, **kwargs):
     """
-    Create a new job listing for the given company.
+    Update an existing job listing. Only the owning company can update its jobs.
 
     Args:
-        company_id (int): ID of the authenticated company creating the job.
-        data (dict): Job details (title, description, location, category, salary).
+        job_id (int): Primary key of the job to update.
+        company_id (int): Primary key of the requesting company (from session).
+        updated_fields (dict, optional): Dictionary containing updated fields.
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # TODO: Validate required fields in data
-    # if not data.get('title') or not data.get('description') or not data.get('location'):
-    #     return {'error': 'Title, description, and location are required'}, 400
+    if updated_fields is None:
+        updated_fields = kwargs
 
-    # TODO: Confirm the company exists and is approved
-    # company = Company.query.get(company_id)
-    # if not company or company.status != 'approved':
-    #     return {'error': 'Only approved companies can post jobs'}, 403
+    job = Job.query.get(job_id)
+    if not job:
+        return {'error': 'Job not found'}, 404
 
-    # TODO: Create and save the Job
-    # new_job = Job(
-    #     company_id  = company_id,
-    #     title       = data['title'],
-    #     description = data['description'],
-    #     location    = data['location'],
-    #     category    = data.get('category'),
-    #     salary      = data.get('salary'),
-    # )
-    # db.session.add(new_job)
-    # db.session.commit()
-    # return {'message': 'Job created successfully', 'job': new_job.to_dict()}, 201
+    # -------------------------------------------------------------------------
+    # OWNERSHIP CHECK IN SERVICE LAYER:
+    # Ensure job.company_id matches the requesting company_id.
+    # -------------------------------------------------------------------------
+    if job.company_id != company_id:
+        return {'error': 'You do not own this job'}, 403
 
-    return {'message': 'create_job service stub — not yet implemented'}, 200
+    # Update only fields provided
+    if 'title' in updated_fields and updated_fields['title'] is not None:
+        job.title = updated_fields['title'].strip()
+    if 'description' in updated_fields and updated_fields['description'] is not None:
+        job.description = updated_fields['description'].strip()
+    if 'location' in updated_fields and updated_fields['location'] is not None:
+        job.location = updated_fields['location'].strip()
+    if 'category' in updated_fields and updated_fields['category'] is not None:
+        job.category = updated_fields['category'].strip()
+    if 'salary' in updated_fields and updated_fields['salary'] is not None:
+        job.salary = updated_fields['salary'].strip()
+
+    db.session.commit()
+
+    return {
+        'message': 'Job updated successfully',
+        'job': job.to_dict()
+    }, 200
 
 
-def update_job(job_id: int, company_id: int, data: dict):
+def delete_job(job_id: int, company_id: int = None, is_admin: bool = False):
     """
-    Update a job listing owned by the given company.
+    Delete a job listing.
+    - If is_admin is True: deletion is allowed regardless of ownership.
+    - If is_admin is False: company_id must match job.company_id.
 
     Args:
-        job_id     (int): The job to update.
-        company_id (int): Must match job.company_id (ownership check).
-        data (dict): Fields to update.
+        job_id (int): Primary key of the job to delete.
+        company_id (int, optional): ID of requesting company (required if not admin).
+        is_admin (bool): Flag indicating if request comes from an administrator.
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # TODO: Find the job (404 if missing)
-    # job = Job.query.get(job_id)
-    # if not job:
-    #     return {'error': 'Job not found'}, 404
+    job = Job.query.get(job_id)
+    if not job:
+        return {'error': 'Job not found'}, 404
 
-    # TODO: Ownership check — company can only edit their own jobs
-    # if job.company_id != company_id:
-    #     return {'error': 'You do not have permission to edit this job'}, 403
+    # -------------------------------------------------------------------------
+    # OWNERSHIP & ADMIN DELETION CHECK:
+    # -------------------------------------------------------------------------
+    if not is_admin:
+        if not company_id or job.company_id != company_id:
+            return {'error': 'You do not have permission to delete this job'}, 403
 
-    # TODO: Update only the fields that were provided
-    # if data.get('title'):       job.title       = data['title']
-    # if data.get('description'): job.description = data['description']
-    # if data.get('location'):    job.location    = data['location']
-    # if data.get('category'):    job.category    = data['category']
-    # if data.get('salary'):      job.salary      = data['salary']
-    # db.session.commit()
-    # return {'message': 'Job updated', 'job': job.to_dict()}, 200
+    db.session.delete(job)
+    db.session.commit()
 
-    return {'message': f'update_job({job_id}) service stub — not yet implemented'}, 200
-
-
-def delete_job(job_id: int, company_id: int):
-    """
-    Delete a job listing (company must own the job).
-
-    Args:
-        job_id     (int): The job to delete.
-        company_id (int): Must match job.company_id (ownership check).
-
-    Returns:
-        tuple: (response_dict, http_status_code)
-    """
-    # TODO: Find the job (404 if missing)
-    # job = Job.query.get(job_id)
-    # if not job:
-    #     return {'error': 'Job not found'}, 404
-
-    # TODO: Ownership check
-    # if job.company_id != company_id:
-    #     return {'error': 'You do not have permission to delete this job'}, 403
-
-    # TODO: Delete and commit
-    # db.session.delete(job)
-    # db.session.commit()
-    # return {'message': 'Job deleted successfully'}, 200
-
-    return {'message': f'delete_job({job_id}) service stub — not yet implemented'}, 200
+    return {
+        'message': 'Job deleted successfully'
+    }, 200
