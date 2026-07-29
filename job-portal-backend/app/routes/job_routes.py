@@ -1,202 +1,193 @@
 # ============================================================
-# app/routes/job_routes.py — Job Listing Routes (Presentation Layer)
+# app/routes/job_routes.py — Job Routes (Presentation Layer)
 #
-# This file is the PRESENTATION LAYER for job-related endpoints.
-# It receives HTTP requests, delegates to job_service.py (Business Logic),
-# and returns JSON responses.
+# This file handles all HTTP requests for job listings.
+# It acts as the PRESENTATION LAYER:
+#   - Parses request URLs, query parameters, and JSON payloads
+#   - Performs route-level input validation
+#   - Checks session credentials and enforces role authorization
+#   - Calls job_service.py for core business logic execution
+#   - Formats JSON responses with proper HTTP status codes
 #
-# Blueprint: job_bp
-# URL Prefix (set in app/__init__.py): /api/jobs
-# Full endpoint URLs:
-#   GET    /api/jobs              → list all jobs (with optional filters)
-#   GET    /api/jobs/<id>         → get a specific job by ID
-#   POST   /api/jobs              → create a new job listing (company only)
-#   PUT    /api/jobs/<id>         → update a job listing (owning company only)
-#   DELETE /api/jobs/<id>         → delete a job listing (owning company only)
+# Blueprint: job_bp (URL prefix: /api/jobs)
+# Endpoints:
+#   GET    /api/jobs              → List all jobs (public, optional filters)
+#   GET    /api/jobs/<id>         → Get specific job details (public)
+#   POST   /api/jobs              → Create new job listing (company role required)
+#   PUT    /api/jobs/<id>         → Update job listing (company role required)
+#   DELETE /api/jobs/<id>         → Delete job listing (owning company or admin allowed)
 # ============================================================
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from app.services import job_service
-from app.utils.decorators import role_required  # Role-based access control decorator
+from app.utils.decorators import role_required
 
 job_bp = Blueprint('jobs', __name__)
 
 
 # ============================================================
-# GET /api/jobs
+# 1. GET /api/jobs — Public list & search endpoint
 # ============================================================
 @job_bp.route('/', methods=['GET'])
 def get_all_jobs():
     """
-    Retrieve all approved job listings.
+    Retrieve all job listings with optional filtering and search.
+    Public access — no authentication required.
 
-    Optional query parameters for filtering/searching:
-        ?category=Engineering
-        ?location=London
-        ?keyword=python
+    Query Parameters:
+        ?keyword=python       → Search in job title or description
+        ?location=London      → Filter by job location
+        ?category=Engineering → Filter by job category
 
-    Success response (200 OK):
-        { "jobs": [ { job1 }, { job2 }, ... ] }
+    Why search/filter uses optional query parameters rather than separate endpoints:
+    Query parameters allow clients to dynamically combine optional filters (e.g. keyword + location)
+    in a single, RESTful GET endpoint without needing separate routes per filter combination.
     """
-    # TODO: Read optional query params from the URL
-    # category = request.args.get('category')
-    # location  = request.args.get('location')
-    # keyword   = request.args.get('keyword')
+    keyword = request.args.get('keyword')
+    location = request.args.get('location')
+    category = request.args.get('category')
 
-    # TODO: Call job_service.get_all_jobs(filters) which will:
-    #         - Build a SQLAlchemy query with optional WHERE clauses
-    #         - Return a list of Job objects from approved companies only
-    # result, status_code = job_service.get_all_jobs(category, location, keyword)
-    # return jsonify(result), status_code
-
-    return jsonify({'message': 'get_all_jobs route stub — not yet implemented'}), 200
+    # Forward query parameters to service layer for SQL filtering
+    result, status_code = job_service.get_all_jobs(
+        keyword=keyword,
+        location=location,
+        category=category
+    )
+    return jsonify(result), status_code
 
 
 # ============================================================
-# GET /api/jobs/<id>
+# 2. GET /api/jobs/<id> — Public single job lookup
 # ============================================================
 @job_bp.route('/<int:job_id>', methods=['GET'])
 def get_job(job_id):
     """
-    Retrieve a single job listing by its ID.
+    Retrieve full details for a single job listing by ID.
+    Public access — no authentication required.
 
     Path parameter:
-        job_id (int): The primary key of the job.
-
-    Success response (200 OK):
-        { "job": { id, title, description, ... } }
-
-    Error response:
-        404 — Job not found
+        job_id (int): Primary key of the job listing.
     """
-    # TODO: Call job_service.get_job_by_id(job_id) which will:
-    #         - Query Job.query.get(job_id)
-    #         - Return 404 if not found
-    # result, status_code = job_service.get_job_by_id(job_id)
-    # return jsonify(result), status_code
-
-    return jsonify({'message': f'get_job({job_id}) route stub — not yet implemented'}), 200
+    result, status_code = job_service.get_job_by_id(job_id)
+    return jsonify(result), status_code
 
 
 # ============================================================
-# POST /api/jobs
+# 3. POST /api/jobs — Create job listing (Approved Company only)
 # ============================================================
 @job_bp.route('/', methods=['POST'])
-# @role_required('company')  # TODO: Uncomment once role_required decorator is implemented
+@role_required('company')
 def create_job():
     """
-    Create a new job listing.
-    Only an APPROVED company should be able to call this.
+    Create a new job listing for the authenticated company.
+
+    Protected: Requires 'company' role.
+    Extracts company_id from active session.
 
     Expected JSON body:
         {
-            "title":       "Python Developer",
-            "description": "Build backend APIs...",
+            "title":       "Senior Python Developer",
+            "description": "Build backend APIs and microservices...",
             "location":    "Remote",
-            "category":    "Software Engineering",
-            "salary":      "£40,000 - £50,000"
+            "category":    "Engineering",
+            "salary":      "£50,000 - £60,000"
         }
-
-    Success response (201 Created):
-        { "message": "Job created successfully", "job": { ... } }
-
-    Error responses:
-        400 — Missing required fields
-        401 — Not logged in
-        403 — Not a company, or company not approved
     """
-    # TODO: Get the logged-in company's ID from the session
-    # company_id = session.get('company_id')
+    # Company ID is stored in session during login (session['user_id'])
+    company_id = session.get('company_id') or session.get('user_id')
 
-    # TODO: Extract JSON body
-    # data = request.get_json()
+    # Parse JSON payload
+    data = request.get_json(silent=True) or {}
 
-    # TODO: Call job_service.create_job(company_id, data) which will:
-    #         - Validate required fields (title, description, location)
-    #         - Confirm company status is 'approved'
-    #         - Create a new Job record and save to DB
-    # result, status_code = job_service.create_job(company_id, data)
-    # return jsonify(result), status_code
+    # Route-level input validation
+    title = data.get('title')
+    description = data.get('description')
+    location = data.get('location')
 
-    return jsonify({'message': 'create_job route stub — not yet implemented'}), 200
+    if not title or not isinstance(title, str) or not title.strip():
+        return jsonify({'error': 'Title is required and must be a non-empty string'}), 400
+
+    if not description or not isinstance(description, str) or not description.strip():
+        return jsonify({'error': 'Description is required and must be a non-empty string'}), 400
+
+    if not location or not isinstance(location, str) or not location.strip():
+        return jsonify({'error': 'Location is required and must be a non-empty string'}), 400
+
+    # Call service layer to perform approval check & creation
+    result, status_code = job_service.create_job(company_id=company_id, title=data)
+    return jsonify(result), status_code
 
 
 # ============================================================
-# PUT /api/jobs/<id>
+# 4. PUT /api/jobs/<id> — Update job listing (Owning Company only)
 # ============================================================
 @job_bp.route('/<int:job_id>', methods=['PUT'])
-# @role_required('company')  # TODO: Uncomment once role_required decorator is implemented
+@role_required('company')
 def update_job(job_id):
     """
     Update an existing job listing.
-    Only the COMPANY THAT POSTED THIS JOB can update it.
 
-    Path parameter:
-        job_id (int): The primary key of the job to update.
+    Protected: Requires 'company' role.
+    Service layer enforces that company_id matches job.company_id.
 
     Expected JSON body (any updatable fields):
         {
-            "title":    "Senior Python Developer",
-            "salary":   "£55,000"
+            "title":    "Lead Python Developer",
+            "salary":   "£65,000 - £75,000"
         }
-
-    Success response (200 OK):
-        { "message": "Job updated", "job": { ... } }
-
-    Error responses:
-        400 — No valid fields to update
-        401 — Not authenticated
-        403 — Not the owning company
-        404 — Job not found
     """
-    # TODO: Get logged-in company_id from session
-    # company_id = session.get('company_id')
+    company_id = session.get('company_id') or session.get('user_id')
+    data = request.get_json(silent=True) or {}
 
-    # TODO: Extract JSON body
-    # data = request.get_json()
+    updatable_fields = ['title', 'description', 'location', 'category', 'salary']
+    provided_updates = {k: v for k, v in data.items() if k in updatable_fields}
 
-    # TODO: Call job_service.update_job(job_id, company_id, data) which will:
-    #         - Find the Job by ID (404 if missing)
-    #         - Verify job.company_id == company_id (403 if mismatch)
-    #         - Update only the provided fields
-    #         - Commit changes to DB
-    # result, status_code = job_service.update_job(job_id, company_id, data)
-    # return jsonify(result), status_code
+    if not provided_updates:
+        return jsonify({
+            'error': 'No valid fields provided for update. Allowed fields: title, description, location, category, salary'
+        }), 400
 
-    return jsonify({'message': f'update_job({job_id}) route stub — not yet implemented'}), 200
+    # Delegate to service layer for ownership check and database update
+    result, status_code = job_service.update_job(
+        job_id=job_id,
+        company_id=company_id,
+        updated_fields=provided_updates
+    )
+    return jsonify(result), status_code
 
 
 # ============================================================
-# DELETE /api/jobs/<id>
+# 5. DELETE /api/jobs/<id> — Delete job (Owning Company or Admin)
 # ============================================================
 @job_bp.route('/<int:job_id>', methods=['DELETE'])
-# @role_required('company')  # TODO: Uncomment once role_required decorator is implemented
 def delete_job(job_id):
     """
     Delete a job listing.
-    Only the COMPANY THAT POSTED THIS JOB can delete it
-    (admins can also delete via /api/admin/jobs/<id>).
 
-    Path parameter:
-        job_id (int): The primary key of the job to delete.
-
-    Success response (200 OK):
-        { "message": "Job deleted successfully" }
-
-    Error responses:
-        401 — Not authenticated
-        403 — Not the owning company
-        404 — Job not found
+    Protected: Accessible by either:
+      - The owning company (session['role'] == 'company' and job.company_id matches session company_id)
+      - An administrator (session['role'] == 'admin', is_admin=True)
     """
-    # TODO: Get logged-in company_id from session
-    # company_id = session.get('company_id')
+    user_id = session.get('user_id')
+    role = session.get('role')
 
-    # TODO: Call job_service.delete_job(job_id, company_id) which will:
-    #         - Find the Job (404 if not found)
-    #         - Verify ownership (403 if not owning company)
-    #         - Delete the Job (cascade deletes its Applications too)
-    #         - Commit to DB
-    # result, status_code = job_service.delete_job(job_id, company_id)
-    # return jsonify(result), status_code
+    if not user_id or not role:
+        return jsonify({
+            'error': 'Authentication required. Please log in to access this resource.'
+        }), 401
 
-    return jsonify({'message': f'delete_job({job_id}) route stub — not yet implemented'}), 200
+    if role not in ['company', 'admin']:
+        return jsonify({
+            'error': f'Access denied. Required role: company or admin, your role: {role}'
+        }), 403
+
+    is_admin = (role == 'admin')
+    company_id = (session.get('company_id') or user_id) if role == 'company' else None
+
+    # Delegate deletion logic to service layer
+    result, status_code = job_service.delete_job(
+        job_id=job_id,
+        company_id=company_id,
+        is_admin=is_admin
+    )
+    return jsonify(result), status_code
