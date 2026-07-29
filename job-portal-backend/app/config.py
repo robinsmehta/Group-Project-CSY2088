@@ -65,7 +65,10 @@ class Config:
 
     # --- File Uploads ---
     # Where uploaded résumé files will be stored on the server's filesystem.
-    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads/resumes')
+
+    # Allowed extensions for uploaded résumé files
+    ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'}
 
     # Maximum file upload size — 10 MB (in bytes: 10 * 1024 * 1024).
     # Flask will reject uploads larger than this automatically.
