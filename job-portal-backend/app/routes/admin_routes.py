@@ -2,7 +2,8 @@
 # app/routes/admin_routes.py — Admin Routes (Presentation Layer)
 #
 # Handles all platform administration actions.
-# EVERY route in this file should be protected so only Admins can access them.
+# EVERY route in this file is protected with @role_required('admin') so only
+# authenticated Admins can access them.
 #
 # Blueprint: admin_bp
 # URL Prefix (set in app/__init__.py): /api/admin
@@ -26,7 +27,7 @@ admin_bp = Blueprint('admin', __name__)
 # GET /api/admin/companies/pending
 # ============================================================
 @admin_bp.route('/companies/pending', methods=['GET'])
-# @role_required('admin')  # TODO: Uncomment once role_required is implemented
+@role_required('admin')
 def get_pending_companies():
     """
     Retrieve all company accounts with status = 'pending'.
@@ -39,20 +40,15 @@ def get_pending_companies():
         401 — Not logged in
         403 — Not an admin
     """
-    # TODO: Call admin_service.get_pending_companies() which will:
-    #         - Query Company.query.filter_by(status='pending').all()
-    #         - Return the list serialised as dicts
-    # result, status_code = admin_service.get_pending_companies()
-    # return jsonify(result), status_code
-
-    return jsonify({'message': 'get_pending_companies route stub — not yet implemented'}), 200
+    result, status_code = admin_service.get_pending_companies()
+    return jsonify(result), status_code
 
 
 # ============================================================
 # PUT /api/admin/companies/<id>/approve
 # ============================================================
 @admin_bp.route('/companies/<int:company_id>/approve', methods=['PUT'])
-# @role_required('admin')  # TODO: Uncomment once role_required is implemented
+@role_required('admin')
 def approve_company(company_id):
     """
     Approve a pending company account.
@@ -62,28 +58,22 @@ def approve_company(company_id):
         company_id (int): The ID of the company to approve.
 
     Success response (200 OK):
-        { "message": "Company approved", "company": { ... } }
+        { "message": "Company approved successfully", "company": { ... } }
 
     Error responses:
-        401 — Not an admin
+        401 — Not logged in
+        403 — Not an admin
         404 — Company not found
     """
-    # TODO: Call admin_service.update_company_status(company_id, 'approved') which will:
-    #         - Find Company by ID (404 if not found)
-    #         - Set company.status = 'approved'
-    #         - Commit to DB
-    #         - Optionally: send an approval email to the company
-    # result, status_code = admin_service.update_company_status(company_id, 'approved')
-    # return jsonify(result), status_code
-
-    return jsonify({'message': f'approve_company({company_id}) stub — not yet implemented'}), 200
+    result, status_code = admin_service.approve_company(company_id)
+    return jsonify(result), status_code
 
 
 # ============================================================
 # PUT /api/admin/companies/<id>/reject
 # ============================================================
 @admin_bp.route('/companies/<int:company_id>/reject', methods=['PUT'])
-# @role_required('admin')  # TODO: Uncomment once role_required is implemented
+@role_required('admin')
 def reject_company(company_id):
     """
     Reject a pending company account.
@@ -93,105 +83,88 @@ def reject_company(company_id):
         company_id (int): The ID of the company to reject.
 
     Success response (200 OK):
-        { "message": "Company rejected", "company": { ... } }
+        { "message": "Company rejected successfully", "company": { ... } }
 
     Error responses:
-        401 — Not an admin
+        401 — Not logged in
+        403 — Not an admin
         404 — Company not found
     """
-    # TODO: Call admin_service.update_company_status(company_id, 'rejected')
-    # Same as approve but sets status to 'rejected'
-    # result, status_code = admin_service.update_company_status(company_id, 'rejected')
-    # return jsonify(result), status_code
-
-    return jsonify({'message': f'reject_company({company_id}) stub — not yet implemented'}), 200
+    result, status_code = admin_service.reject_company(company_id)
+    return jsonify(result), status_code
 
 
 # ============================================================
 # DELETE /api/admin/jobs/<id>
 # ============================================================
 @admin_bp.route('/jobs/<int:job_id>', methods=['DELETE'])
-# @role_required('admin')  # TODO: Uncomment once role_required is implemented
+@role_required('admin')
 def delete_job(job_id):
     """
     Permanently delete any job listing from the platform.
     Admins can remove inappropriate or fraudulent job postings.
+    Cascades deletion to all Applications submitted for this job.
 
     Path parameter:
         job_id (int): The ID of the job to delete.
 
     Success response (200 OK):
-        { "message": "Job deleted by admin" }
+        { "message": "Job deleted successfully" }
 
     Error responses:
-        401 — Not an admin
+        401 — Not logged in
+        403 — Not an admin
         404 — Job not found
     """
-    # TODO: Call admin_service.delete_job(job_id) which will:
-    #         - Find Job by ID (404 if not found)
-    #         - Delete it (cascade removes its Applications too)
-    #         - Commit to DB
-    # result, status_code = admin_service.delete_job(job_id)
-    # return jsonify(result), status_code
-
-    return jsonify({'message': f'admin_delete_job({job_id}) stub — not yet implemented'}), 200
+    result, status_code = admin_service.delete_job(job_id)
+    return jsonify(result), status_code
 
 
 # ============================================================
 # DELETE /api/admin/users/<id>
 # ============================================================
 @admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
-# @role_required('admin')  # TODO: Uncomment once role_required is implemented
+@role_required('admin')
 def delete_user(user_id):
     """
     Permanently delete a user (job seeker) account.
-    Also removes all their applications (via cascade).
+    Cascades deletion to all Applications submitted by this user.
 
     Path parameter:
         user_id (int): The ID of the user to delete.
 
     Success response (200 OK):
-        { "message": "User deleted by admin" }
+        { "message": "User deleted successfully" }
 
     Error responses:
-        401 — Not an admin
+        401 — Not logged in
+        403 — Not an admin
         404 — User not found
     """
-    # TODO: Call admin_service.delete_user(user_id) which will:
-    #         - Find User by ID (404 if not found)
-    #         - Delete user (cascade removes their Applications)
-    #         - Commit to DB
-    # result, status_code = admin_service.delete_user(user_id)
-    # return jsonify(result), status_code
-
-    return jsonify({'message': f'admin_delete_user({user_id}) stub — not yet implemented'}), 200
+    result, status_code = admin_service.delete_user(user_id)
+    return jsonify(result), status_code
 
 
 # ============================================================
 # DELETE /api/admin/companies/<id>
 # ============================================================
 @admin_bp.route('/companies/<int:company_id>', methods=['DELETE'])
-# @role_required('admin')  # TODO: Uncomment once role_required is implemented
+@role_required('admin')
 def delete_company(company_id):
     """
     Permanently delete a company account.
-    Also removes all their job listings and associated applications.
+    Cascades deletion to all Jobs posted by the company and their Applications.
 
     Path parameter:
         company_id (int): The ID of the company to delete.
 
     Success response (200 OK):
-        { "message": "Company deleted by admin" }
+        { "message": "Company deleted successfully" }
 
     Error responses:
-        401 — Not an admin
+        401 — Not logged in
+        403 — Not an admin
         404 — Company not found
     """
-    # TODO: Call admin_service.delete_company(company_id) which will:
-    #         - Find Company by ID (404 if not found)
-    #         - Delete company (cascade removes all Jobs and their Applications)
-    #         - Commit to DB
-    # result, status_code = admin_service.delete_company(company_id)
-    # return jsonify(result), status_code
-
-    return jsonify({'message': f'admin_delete_company({company_id}) stub — not yet implemented'}), 200
+    result, status_code = admin_service.delete_company(company_id)
+    return jsonify(result), status_code

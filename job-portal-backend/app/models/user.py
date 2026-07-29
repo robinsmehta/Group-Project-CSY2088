@@ -55,10 +55,12 @@ class User(db.Model):
 
     # One User → Many Applications
     # back_populates='user' creates a reverse link: application.user → User object
+    # cascade='all, delete-orphan' ensures deleting a User automatically deletes all their Applications
     # lazy='dynamic' means applications aren't loaded from DB until you access this attribute
     applications = db.relationship(
         'Application',
         back_populates='user',
+        cascade='all, delete-orphan',
         lazy='dynamic'
     )
 
