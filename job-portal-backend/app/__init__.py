@@ -62,8 +62,8 @@ def create_app(config_name: str = None) -> Flask:
     db.init_app(app)                    # Connect SQLAlchemy to the app + DB
     bcrypt.init_app(app)                # Attach Bcrypt for password hashing
     migrate.init_app(app, db)           # Attach Flask-Migrate (needs both app and db)
-    cors.init_app(app, resources={      # Allow all origins on all /api/* routes
-        r"/api/*": {"origins": "*"}     # TODO: In production, restrict to your frontend domain
+    cors.init_app(app, supports_credentials=True, resources={
+        r"/api/*": {"origins": r"https?://.*"}
     })
 
     # --------------------------------------------------------
@@ -91,13 +91,21 @@ def create_app(config_name: str = None) -> Flask:
     from .models import user, company, job, application, admin  # noqa: F401
 
     # --------------------------------------------------------
-    # 6. Database Health-Check Route
+    # 6. Database Health-Check & Demonstration Protected Routes
     # --------------------------------------------------------
-    # Health check route — safe to keep during development, consider removing or securing before final submission.
-    #
-    # Purpose: This endpoint allows developers, testers, and automated tools to verify
-    # that the full connection chain (Flask API → SQLAlchemy ORM → MySQL Database) is working.
-    # It attempts a simple query ('SELECT 1') against the database and returns the result.
+    from .utils.decorators import role_required
+
+    @app.route('/api/company/test', methods=['GET'])
+    @role_required('company')
+    def company_test_route():
+        from flask import session
+        return jsonify({
+            'message': 'Access granted: Company protected route test successful',
+            'company_id': session.get('user_id'),
+            'role': session.get('role'),
+            'approval_status': session.get('status')
+        }), 200
+
     @app.route('/api/health', methods=['GET'])
     def health_check():
         """

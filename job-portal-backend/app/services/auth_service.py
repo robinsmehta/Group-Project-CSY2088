@@ -5,148 +5,248 @@
 # Routes in auth_routes.py call functions defined here.
 #
 # Responsibilities:
-#   - Validate data rules (not just "is field present" but "is email valid format?")
-#   - Check for duplicate emails in the database before registering
-#   - Hash passwords with bcrypt before storing
-#   - Verify passwords on login
-#   - Manage session state (set/clear session variables)
-#   - Return consistent (response_dict, http_status_code) tuples
-#
-# Each function here follows this return pattern:
-#   return {'key': 'value'}, 200   ← success
-#   return {'error': 'msg'},  400   ← failure
+#   - Check for duplicate emails in the database BEFORE password hashing
+#   - Hash passwords with bcrypt before storing (never store plain text)
+#   - Verify passwords on login using bcrypt.check_password_hash
+#   - Manage session state (store user_id, role, company approval status)
+#   - Return sanitized response dicts and HTTP status codes (never return password hashes)
 # ============================================================
 
+from flask import session
 from app.extensions import db, bcrypt
-from app.models.user    import User
+from app.models.user import User
 from app.models.company import Company
-from app.models.admin   import Admin
+from app.models.admin import Admin
 
 
-def register_user(data: dict):
+def register_user(name, email=None, password=None):
     """
-    Business logic for registering a new job-seeker account.
+    Register a new job-seeker account.
 
     Args:
-        data (dict): Should contain 'name', 'email', 'password'.
-
-    Returns:
-        tuple: (response_dict, http_status_code)
-
-    Steps to implement:
-    """
-    # TODO: Extract fields from data
-    # name     = data.get('name', '').strip()
-    # email    = data.get('email', '').strip().lower()
-    # password = data.get('password', '')
-
-    # TODO: Validate that fields are not empty
-    # if not name or not email or not password:
-    #     return {'error': 'Name, email, and password are required'}, 400
-
-    # TODO: Validate email format (optional but recommended)
-    # You can use a regex or the 'email-validator' library
-
-    # TODO: Check if email already exists in the users table
-    # existing = User.query.filter_by(email=email).first()
-    # if existing:
-    #     return {'error': 'An account with this email already exists'}, 409
-
-    # TODO: Hash the password using bcrypt
-    # password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
-
-    # TODO: Create a new User object and save to DB
-    # new_user = User(name=name, email=email, password_hash=password_hash)
-    # db.session.add(new_user)
-    # db.session.commit()
-
-    # TODO: Return success response
-    # return {'message': 'User registered successfully', 'user': new_user.to_dict()}, 201
-
-    # Placeholder
-    return {'message': 'register_user service stub — not yet implemented'}, 200
-
-
-def register_company(data: dict):
-    """
-    Business logic for registering a new company account.
-
-    Args:
-        data (dict): Should contain 'company_name', 'email', 'password',
-                     and optionally 'description'.
+        name (str or dict): Full name or dict containing name, email, password.
+        email (str, optional): User email address.
+        password (str, optional): Plain text password to hash.
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # TODO: Extract and validate fields (company_name, email, password)
+    # Accept both positional arguments and dictionary input for flexibility
+    if isinstance(name, dict):
+        data = name
+        name = data.get('name')
+        email = data.get('email')
+        password = data.get('password')
 
-    # TODO: Check for duplicate email in the companies table
+    name = (name or '').strip()
+    email = (email or '').strip().lower()
+    password = password or ''
 
-    # TODO: Hash the password
+    if not name or not email or not password:
+        return {'error': 'Name, email, and password are required fields'}, 400
 
-    # TODO: Create Company with status='pending' (default) and save to DB
+    # -------------------------------------------------------------------------
+    # 1. DUPLICATE EMAIL CHECK (BEFORE HASHING)
+    #
+    # WHY CHECK BEFORE HASHING?
+    # Password hashing using bcrypt is deliberately computationally expensive (work factor 12)
+    # to resist brute-force attacks. Running bcrypt hashing BEFORE checking if the email exists
+    # would allow malicious users to launch a Denial of Service (DoS) attack by spamming
+    # duplicate registration requests to consume CPU resources.
+    # -------------------------------------------------------------------------
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return {'error': 'Email is already registered'}, 409
 
-    # TODO: Return success response
-    # return {'message': 'Company registered. Awaiting admin approval.', 'company': company.to_dict()}, 201
+    # -------------------------------------------------------------------------
+    # 2. SECURE PASSWORD HASHING
+    #
+    # WHY BCRYPT?
+    # Plain text passwords must NEVER be saved in the database. Flask-Bcrypt generates
+    # a salt automatically and hashes the password securely. We decode it to utf-8
+    # so it can be stored as a String in MySQL.
+    # -------------------------------------------------------------------------
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    return {'message': 'register_company service stub — not yet implemented'}, 200
+    # 3. Create new User record and commit to database
+    new_user = User(
+        name=name,
+        email=email,
+        password_hash=hashed_password
+    )
+    db.session.add(new_user)
+    db.session.commit()
+
+    # -------------------------------------------------------------------------
+    # 4. RETURN SUCCESS RESPONSE (SANITISED)
+    #
+    # WHY PASSWORD HASH IS EXCLUDED:
+    # Even though bcrypt hashes are secure, returning password hashes in API responses
+    # exposes them to network sniffers, client logs, or XSS attacks. We only return
+    # essential user details (id, name, email).
+    # -------------------------------------------------------------------------
+    return {
+        'message': 'User registered successfully',
+        'user': {
+            'id': new_user.id,
+            'name': new_user.name,
+            'email': new_user.email
+        }
+    }, 201
 
 
-def login(data: dict):
+def register_company(company_name, email=None, password=None, description=None):
     """
-    Business logic for authenticating a user, company, or admin.
+    Register a new company/employer account.
 
     Args:
-        data (dict): Should contain 'email', 'password', 'role'.
-                     role must be one of: 'user', 'company', 'admin'.
+        company_name (str or dict): Company name or dict with fields.
+        email (str, optional): Company contact/login email.
+        password (str, optional): Plain text password to hash.
+        description (str, optional): Optional description of the company.
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # TODO: Extract email, password, role from data
+    if isinstance(company_name, dict):
+        data = company_name
+        company_name = data.get('company_name')
+        email = data.get('email')
+        password = data.get('password')
+        description = data.get('description')
 
-    # TODO: Based on role, decide which model to query:
-    #   role == 'user'    → User model
-    #   role == 'company' → Company model
-    #   role == 'admin'   → Admin model
+    company_name = (company_name or '').strip()
+    email = (email or '').strip().lower()
+    password = password or ''
+    description = (description or '').strip() if description else None
 
-    # TODO: Query the database for an account with matching email
-    # account = User.query.filter_by(email=email).first()  # (example for user)
+    if not company_name or not email or not password:
+        return {'error': 'Company name, email, and password are required fields'}, 400
 
-    # TODO: If not found, return 401 Unauthorized
-    # if not account:
-    #     return {'error': 'Invalid email or password'}, 401
+    # 1. Duplicate email check in companies table before hashing
+    existing_company = Company.query.filter_by(email=email).first()
+    if existing_company:
+        return {'error': 'Email is already registered'}, 409
 
-    # TODO: Verify password
-    # if not bcrypt.check_password_hash(account.password_hash, password):
-    #     return {'error': 'Invalid email or password'}, 401
+    # 2. Securely hash password
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    # TODO: If role is 'company', check that company status is 'approved'
-    # if role == 'company' and account.status != 'approved':
-    #     return {'error': 'Your company account is pending admin approval'}, 403
+    # 3. Create Company record (default status='pending')
+    # Companies default to 'pending' and require admin approval before they can post jobs.
+    new_company = Company(
+        company_name=company_name,
+        email=email,
+        password_hash=hashed_password,
+        description=description,
+        status='pending'
+    )
+    db.session.add(new_company)
+    db.session.commit()
 
-    # TODO: Store identity in Flask session
-    # from flask import session
-    # session['user_id'] = account.id
-    # session['role']    = role
+    # 4. Return success response with note about admin approval
+    return {
+        'message': 'Company registered successfully. Account is pending admin approval.',
+        'note': 'Your account is pending admin approval before you can post jobs.',
+        'company': {
+            'id': new_company.id,
+            'company_name': new_company.company_name,
+            'email': new_company.email,
+            'status': new_company.status
+        }
+    }, 201
 
-    # TODO: Return success response with account info
-    # return {'message': 'Login successful', 'role': role, 'data': account.to_dict()}, 200
 
-    return {'message': 'login service stub — not yet implemented'}, 200
+def login(email, password=None, role=None):
+    """
+    Authenticate a user, company, or admin account and establish a session.
+
+    Args:
+        email (str or dict): Email address or dictionary of login credentials.
+        password (str, optional): Password to verify.
+        role (str, optional): Account role ('user', 'company', or 'admin').
+
+    Returns:
+        tuple: (response_dict, http_status_code)
+    """
+    if isinstance(email, dict):
+        data = email
+        email = data.get('email')
+        password = data.get('password')
+        role = data.get('role')
+
+    email = (email or '').strip().lower()
+    password = password or ''
+    role = (role or '').strip().lower()
+
+    if not email or not password or not role:
+        return {'error': 'Email, password, and role are required fields'}, 400
+
+    # 1. Query the corresponding database model based on the requested role
+    if role == 'user':
+        account = User.query.filter_by(email=email).first()
+    elif role == 'company':
+        account = Company.query.filter_by(email=email).first()
+    elif role == 'admin':
+        account = Admin.query.filter_by(email=email).first()
+    else:
+        return {'error': 'Invalid role. Role must be user, company, or admin.'}, 400
+
+    # 2. Check if account exists
+    # SECURITY: Return generic error message ("Invalid email or password") to prevent email enumeration
+    if not account:
+        return {'error': 'Invalid email or password'}, 401
+
+    # -------------------------------------------------------------------------
+    # 3. VERIFY PASSWORD WITH BCRYPT
+    #
+    # WHY NOT STRING EQUALITY (==)?
+    # Bcrypt produces a random salt for every password hash. Comparing plain text
+    # password against stored hash using `==` will always fail and is insecure.
+    # `bcrypt.check_password_hash` extracts the salt from stored hash and re-hashes
+    # the candidate password in constant time to prevent timing attacks.
+    # -------------------------------------------------------------------------
+    if not bcrypt.check_password_hash(account.password_hash, password):
+        return {'error': 'Invalid email or password'}, 401
+
+    # -------------------------------------------------------------------------
+    # 4. STORE IDENTITY AND ROLE IN FLASK SESSION
+    #
+    # WHY SESSION STORAGE?
+    # Flask sessions use cryptographically signed HTTP cookies. Storing user_id, role,
+    # and approval status in the session allows server-side decorators like @role_required
+    # to authenticate subsequent requests instantly without database lookups.
+    # -------------------------------------------------------------------------
+    session.clear()  # Clear any stale session data
+    session['user_id'] = account.id
+    session['role'] = role
+
+    approval_status = None
+    if role == 'company':
+        approval_status = account.status
+        session['status'] = approval_status
+
+    account_name = getattr(account, 'name', getattr(account, 'company_name', ''))
+
+    return {
+        'message': 'Login successful',
+        'role': role,
+        'user': {
+            'id': account.id,
+            'name': account_name,
+            'email': account.email,
+            'role': role,
+            'status': approval_status
+        }
+    }, 200
 
 
 def logout():
     """
-    Business logic for logging out.
-    Clears the Flask session.
+    Log out the active account by clearing the Flask session.
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # TODO: Import session from flask and clear it
-    # from flask import session
-    # session.clear()
-    # return {'message': 'Logged out successfully'}, 200
-
-    return {'message': 'logout service stub — not yet implemented'}, 200
+    # session.clear() removes user_id, role, and all stored credentials
+    session.clear()
+    return {'message': 'Logged out successfully'}, 200

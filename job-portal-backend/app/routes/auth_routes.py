@@ -4,27 +4,24 @@
 # This file is the PRESENTATION LAYER for authentication.
 # Its job is ONLY to:
 #   1. Receive HTTP requests
-#   2. Extract and lightly validate the request data
+#   2. Extract and validate request input (presence of required JSON fields)
 #   3. Pass the data to the Business Logic layer (auth_service.py)
-#   4. Return an HTTP response
-#
-# It should NOT contain any business logic itself.
+#   4. Return an HTTP response with appropriate status code
 #
 # Blueprint: auth_bp
 # URL Prefix (set in app/__init__.py): /api/auth
-# Full endpoint URLs:
+# Endpoints:
 #   POST /api/auth/register/user
 #   POST /api/auth/register/company
 #   POST /api/auth/login
 #   POST /api/auth/logout
+#   GET  /api/auth/company/test (protected test route demonstrating @role_required)
 # ============================================================
 
-from flask import Blueprint, request, jsonify
-from app.services import auth_service  # Business logic lives here
+from flask import Blueprint, request, jsonify, session
+from app.services import auth_service
+from app.utils.decorators import role_required
 
-# Create a Blueprint named 'auth'.
-# A Blueprint is a mini Flask app — a group of related routes.
-# 'auth' is the internal name; __name__ is used to locate templates/static files.
 auth_bp = Blueprint('auth', __name__)
 
 
@@ -43,29 +40,26 @@ def register_user():
             "password": "securepassword123"
         }
 
-    Success response (201 Created):
-        { "message": "User registered successfully", "user": { ... } }
-
-    Error responses:
-        400 — Missing fields or invalid data
-        409 — Email already exists
+    Response Statuses:
+        201 Created — User registered successfully
+        400 Bad Request — Missing required fields
+        409 Conflict — Email already registered
     """
-    # TODO: Extract JSON data from request body
-    # data = request.get_json()
+    data = request.get_json(silent=True) or {}
 
-    # TODO: Check that required fields (name, email, password) exist in data
-    # if not data or not data.get('name') or ...:
-    #     return jsonify({'error': 'Missing required fields'}), 400
+    # Basic route-level input validation
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
 
-    # TODO: Call auth_service.register_user(data) to:
-    #         - Check for duplicate email
-    #         - Hash the password
-    #         - Save the new User to the DB
-    # result, status_code = auth_service.register_user(data)
-    # return jsonify(result), status_code
+    if not name or not email or not password:
+        return jsonify({
+            'error': 'Missing required fields: name, email, and password are required.'
+        }), 400
 
-    # Placeholder response — remove once logic is implemented
-    return jsonify({'message': 'register_user route stub — not yet implemented'}), 200
+    # Delegate business logic to auth_service layer
+    result, status_code = auth_service.register_user(name=name, email=email, password=password)
+    return jsonify(result), status_code
 
 
 # ============================================================
@@ -81,29 +75,34 @@ def register_company():
             "company_name": "Acme Corp",
             "email":        "hr@acme.com",
             "password":     "securepassword456",
-            "description":  "We make everything."
+            "description":  "We make software."
         }
 
-    Success response (201 Created):
-        { "message": "Company registered. Pending admin approval.", "company": { ... } }
-
-    Error responses:
-        400 — Missing fields
-        409 — Email already registered
+    Response Statuses:
+        201 Created — Company registered (pending approval)
+        400 Bad Request — Missing required fields
+        409 Conflict — Email already registered
     """
-    # TODO: Extract JSON from request
-    # data = request.get_json()
+    data = request.get_json(silent=True) or {}
 
-    # TODO: Validate required fields (company_name, email, password)
+    company_name = data.get('company_name')
+    email = data.get('email')
+    password = data.get('password')
+    description = data.get('description')
 
-    # TODO: Call auth_service.register_company(data) to:
-    #         - Check for duplicate email
-    #         - Hash the password
-    #         - Save Company with status='pending'
-    # result, status_code = auth_service.register_company(data)
-    # return jsonify(result), status_code
+    if not company_name or not email or not password:
+        return jsonify({
+            'error': 'Missing required fields: company_name, email, and password are required.'
+        }), 400
 
-    return jsonify({'message': 'register_company route stub — not yet implemented'}), 200
+    # Delegate business logic to auth_service layer
+    result, status_code = auth_service.register_company(
+        company_name=company_name,
+        email=email,
+        password=password,
+        description=description
+    )
+    return jsonify(result), status_code
 
 
 # ============================================================
@@ -112,38 +111,34 @@ def register_company():
 @auth_bp.route('/login', methods=['POST'])
 def login():
     """
-    Authenticate a user, company, or admin and start a session.
+    Authenticate a user, company, or admin and establish a session.
 
     Expected JSON body:
         {
             "email":    "jane@example.com",
             "password": "securepassword123",
-            "role":     "user"    # one of: "user", "company", "admin"
+            "role":     "user"    # 'user', 'company', or 'admin'
         }
 
-    Success response (200 OK):
-        { "message": "Login successful", "role": "user", "data": { ... } }
-
-    Error responses:
-        400 — Missing fields
-        401 — Invalid credentials
-        403 — Company not yet approved by admin
+    Response Statuses:
+        200 OK — Authentication successful, session initialized
+        400 Bad Request — Missing required fields or invalid role format
+        401 Unauthorized — Invalid email or password
     """
-    # TODO: Extract JSON from request
-    # data = request.get_json()
+    data = request.get_json(silent=True) or {}
 
-    # TODO: Get role from request to know which table to query
-    # role = data.get('role')  # 'user', 'company', or 'admin'
+    email = data.get('email')
+    password = data.get('password')
+    role = data.get('role')
 
-    # TODO: Call auth_service.login(email, password, role) which will:
-    #         - Look up the account in the right table
-    #         - Verify the password with bcrypt.check_password_hash()
-    #         - If company, check status == 'approved'
-    #         - Store user info in Flask session (or generate a JWT token)
-    # result, status_code = auth_service.login(data)
-    # return jsonify(result), status_code
+    if not email or not password or not role:
+        return jsonify({
+            'error': 'Missing required fields: email, password, and role are required.'
+        }), 400
 
-    return jsonify({'message': 'login route stub — not yet implemented'}), 200
+    # Delegate business logic to auth_service layer
+    result, status_code = auth_service.login(email=email, password=password, role=role)
+    return jsonify(result), status_code
 
 
 # ============================================================
@@ -154,15 +149,32 @@ def logout():
     """
     Log out the currently authenticated user/company/admin.
 
-    Clears the server-side session (or invalidates JWT token).
+    Clears server-side session data.
 
-    Success response (200 OK):
-        { "message": "Logged out successfully" }
+    Response Statuses:
+        200 OK — Logout successful
     """
-    # TODO: Call auth_service.logout() which will:
-    #         - Clear session data: session.clear()
-    #         - Or if using JWT: add token to a blacklist / tell client to discard it
-    # result, status_code = auth_service.logout()
-    # return jsonify(result), status_code
+    result, status_code = auth_service.logout()
+    return jsonify(result), status_code
 
-    return jsonify({'message': 'logout route stub — not yet implemented'}), 200
+
+# ============================================================
+# GET /api/auth/company/test — Protected Route Example
+# ============================================================
+@auth_bp.route('/company/test', methods=['GET'])
+@role_required('company')
+def company_test_route():
+    """
+    Demonstration protected endpoint requiring 'company' role.
+
+    Response Statuses:
+        200 OK — Session valid & role matches 'company'
+        401 Unauthorized — User not logged in
+        403 Forbidden — User logged in with non-company role
+    """
+    return jsonify({
+        'message': 'Access granted to protected company test endpoint!',
+        'company_id': session.get('user_id'),
+        'role': session.get('role'),
+        'approval_status': session.get('status')
+    }), 200

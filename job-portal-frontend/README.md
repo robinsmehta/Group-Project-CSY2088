@@ -1,87 +1,75 @@
 # Job Portal — Frontend
 
-## What is this folder?
+## Overview
 
-This is the **plain HTML/CSS/JavaScript frontend** for the Job Portal web application. It communicates with the Flask backend API via `fetch()` calls. There is no framework — just vanilla HTML, CSS, and JavaScript — so every teammate can open a file and start working without needing to learn React, Vue, or anything extra.
+This directory contains the HTML5, CSS3, and JavaScript frontend application for the Job Portal. It interfaces with the Flask REST API backend to deliver interactive features for Job Seekers, Employers, and System Administrators.
 
-## Project Overview
+## Project Structure
 
-We are building a controlled Job Portal where:
-- **Companies** register and wait for admin approval before posting job listings.
-- **Job Seekers (Users)** browse jobs, apply with a resume upload, and track their application status in real time.
-- **Admins** moderate the platform — approving/rejecting companies and removing inappropriate content.
-
-This solves the problem of large platforms (Indeed, LinkedIn) giving small companies little control, and leaving job seekers in the dark about their application status.
-
-## Folder Structure
-
-```
+```text
 job-portal-frontend/
-├── index.html              ← Landing homepage (everyone sees this first)
+├── index.html              # Landing homepage and portal entry
 ├── auth/
-│   ├── register.html       ← Registration page for users and companies
-│   └── login.html          ← Login page
+│   ├── register.html       # Account registration interface
+│   └── login.html          # Account login interface
 ├── company/
-│   ├── dashboard.html      ← Company: view, edit, delete their job listings
-│   ├── post-job.html       ← Company: form to post a new job
-│   └── applicants.html     ← Company: view applicants and update their status
+│   ├── dashboard.html      # Company dashboard for job listing management
+│   ├── post-job.html       # Form interface for submitting new job listings
+│   └── applicants.html     # Candidate review and status tracking interface
 ├── jobs/
-│   ├── listing.html        ← Public: browse and search all jobs
-│   └── detail.html         ← Public: view one job and apply
+│   ├── listing.html        # Public job search and listing directory
+│   └── detail.html         # Job details and application submission view
 ├── user/
-│   └── dashboard.html      ← User: view their applications and status
+│   └── dashboard.html      # Job seeker application tracking dashboard
 ├── admin/
-│   └── dashboard.html      ← Admin: approve companies, delete content
+│   └── dashboard.html      # Administrator management dashboard
 ├── css/
-│   ├── style.css           ← Global styles (navbar, footer, colours, fonts, buttons)
-│   ├── auth.css            ← Styles for register/login pages
-│   ├── jobs.css            ← Styles for job listing and detail pages
-│   └── dashboard.css       ← Styles shared by company/user/admin dashboards
+│   ├── style.css           # Core styling tokens, typography, navbar, and footer
+│   ├── auth.css            # Authentication views styling
+│   ├── jobs.css            # Job search and listing views styling
+│   └── dashboard.css       # Shared dashboard layouts styling
 ├── js/
-│   ├── config.js           ← API base URL (change this if the backend port changes)
-│   ├── auth.js             ← fetch() calls for register, login, logout
-│   ├── jobs.js             ← fetch() calls for job listing, search, detail
-│   ├── applications.js     ← fetch() calls for applying, status tracking
-│   ├── admin.js            ← fetch() calls for admin actions
-│   └── shared.js           ← Helper functions used across multiple pages
-└── assets/                 ← Images, icons, logo (add files here as needed)
+│   ├── config.js           # API base URL configuration
+│   ├── auth.js             # API integrations for authentication (register, login, logout)
+│   ├── jobs.js             # API integrations for job search and management
+│   ├── applications.js     # API integrations for job applications
+│   ├── admin.js            # API integrations for administrative functions
+│   └── shared.js           # Utilities and UI helpers shared across views
+└── assets/                 # Static visual assets (images, icons, vectors)
 ```
 
-## How to Run Locally
+## Running the Application Locally
 
-The frontend is plain HTML — no build step needed.
+The frontend relies on standard Web API standards. Serve the files over HTTP to enable API integration and CORS credentials support.
 
-### Option 1: Open directly in browser
-Just double-click `index.html` to open it. However, `fetch()` calls to the API won't work this way due to browser security restrictions (CORS).
-
-### Option 2: Use VS Code Live Server (Recommended)
+### Method 1: VS Code Live Server (Recommended)
 1. Install the **Live Server** extension in VS Code.
-2. Right-click `index.html` → **"Open with Live Server"**.
-3. The frontend will run on `http://127.0.0.1:5500`.
+2. Right-click `index.html` and select **Open with Live Server**.
+3. Access the application at `http://127.0.0.1:5500`.
 
-### Option 3: Use Python's built-in server
+### Method 2: Python HTTP Server Module
 ```bash
 cd job-portal-frontend
 python3 -m http.server 5500
 ```
-Then open `http://localhost:5500` in your browser.
+Access the application by navigating to `http://localhost:5500` in your web browser.
 
-> **Important:** Make sure the Flask backend is also running on port 5000 before testing any API calls. See the backend README for how to start it.
+> **Note**: Ensure the backend API service is running on `http://localhost:5001/api` prior to executing API requests.
 
-## Which file do I work in?
+---
 
-| Teammate's area | Files to edit |
-|-----------------|---------------|
-| Homepage & job listings | `index.html`, `jobs/listing.html`, `jobs/detail.html`, `css/jobs.css` |
-| Auth pages (register/login) | `auth/register.html`, `auth/login.html`, `css/auth.css` |
-| Company pages | `company/dashboard.html`, `company/post-job.html`, `company/applicants.html` |
-| User & Admin pages | `user/dashboard.html`, `admin/dashboard.html`, `css/dashboard.css` |
-| JavaScript / API connections | All files in `js/` |
+## Component Work Allocation
 
-## Notes for Teammates
+| Functional Area | Target Views and Styles |
+|-----------------|-------------------------|
+| Landing & Job Catalog | `index.html`, `jobs/listing.html`, `jobs/detail.html`, `css/jobs.css` |
+| Authentication Views | `auth/register.html`, `auth/login.html`, `css/auth.css` |
+| Employer Portal | `company/dashboard.html`, `company/post-job.html`, `company/applicants.html` |
+| User & Admin Portals | `user/dashboard.html`, `admin/dashboard.html`, `css/dashboard.css` |
+| API Integrations | Modules located within `js/` |
 
-- **All JavaScript API calls use `API_BASE_URL` from `js/config.js`** — never hardcode `http://localhost:5000` in a JS file directly.
-- **Search for `<!-- TODO:` in HTML files** to find where you need to add content.
-- **Search for `// TODO:` in JS files** to find where fetch() calls and logic need to be written.
-- **CSS files are split by page area** — edit `style.css` for global styles, and the specific CSS file for your page.
-- **Don't put your styles in the HTML file** — keep CSS in the `css/` folder.
+## Development Guidelines
+
+1. **Centralized Configuration**: All API network requests must reference `API_BASE_URL` declared in `js/config.js`. Avoid hardcoding host URLs inside individual module files.
+2. **Session Persistence**: HTTP fetch calls to protected endpoints must pass `{ credentials: 'include' }` to transmit server session cookies correctly.
+3. **Modular Styling**: Maintain layout separation by placing shared baseline styles in `css/style.css` and view-specific rules within dedicated stylesheet files.
