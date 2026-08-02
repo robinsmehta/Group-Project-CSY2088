@@ -1,53 +1,496 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job Detail — Job Portal</title>
-    <link rel="stylesheet" href="../css/style.css" />
-    <link rel="stylesheet" href="../css/jobs.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireMe — Senior Product Designer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #F8F9FB;
+            color: #111827;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #111827;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4B5563;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .nav-action-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #374151;
+            text-decoration: none;
+        }
+
+        .btn-register {
+            background: #111827;
+            color: #ffffff;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Detail Header */
+        .detail-header {
+            padding: 40px 0 30px;
+            background: #ffffff;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #6B7280;
+            text-decoration: none;
+            margin-bottom: 32px;
+        }
+
+        .header-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .company-badge-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: #F3F4F6;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #111827;
+            border: 1px solid #E5E7EB;
+        }
+
+        .job-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .company-tags {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 24px;
+        }
+
+        .tag-item {
+            background: #F9FAFB;
+            padding: 4px 12px;
+            border-radius: 12px;
+            border: 1px solid #F3F4F6;
+        }
+
+        .header-pills {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .pill-card {
+            background: #ffffff;
+            border: 1px solid #E5E7EB;
+            padding: 12px 24px;
+            border-radius: 16px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .pill-card label {
+            display: block;
+            font-size: 11px;
+            color: #9CA3AF;
+            margin-bottom: 2px;
+        }
+
+        .pill-card span {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* Detail Layout */
+        .detail-body {
+            padding: 40px 0 80px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Main Content */
+        .content-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 36px;
+            border: 1px solid #F3F4F6;
+        }
+
+        .section-block {
+            margin-bottom: 32px;
+        }
+
+        .section-block h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .section-block p {
+            font-size: 14px;
+            color: #4B5563;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .section-block ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            font-size: 14px;
+            color: #4B5563;
+            line-height: 1.7;
+        }
+
+        .section-block li {
+            margin-bottom: 8px;
+        }
+
+        /* Sidebar Apply Card */
+        .apply-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #F3F4F6;
+            position: sticky;
+            top: 92px;
+        }
+
+        .btn-apply-now {
+            width: 100%;
+            background: #111827;
+            color: #ffffff;
+            padding: 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            text-decoration: none;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-meta-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sidebar-meta-item label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #9CA3AF;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-meta-item span {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        @media (max-width: 868px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/jobs.css">
 </head>
 <body>
 
-    <!-- TODO: Add shared navbar here -->
-    <header id="navbar"></header>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar"></nav>
 
-    <main>
-        <!--
-            JOB DETAIL PAGE (Public — no login required to view)
-            Shows full details for a single job listing and an Apply button.
-
-            TODO: Read job_id from URL query string: ?job_id=<id>
-            TODO: Fetch job data via GET /api/jobs/<id> using jobs.js → loadJobDetail()
-                  and populate all the fields below.
-
-            TODO: Display: job title, company name, location, category, salary, full description.
-
-            TODO: Show an "Apply Now" button if the user is logged in as a job seeker.
-                  Clicking it opens a small form/modal to upload their resume.
-                  On submit, call applications.js → applyToJob() which sends
-                  POST /api/applications with job_id and the resume file.
-
-            TODO: If user is NOT logged in, the "Apply Now" button redirects to login.html.
-        -->
-
-        <div id="job-detail-content">
-            <!-- TODO: Job title, company, location, salary, description go here -->
+    <!-- Header -->
+    <header class="detail-header" id="detail-header">
+        <div class="container">
+            <a href="listing.html" class="back-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Back to all jobs
+            </a>
+            <div class="header-content" id="header-content">
+                <div style="text-align:center;padding:40px 0;color:#6B7280;">Loading job details…</div>
+            </div>
         </div>
+    </header>
 
-        <div id="apply-section">
-            <!-- TODO: Apply button / resume upload form goes here -->
-            <!-- TODO: Show success/error message after applying -->
+    <!-- Body Layout -->
+    <div class="detail-body">
+        <div class="container">
+            <div class="detail-grid">
+                <!-- Main Job Info -->
+                <div class="content-box" id="job-content">
+                    <div style="text-align:center;padding:60px 0;color:#6B7280;">Loading…</div>
+                </div>
+
+                <!-- Sidebar Apply Card -->
+                <aside class="apply-card" id="apply-sidebar">
+                    <div style="text-align:center;padding:20px;color:#6B7280;">Loading…</div>
+                </aside>
+            </div>
         </div>
-    </main>
+    </div>
 
-    <!-- TODO: Add shared footer here -->
-    <footer id="footer"></footer>
+    <!-- Footer -->
+    <footer class="footer" id="footer"></footer>
+
+    <!-- Apply Modal -->
+    <div id="apply-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+        <div style="background:#fff;border-radius:20px;padding:36px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.2);position:relative;" id="apply-modal-inner">
+            <button id="close-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:18px;color:#6B7280;">✕</button>
+            <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;">Apply for this Job</h2>
+            <p id="apply-job-title" style="font-size:13px;color:#6B7280;margin-bottom:24px;"></p>
+            <div id="apply-error" style="display:none;color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px;font-size:13px;margin-bottom:16px;"></div>
+            <form id="apply-form">
+                <div style="margin-bottom:20px;">
+                    <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">Upload Resume (PDF, DOC, DOCX)</label>
+                    <input type="file" id="resume-file" accept=".pdf,.doc,.docx" required style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:10px;font-size:13px;">
+                </div>
+                <button type="submit" id="apply-submit" style="width:100%;background:#111827;color:#fff;padding:14px;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;">
+                    Submit Application
+                </button>
+            </form>
+        </div>
+    </div>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
-    <script src="../js/jobs.js"></script>
-    <script src="../js/applications.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        let currentJobId = null;
+        const modal = document.getElementById('apply-modal');
 
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderNavbar('jobs');
+            renderFooter();
+
+            // Hide modal initially (fix inline style conflict)
+            modal.style.display = 'none';
+
+            const params = new URLSearchParams(window.location.search);
+            currentJobId = params.get('id');
+
+            if (!currentJobId) {
+                document.getElementById('header-content').innerHTML = '<p style="color:#DC2626;">No job ID specified.</p>';
+                document.getElementById('job-content').innerHTML = '';
+                document.getElementById('apply-sidebar').innerHTML = '';
+                return;
+            }
+
+            const { ok, data } = await apiGetJob(currentJobId);
+
+            if (!ok || !data.id) {
+                document.getElementById('header-content').innerHTML = '<p style="color:#DC2626;">Job not found or has been removed.</p>';
+                document.getElementById('job-content').innerHTML = '';
+                document.getElementById('apply-sidebar').innerHTML = '';
+                return;
+            }
+
+            renderJobDetail(data);
+
+            // Modal controls
+            document.getElementById('close-modal').addEventListener('click', () => modal.style.display = 'none');
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+            document.getElementById('apply-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const user = getLoggedInUser();
+                if (!user || user.role !== 'user') {
+                    showToast('Please log in as a job seeker to apply.', 'error');
+                    setTimeout(() => window.location.href = '../auth/login.html', 1000);
+                    return;
+                }
+                const resumeFile = document.getElementById('resume-file').files[0];
+                const errDiv = document.getElementById('apply-error');
+                const btn = document.getElementById('apply-submit');
+
+                errDiv.style.display = 'none';
+                btn.disabled = true;
+                btn.textContent = 'Submitting…';
+
+                const { ok: aok, data: adata } = await apiApplyToJob(currentJobId, resumeFile);
+
+                if (aok) {
+                    modal.style.display = 'none';
+                    showToast('Application submitted successfully!', 'success');
+                } else {
+                    const msg = adata.error || adata.message || 'Failed to submit application.';
+                    errDiv.textContent = msg;
+                    errDiv.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Submit Application';
+                }
+            });
+        });
+
+        function renderJobDetail(job) {
+            const esc = (s) => { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; };
+            const initials = (job.company_name || 'C').substring(0, 2).toUpperCase();
+            const postedAgo = timeAgo(job.created_at);
+
+            // Header
+            document.getElementById('header-content').innerHTML = `
+                <div class="company-badge-icon">${initials}</div>
+                <h1 class="job-title">${esc(job.title)}</h1>
+                <div class="company-tags">
+                    <span class="tag-item">${esc(job.company_name || 'Unknown Company')}</span>
+                    <span class="tag-item">${esc(job.location || 'Not specified')}</span>
+                    ${job.category ? `<span class="tag-item">${esc(job.category)}</span>` : ''}
+                </div>
+                <div class="header-pills">
+                    <div class="pill-card"><label>POSTED</label><span>${postedAgo}</span></div>
+                    ${job.salary ? `<div class="pill-card"><label>SALARY</label><span>${esc(job.salary)}</span></div>` : ''}
+                </div>
+            `;
+
+            // Description body
+            const descHtml = (job.description || '').split('\n').filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join('');
+            document.getElementById('job-content').innerHTML = `
+                <div class="section-block">
+                    <h3>About the Role</h3>
+                    ${descHtml || '<p>No description provided.</p>'}
+                </div>
+            `;
+
+            // Sidebar
+            document.getElementById('apply-sidebar').innerHTML = `
+                <button class="btn-apply-now" id="open-apply-btn">Apply Now</button>
+                <div class="sidebar-meta-list">
+                    <div class="sidebar-meta-item"><label>LOCATION</label><span>${esc(job.location || 'Not specified')}</span></div>
+                    ${job.salary ? `<div class="sidebar-meta-item"><label>SALARY</label><span>${esc(job.salary)}</span></div>` : ''}
+                    ${job.category ? `<div class="sidebar-meta-item"><label>CATEGORY</label><span>${esc(job.category)}</span></div>` : ''}
+                    <div class="sidebar-meta-item"><label>COMPANY</label><span>${esc(job.company_name || 'Unknown')}</span></div>
+                    <div class="sidebar-meta-item"><label>POSTED</label><span>${postedAgo}</span></div>
+                </div>
+            `;
+
+            document.getElementById('apply-job-title').textContent = job.title;
+            document.getElementById('open-apply-btn').addEventListener('click', () => {
+                const user = getLoggedInUser();
+                if (!user || user.role !== 'user') {
+                    showToast('Please log in as a job seeker to apply.', 'warning');
+                    setTimeout(() => window.location.href = '../auth/login.html', 1000);
+                    return;
+                }
+                modal.style.display = 'flex';
+            });
+        }
+
+        function timeAgo(isoStr) {
+            if (!isoStr) return 'Recently';
+            const diff = Date.now() - new Date(isoStr).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 60)  return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24)   return `${hrs}h ago`;
+            return `${Math.floor(hrs / 24)}d ago`;
+        }
+    </script>
 </body>
 </html>
+

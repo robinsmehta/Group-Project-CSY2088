@@ -1,49 +1,796 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job Portal — Home</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/jobs.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireMe — Your next big opportunity is waiting for you</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #F8F9FB;
+            color: #111827;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Navbar */
+        .navbar {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #000;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #111827;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4B5563;
+        }
+
+        .nav-links a:hover {
+            color: #111827;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .nav-action-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #374151;
+        }
+
+        .btn-register {
+            background: #111827;
+            color: #ffffff;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-register:hover {
+            background: #1f2937;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            padding: 80px 0 100px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 249, 251, 1) 100%);
+            overflow: hidden;
+        }
+
+        .hero-bg-img {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1400px;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: #111827;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 16px;
+            color: #6B7280;
+            max-width: 540px;
+            margin: 0 auto 36px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            background: #111827;
+            color: #ffffff;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #111827;
+            border: 1.5px solid #111827;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Roles Cards Section */
+        .roles-section {
+            padding: 40px 0 80px;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .role-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 40px;
+            border: 1.5px solid #E5E7EB;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .role-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 35px -10px rgba(30, 58, 95, 0.12);
+            border-color: #1E3A5F;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .badge-candidate {
+            background: #F3E8FF;
+            color: #7E22CE;
+        }
+
+        .badge-employer {
+            background: #DCFCE7;
+            color: #15803D;
+        }
+
+        .role-card h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .role-card p {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .role-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 32px;
+        }
+
+        .role-illustration {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        /* Why Choose Us Section */
+        .why-section {
+            padding: 60px 0 100px;
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .why-left h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #111827;
+        }
+
+        .why-left p {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .why-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .check-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1.5px solid #10B981;
+            color: #10B981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .feature-card {
+            padding: 32px 24px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .bg-pink { background: #FAF5FF; }
+        .bg-purple { background: #F5F3FF; }
+        .bg-yellow { background: #FFFBEB; }
+        .bg-gray { background: #F3F4F6; }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .feature-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.5;
+        }
+
+        /* Featured Opportunities */
+        .jobs-section {
+            padding: 40px 0 100px;
+        }
+
+        .jobs-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .jobs-header-left h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .jobs-header-left p {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .btn-view-all {
+            border: 1px solid #E5E7EB;
+            background: #ffffff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .job-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #F3F4F6;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.01);
+        }
+
+        .job-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #F3F4F6;
+            object-fit: cover;
+        }
+
+        .job-badge {
+            font-size: 11px;
+            font-weight: 500;
+            color: #6B7280;
+            background: #F9FAFB;
+            padding: 4px 10px;
+            border-radius: 12px;
+            border: 1px solid #F3F4F6;
+        }
+
+        .job-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 6px;
+        }
+
+        .company-name {
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 20px;
+        }
+
+        .job-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-bottom: 24px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .job-card-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid #F9FAFB;
+        }
+
+        .salary {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .arrow-btn {
+            color: #111827;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid #E5E7EB;
+            padding: 32px 0;
+            background: #ffffff;
+        }
+
+        .footer .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 1024px) {
+            .jobs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .why-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .roles-grid {
+                grid-template-columns: 1fr;
+            }
+            .jobs-grid {
+                grid-template-columns: 1fr;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-title {
+                font-size: 32px;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- TODO: Add shared navbar here -->
-    <header id="navbar"></header>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar"></nav>
 
-    <main>
-        <!--
-            LANDING / HOMEPAGE
-            Welcome page for all visitors.
-
-            TODO: Hero section — Welcome title, description, search bar (wire to jobs.js -> searchJobs()).
-            TODO: Featured jobs section — Call jobs.js -> loadFeaturedJobs() to fetch and display recent jobs in #featured-jobs-grid.
-            TODO: How it works section — Brief 3-step guide (Register -> Apply -> Track status).
-            TODO: Call-to-action buttons linking to auth/register.html and auth/login.html.
-        -->
-
-        <h1>Welcome to Job Portal</h1>
-
-        <div id="search-section">
-            <!-- TODO: Add hero search input & button here -->
-        </div>
-
-        <div id="featured-jobs-section">
-            <h2>Featured Jobs</h2>
-            <div id="featured-jobs-grid">
-                <!-- TODO: Render featured job cards dynamically via jobs.js -->
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <img src="placeholder-hero.jpg" alt="Office Background" class="hero-bg-img" />
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Your next big opportunity is waiting for you.</h1>
+                <p class="hero-subtitle">HireMe bridges the gap between ambitious job seekers and the world's most innovative companies. Start your journey today.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn-primary">
+                        Get Started Now
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                    <a href="#" class="btn-secondary">Browse All Jobs</a>
+                </div>
             </div>
         </div>
-    </main>
+    </section>
 
-    <!-- TODO: Add shared footer here -->
-    <footer id="footer"></footer>
+    <!-- Candidate & Employer Cards -->
+    <section class="roles-section">
+        <div class="container">
+            <div class="roles-grid">
+                <!-- Candidate Card -->
+                <div class="role-card">
+                    <div>
+                        <span class="badge badge-candidate">Candidate</span>
+                        <h2>I'm looking for a job</h2>
+                        <p>Access thousands of job listings, personalized career advice, and tools to help you land your dream role.</p>
+                        <a href="#" class="role-link">
+                            Create Seeker Profile
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </div>
+                    <img src="placeholder-candidate.png" alt="Candidate Illustration" class="role-illustration" />
+                </div>
+
+                <!-- Employer Card -->
+                <div class="role-card">
+                    <div>
+                        <span class="badge badge-employer">Employer</span>
+                        <h2>I'm hiring talent</h2>
+                        <p>Reach the best candidates in the industry. Manage your hiring pipeline and scale your team with ease.</p>
+                        <a href="#" class="role-link">
+                            Post a Job Listing
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </div>
+                    <img src="placeholder-employer.png" alt="Employer Illustration" class="role-illustration" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose HireMe -->
+    <section class="why-section">
+        <div class="container">
+            <div class="why-grid">
+                <div class="why-left">
+                    <h2>Why choose HireMe?</h2>
+                    <p>We've redesigned the job portal experience from the ground up, focusing on quality, speed, and trust for both sides of the marketplace.</p>
+                    <div class="why-checklist">
+                        <div class="checklist-item">
+                            <span class="check-icon">✓</span>
+                            Verified top-tier companies only
+                        </div>
+                        <div class="checklist-item">
+                            <span class="check-icon">✓</span>
+                            Transparent salary ranges
+                        </div>
+                        <div class="checklist-item">
+                            <span class="check-icon">✓</span>
+                            Fast response times guaranteed
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card bg-pink">
+                        <div class="feature-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                        </div>
+                        <h3>Career Growth</h3>
+                        <p>Get access to exclusive roles that aren't posted on generic job boards.</p>
+                    </div>
+
+                    <div class="feature-card bg-purple">
+                        <div class="feature-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                        <h3>Smart Matching</h3>
+                        <p>Our AI-driven engine matches your skills with the perfect team culture.</p>
+                    </div>
+
+                    <div class="feature-card bg-yellow">
+                        <div class="feature-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        </div>
+                        <h3>Verified Profiles</h3>
+                        <p>Trust is built through our rigorous vetting process for both talent and employers.</p>
+                    </div>
+
+                    <div class="feature-card bg-gray">
+                        <div class="feature-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        </div>
+                        <h3>Global Reach</h3>
+                        <p>Connect with opportunities from Silicon Valley to remote tech hubs worldwide.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Opportunities -->
+    <section class="jobs-section">
+        <div class="container">
+            <div class="jobs-header">
+                <div class="jobs-header-left">
+                    <h2>Featured Opportunities</h2>
+                    <p>Hand-picked roles from top companies looking for talent like you. Explore the latest openings in tech and design.</p>
+                </div>
+                <a href="#" class="btn-view-all">View All Jobs</a>
+            </div>
+
+            <div class="jobs-grid">
+                <!-- Job 1 -->
+                <div class="job-card">
+                    <div>
+                        <div class="job-card-top">
+                            <img src="placeholder-logo-1.png" alt="Netflix" class="company-logo" />
+                            <span class="job-badge">Full-time</span>
+                        </div>
+                        <h3 class="job-title">Senior Product Designer</h3>
+                        <p class="company-name">Netflix</p>
+                        <div class="job-meta">
+                            <div class="meta-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                Los Gatos, CA
+                            </div>
+                            <div class="meta-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                2 days ago
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-card-bottom">
+                        <span class="salary">$180k - $240k</span>
+                        <a href="#" class="arrow-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Job 2 -->
+                <div class="job-card">
+                    <div>
+                        <div class="job-card-top">
+                            <img src="placeholder-logo-2.png" alt="Upwork" class="company-logo" />
+                            <span class="job-badge">Contract</span>
+                        </div>
+                        <h3 class="job-title">Full Stack Engineer</h3>
+                        <p class="company-name">Upwork</p>
+                        <div class="job-meta">
+                            <div class="meta-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                Remote
+                            </div>
+                            <div class="meta-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                5 hours ago
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-card-bottom">
+                        <span class="salary">$90 - $120 /hr</span>
+                        <a href="#" class="arrow-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Job 3 -->
+                <div class="job-card">
+                    <div>
+                        <div class="job-card-top">
+                            <img src="placeholder-logo-3.png" alt="Stripe" class="company-logo" />
+                            <span class="job-badge">Full-time</span>
+                        </div>
+                        <h3 class="job-title">Marketing Strategy Lead</h3>
+                        <p class="company-name">Stripe</p>
+                        <div class="job-meta">
+                            <div class="meta-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                San Francisco, CA
+                            </div>
+                            <div class="meta-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                1 week ago
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-card-bottom">
+                        <span class="salary">$135k - $210k</span>
+                        <a href="#" class="arrow-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Job 4 -->
+                <div class="job-card">
+                    <div>
+                        <div class="job-card-top">
+                            <img src="placeholder-logo-4.png" alt="Airbnb" class="company-logo" />
+                            <span class="job-badge">Full-time</span>
+                        </div>
+                        <h3 class="job-title">Senior Data Scientist</h3>
+                        <p class="company-name">Airbnb</p>
+                        <div class="job-meta">
+                            <div class="meta-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                Remote (US)
+                            </div>
+                            <div class="meta-item">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                3 days ago
+                            </div>
+                        </div>
+                    </div>
+                    <div class="job-card-bottom">
+                        <span class="salary">$170k - $255k</span>
+                        <a href="#" class="arrow-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer"></footer>
 
     <script src="js/config.js"></script>
     <script src="js/shared.js"></script>
-    <script src="js/jobs.js"></script>
-
+    <script src="js/api.js"></script>
+    <script src="js/home.js"></script>
 </body>
 </html>
-

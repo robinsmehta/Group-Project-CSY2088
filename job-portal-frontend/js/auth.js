@@ -1,16 +1,12 @@
-// ============================================================
 // js/auth.js — Authentication: Register, Login, Logout
 //
 // Handles fetch() API calls related to user authentication.
 // Used by: auth/register.html, auth/login.html
 // Depends on: config.js (for API_BASE_URL), shared.js
-// ============================================================
 
 
-// ------------------------------------------------------------
 // registerUser(name, email, password)
 // Sends POST request to /api/auth/register/user endpoint.
-// ------------------------------------------------------------
 async function registerUser(name, email, password) {
     try {
         const response = await fetch(`${API_BASE_URL}/auth/register/user`, {
@@ -29,10 +25,8 @@ async function registerUser(name, email, password) {
 }
 
 
-// ------------------------------------------------------------
 // registerCompany(company_name, email, password, description)
 // Sends POST request to /api/auth/register/company endpoint.
-// ------------------------------------------------------------
 async function registerCompany(company_name, email, password, description = '') {
     try {
         const response = await fetch(`${API_BASE_URL}/auth/register/company`, {
@@ -51,10 +45,8 @@ async function registerCompany(company_name, email, password, description = '') 
 }
 
 
-// ------------------------------------------------------------
 // loginUser(email, password, role)
 // Sends POST request to /api/auth/login endpoint.
-// ------------------------------------------------------------
 async function loginUser(email, password, role) {
     try {
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -73,10 +65,8 @@ async function loginUser(email, password, role) {
 }
 
 
-// ------------------------------------------------------------
 // logoutUser()
 // Sends POST request to /api/auth/logout endpoint.
-// ------------------------------------------------------------
 async function logoutUser() {
     try {
         const response = await fetch(`${API_BASE_URL}/auth/logout`, {

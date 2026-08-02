@@ -1,47 +1,434 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login — Job Portal</title>
-    <link rel="stylesheet" href="../css/style.css" />
-    <link rel="stylesheet" href="../css/auth.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireMe — Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #F8F9FB;
+            color: #111827;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #111827;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4B5563;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .nav-action-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #374151;
+            text-decoration: none;
+        }
+
+        .btn-register {
+            background: #111827;
+            color: #ffffff;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Login Layout */
+        .login-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 28px;
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+            border: 1px solid #F3F4F6;
+            overflow: hidden;
+        }
+
+        /* Left Pink Section */
+        .login-info {
+            background: #FFF5F7;
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .login-info h1 {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+
+        .login-info h1 span {
+            color: #DB2777;
+        }
+
+        .login-info p {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.6;
+        }
+
+        .image-container {
+            position: relative;
+            margin-top: 32px;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .login-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            border-radius: 16px;
+        }
+
+        .image-badge {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(8px);
+            color: #ffffff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Right Form Section */
+        .login-form-side {
+            padding: 48px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form-side h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .login-form-side .subtitle {
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .forgot-link {
+            font-size: 11px;
+            color: #DB2777;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper svg {
+            position: absolute;
+            left: 14px;
+            color: #9CA3AF;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 14px 12px 40px;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #111827;
+            outline: none;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #111827;
+            background: #ffffff;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #111827;
+            color: #ffffff;
+            padding: 14px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            margin-bottom: 24px;
+        }
+
+        .btn-submit:hover {
+            background: #1f2937;
+        }
+
+        .register-footer {
+            text-align: center;
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .register-footer a {
+            color: #111827;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                grid-template-columns: 1fr;
+            }
+            .login-info {
+                display: none;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/auth.css">
 </head>
 <body>
 
-    <!-- TODO: Add shared navbar here -->
-    <header id="navbar"></header>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar"></nav>
 
-    <main class="auth-page">
-        <!--
-            LOGIN PAGE (User, Company, Admin)
-            Shared sign-in page for all three user roles.
+    <!-- Login Container -->
+    <div class="login-wrapper">
+        <div class="container" style="display: flex; justify-content: center;">
+            <div class="login-card">
+                <!-- Left Pink Info Side -->
+                <div class="login-info">
+                    <div>
+                        <h1>Your next career milestone starts <span>here.</span></h1>
+                        <p>Connect with top-tier companies and discover opportunities that align with your professional goals.</p>
+                    </div>
+                    <div class="image-container">
+                        <img src="../image/placeholder-meeting.jpg" alt="Meeting" class="login-image" />
+                        <div class="image-badge">Join HireMe for personalized career growth tracks.</div>
+                    </div>
+                </div>
 
-            TODO: Role selector tabs (Job Seeker, Company, Admin) to set login role.
-            TODO: Login form — email and password inputs.
-                  Submits via auth.js -> loginUser() to POST /api/auth/login.
-                  On success: redirect to corresponding dashboard (user, company, or admin).
-            TODO: Link to register page (register.html) for new users.
-        -->
+                <!-- Right Form Side -->
+                <div class="login-form-side">
+                    <h2>Welcome Back</h2>
+                    <p class="subtitle">Enter your credentials to access your HireHub portal.</p>
 
-        <h1>Sign In</h1>
+                    <form id="login-form">
+                        <div id="login-message" style="display:none; margin-bottom: 16px; padding: 10px; border-radius: 6px; font-size: 13px;"></div>
 
-        <div id="login-message">
-            <!-- TODO: Display error/feedback messages here via auth.js -->
+                        <div class="form-group">
+                            <label>Account Role</label>
+                            <select id="login-role" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #D1D5DB; font-size: 14px; background: #fff; margin-bottom: 12px; outline: none; cursor: pointer;">
+                                <option value="user">Candidate / Job Seeker</option>
+                                <option value="company">Employer / Company</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <div class="input-wrapper">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                <input type="email" id="login-email" placeholder="alex.b@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="label-row">
+                                <label>Password</label>
+                                <a href="#" class="forgot-link">Forgot Password?</a>
+                            </div>
+                            <div class="input-wrapper">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                <input type="password" id="login-password" placeholder="••••••••••••" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            <span>Login to your account</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </button>
+
+                        <div class="register-footer">
+                            Don't have an account yet? <a href="register.html">Register now</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div id="login-container">
-            <!-- TODO: Login form & role tabs go here -->
-        </div>
-    </main>
-
-    <!-- TODO: Add shared footer here -->
-    <footer id="footer"></footer>
+    <!-- Footer -->
+    <footer class="footer" id="footer"></footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
-    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavbar('login');
+            renderFooter();
+
+            const form = document.getElementById('login-form');
+            const submitBtn = form.querySelector('.btn-submit');
+            const errorBox = document.createElement('div');
+            errorBox.id = 'login-error';
+            errorBox.style.cssText = 'display:none;color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:12px;';
+            form.prepend(errorBox);
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorBox.style.display = 'none';
+                const email    = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value;
+                const role     = document.getElementById('login-role').value;
+
+                submitBtn.disabled = true;
+                submitBtn.querySelector('span').textContent = 'Signing in…';
+
+                const { ok, data } = await apiLogin(email, password, role);
+
+                if (ok) {
+                    // Build session object from real API response
+                    const userObj = {
+                        id:           data.user_id || data.id || null,
+                        email:        email,
+                        role:         role,
+                        name:         data.name         || data.user?.name         || email.split('@')[0],
+                        company_name: data.company_name || data.user?.company_name || null,
+                    };
+                    setLoggedInUser(userObj);
+                    showToast('Logged in successfully!', 'success');
+                    setTimeout(() => {
+                        if (role === 'company') window.location.href = '../company/dashboard.html';
+                        else if (role === 'admin') window.location.href = '../admin/dashboard.html';
+                        else window.location.href = '../user/dashboard.html';
+                    }, 600);
+                } else {
+                    const msg = data.error || data.message || 'Invalid email or password.';
+                    errorBox.textContent = msg;
+                    errorBox.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.querySelector('span').textContent = 'Login to your account';
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
-

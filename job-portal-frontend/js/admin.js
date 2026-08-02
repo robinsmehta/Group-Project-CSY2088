@@ -1,16 +1,12 @@
-// ============================================================
 // js/admin.js — Admin Dashboard Operations
 //
 // Handles basic fetch() calls for administrator moderation actions.
 // Used by: admin/dashboard.html
 // Depends on: config.js (for API_BASE_URL), shared.js
-// ============================================================
 
 
-// ------------------------------------------------------------
 // loadPendingCompanies()
 // Sends basic GET request to /api/admin/companies/pending endpoint.
-// ------------------------------------------------------------
 async function loadPendingCompanies() {
     try {
         const response = await fetch(`${API_BASE_URL}/admin/companies/pending`);
@@ -23,10 +19,8 @@ async function loadPendingCompanies() {
 }
 
 
-// ------------------------------------------------------------
 // approveCompany(companyId)
 // Sends basic PUT request to /api/admin/companies/<id>/approve endpoint.
-// ------------------------------------------------------------
 async function approveCompany(companyId = 1) {
     try {
         const response = await fetch(`${API_BASE_URL}/admin/companies/${companyId}/approve`, { method: 'PUT' });
@@ -39,10 +33,8 @@ async function approveCompany(companyId = 1) {
 }
 
 
-// ------------------------------------------------------------
 // rejectCompany(companyId)
 // Sends basic PUT request to /api/admin/companies/<id>/reject endpoint.
-// ------------------------------------------------------------
 async function rejectCompany(companyId = 1) {
     try {
         const response = await fetch(`${API_BASE_URL}/admin/companies/${companyId}/reject`, { method: 'PUT' });
@@ -55,10 +47,8 @@ async function rejectCompany(companyId = 1) {
 }
 
 
-// ------------------------------------------------------------
 // deleteAdminJob(jobId)
 // Sends basic DELETE request to /api/admin/jobs/<id> endpoint.
-// ------------------------------------------------------------
 async function deleteAdminJob(jobId = 1) {
     try {
         const response = await fetch(`${API_BASE_URL}/admin/jobs/${jobId}`, { method: 'DELETE' });
@@ -71,10 +61,8 @@ async function deleteAdminJob(jobId = 1) {
 }
 
 
-// ------------------------------------------------------------
 // deleteAdminUser(userId)
 // Sends basic DELETE request to /api/admin/users/<id> endpoint.
-// ------------------------------------------------------------
 async function deleteAdminUser(userId = 1) {
     try {
         const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, { method: 'DELETE' });
@@ -87,10 +75,8 @@ async function deleteAdminUser(userId = 1) {
 }
 
 
-// ------------------------------------------------------------
 // deleteAdminCompany(companyId)
 // Sends basic DELETE request to /api/admin/companies/<id> endpoint.
-// ------------------------------------------------------------
 async function deleteAdminCompany(companyId = 1) {
     try {
         const response = await fetch(`${API_BASE_URL}/admin/companies/${companyId}`, { method: 'DELETE' });
