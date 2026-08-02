@@ -17,9 +17,8 @@ async function loadHomeFeaturedJobs() {
     if (!grid) return;
 
     try {
-        const res = await fetch(`${API_BASE_URL}/jobs`);
-        const data = await res.json();
-        const jobs = Array.isArray(data) ? data : (data.jobs || []);
+        const { ok, data } = await apiGetJobs();
+        const jobs = ok ? (Array.isArray(data) ? data : (data.jobs || [])) : [];
 
         if (!jobs.length) {
             grid.innerHTML = `<div class="loading-message">No jobs available right now. Check back soon.</div>`;
@@ -82,9 +81,8 @@ function buildJobCard(job) {
 
 async function loadStats() {
     try {
-        const res = await fetch(`${API_BASE_URL}/jobs`);
-        const data = await res.json();
-        const jobs = Array.isArray(data) ? data : (data.jobs || []);
+        const { ok, data } = await apiGetJobs();
+        const jobs = ok ? (Array.isArray(data) ? data : (data.jobs || [])) : [];
 
         const statJobs = document.getElementById('stat-jobs');
         const statCompanies = document.getElementById('stat-companies');

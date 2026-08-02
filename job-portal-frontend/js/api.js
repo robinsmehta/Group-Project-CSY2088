@@ -117,3 +117,7 @@ async function apiAdminDeleteUser(userId) {
 async function apiAdminDeleteCompany(companyId) {
     return apiFetch(`/admin/companies/${companyId}`, { method: 'DELETE' });
 }
+
+async function apiGetAdminStats() {
+    return apiFetch('/admin/stats');
+}

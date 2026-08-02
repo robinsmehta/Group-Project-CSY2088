@@ -224,6 +224,7 @@ def login(email, password=None, role=None):
     if role == 'company':
         approval_status = account.status
         session['status'] = approval_status
+        session['company_id'] = account.id  # Set company_id for consistency
 
     account_name = getattr(account, 'name', getattr(account, 'company_name', ''))
 

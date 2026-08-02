@@ -26,6 +26,7 @@ from app.extensions import db
 from app.models.user import User
 from app.models.company import Company
 from app.models.job import Job
+from app.models.application import Application
 
 
 def get_pending_companies():
@@ -198,3 +199,28 @@ def delete_company(company_id: int):
     db.session.commit()
 
     return {'message': 'Company deleted successfully'}, 200
+
+
+def get_admin_stats():
+    """
+    Get platform statistics for admin dashboard.
+
+    Returns:
+        tuple: (response_dict, http_status_code)
+               200 OK with stats including total users, companies, jobs, applications
+    """
+    total_users = User.query.count()
+    total_companies = Company.query.count()
+    total_jobs = Job.query.count()
+    total_applications = Application.query.count()
+    pending_companies = Company.query.filter_by(status='pending').count()
+
+    return {
+        'stats': {
+            'total_users': total_users,
+            'total_companies': total_companies,
+            'total_jobs': total_jobs,
+            'total_applications': total_applications,
+            'pending_companies': pending_companies
+        }
+    }, 200

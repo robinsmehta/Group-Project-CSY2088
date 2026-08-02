@@ -8,107 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background-color: #F8F9FB;
-            color: #111827;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navbar */
-        .navbar {
-            height: 72px;
-            background: #ffffff;
-            border-bottom: 1px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            width: 100%;
-        }
-
-        .nav-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 20px;
-            color: #000;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #111827;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            list-style: none;
-            font-size: 13px;
-            font-weight: 500;
-            color: #4B5563;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .nav-action-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #374151;
-            text-decoration: none;
-        }
-
-        .btn-register {
-            background: #111827;
-            color: #ffffff;
-            padding: 9px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Hero Header */
+        /* Admin-specific styles that don't conflict with shared CSS */
         .admin-hero {
             background: linear-gradient(180deg, #FFF0F5 0%, #F8F9FB 100%);
             padding: 60px 0 40px;
@@ -128,7 +31,6 @@
             margin: 0 auto;
         }
 
-        /* Main Section */
         .admin-body {
             padding: 40px 0 80px;
         }
@@ -149,81 +51,6 @@
             color: #6B7280;
             max-width: 480px;
             margin: 0 auto;
-        }
-
-        .table-card {
-            background: #ffffff;
-            border-radius: 24px;
-            border: 1px solid #F3F4F6;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-            margin-bottom: 60px;
-        }
-
-        .table-toolbar {
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .toolbar-title {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .search-mini {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            padding: 8px 14px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 220px;
-        }
-
-        .search-mini input {
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 12px;
-            width: 100%;
-        }
-
-        .btn-add-admin {
-            background: #111827;
-            color: #ffffff;
-            padding: 8px 16px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        .data-table th {
-            background: #F9FAFB;
-            padding: 14px 24px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #6B7280;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .data-table td {
-            padding: 18px 24px;
-            font-size: 13px;
-            border-bottom: 1px solid #F3F4F6;
         }
 
         .badge-pending {
@@ -268,38 +95,6 @@
             text-decoration: none;
         }
 
-        .table-footer {
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #6B7280;
-        }
-
-        .pagination {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .page-num {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: #374151;
-            font-weight: 600;
-        }
-
-        .page-num.active {
-            background: #111827;
-            color: #ffffff;
-        }
-
         .table-center-link {
             text-align: center;
             padding: 16px;
@@ -313,7 +108,6 @@
             text-decoration: none;
         }
     </style>
-    <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
@@ -514,7 +308,25 @@
             renderFooter();
 
             await loadPendingCompanies();
+            await loadAdminStats();
         });
+
+        async function loadAdminStats() {
+            const { ok, data } = await apiGetAdminStats();
+            if (ok && data.stats) {
+                const stats = data.stats;
+                // Update stats display if elements exist
+                const statUsers = document.getElementById('stat-users');
+                const statCompanies = document.getElementById('stat-companies');
+                const statJobs = document.getElementById('stat-jobs');
+                const statApplications = document.getElementById('stat-applications');
+                
+                if (statUsers) statUsers.textContent = stats.total_users || 0;
+                if (statCompanies) statCompanies.textContent = stats.total_companies || 0;
+                if (statJobs) statJobs.textContent = stats.total_jobs || 0;
+                if (statApplications) statApplications.textContent = stats.total_applications || 0;
+            }
+        }
 
         async function loadPendingCompanies() {
             const tbody = document.querySelector('.data-table tbody');

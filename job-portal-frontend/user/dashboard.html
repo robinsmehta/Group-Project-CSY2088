@@ -9,6 +9,130 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* User dashboard specific styles */
+        .user-dashboard-body {
+            padding: 40px 0;
+        }
+
+        .hero-banner-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 32px;
+        }
+
+        .badge-candidate-hub {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .banner-left-content h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .banner-left-content h1 span {
+            font-style: italic;
+        }
+
+        .banner-left-content p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 24px;
+        }
+
+        .btn-browse {
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-icon-wrapper {
+            font-size: 32px;
+        }
+
+        .stat-info label {
+            display: block;
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 4px;
+        }
+
+        .stat-info span {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .kanban-section {
+            margin-top: 32px;
+        }
+
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .kanban-column {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            min-height: 200px;
+        }
+
+        .kanban-column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .kanban-column-header span:first-child {
+            font-weight: 600;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .kanban-column-count {
+            background: #F3F4F6;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+        }
+
+        .kanban-cards-container {
+            min-height: 100px;
+        }
+    </style>
 </head>
 <body>
 
@@ -196,12 +320,13 @@
             // Update stats
             const total      = apps.length;
             const inReview   = apps.filter(a => a.status === 'under_review').length;
-            const shortlisted = apps.filter(a => a.status === 'shortlisted').length;
-            const rejected   = apps.filter(a => a.status === 'rejected').length;
-            document.getElementById('stat-total-applied')?.textContent !== undefined && (document.getElementById('stat-total-applied').textContent = total);
-            document.getElementById('stat-in-review')?.textContent !== undefined && (document.getElementById('stat-in-review').textContent = inReview);
-            document.getElementById('stat-shortlisted')?.textContent !== undefined && (document.getElementById('stat-shortlisted').textContent = shortlisted);
-            document.getElementById('stat-rejected')?.textContent !== undefined && (document.getElementById('stat-rejected').textContent = rejected);
+            const interviews = apps.filter(a => a.status === 'interview_scheduled').length;
+            const offered    = apps.filter(a => a.status === 'offered').length;
+            
+            if (document.getElementById('stat-total-applied')) document.getElementById('stat-total-applied').textContent = total;
+            if (document.getElementById('stat-in-review')) document.getElementById('stat-in-review').textContent = inReview;
+            if (document.getElementById('stat-interviews')) document.getElementById('stat-interviews').textContent = interviews;
+            if (document.getElementById('stat-offered')) document.getElementById('stat-offered').textContent = offered;
 
             renderKanbanCards(apps);
             setupDragAndDrop();
@@ -301,7 +426,7 @@
                             showToast(`Application updated to ${targetStatus.replace(/_/g, ' ')}`, 'success');
                             
                             try {
-                                await updateApplicationStatus(appId, targetStatus);
+                                await apiUpdateApplicationStatus(appId, targetStatus);
                             } catch (_) {}
                         }
                     }

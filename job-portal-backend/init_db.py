@@ -16,6 +16,7 @@ from app.extensions import db
 
 # Import all SQLAlchemy models to ensure their table definitions are registered with db.metadata
 from app.models import User, Company, Job, Application, Admin  # noqa: F401
+from flask_bcrypt import generate_password_hash
 
 
 def init_database():
@@ -64,6 +65,9 @@ def init_database():
                 print(f"   {status} Table: '{table_name}'")
             print("--------------------------------------------------")
             print("All 5 core tables are verified and ready for use!")
+            
+            # Seed default admin account if none exists
+            seed_default_admin()
 
         except Exception as e:
             print("--------------------------------------------------")
@@ -76,6 +80,34 @@ def init_database():
             print(f"3. Are your credentials (DB_USER, DB_PASSWORD) correct in your .env file?")
             print("==================================================")
             sys.exit(1)
+
+
+def seed_default_admin():
+    """
+    Create a default admin account if none exists.
+    This ensures the admin dashboard is accessible after initial setup.
+    """
+    from app.models import Admin
+    
+    # Check if admin already exists
+    existing_admin = Admin.query.filter_by(email='admin@hirehub.com').first()
+    if existing_admin:
+        print("ℹ️  Default admin account already exists (admin@hirehub.com)")
+        return
+    
+    # Create default admin
+    default_admin = Admin(
+        name='Super Admin',
+        email='admin@hirehub.com',
+        password_hash=generate_password_hash('admin123').decode('utf-8')
+    )
+    
+    db.session.add(default_admin)
+    db.session.commit()
+    print("✅ Default admin account created:")
+    print("   Email: admin@hirehub.com")
+    print("   Password: admin123")
+    print("   ⚠️  Please change this password after first login!")
 
 
 if __name__ == '__main__':

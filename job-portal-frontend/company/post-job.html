@@ -7,107 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background-color: #F8F9FB;
-            color: #111827;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navbar */
-        .navbar {
-            height: 72px;
-            background: #ffffff;
-            border-bottom: 1px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            width: 100%;
-        }
-
-        .nav-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 20px;
-            color: #000;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #111827;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            list-style: none;
-            font-size: 13px;
-            font-weight: 500;
-            color: #4B5563;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .nav-action-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #374151;
-            text-decoration: none;
-        }
-
-        .btn-register {
-            background: #111827;
-            color: #ffffff;
-            padding: 9px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Post Job Hero */
+        /* Post-job specific styles that don't conflict with shared CSS */
         .post-job-hero {
             background: linear-gradient(180deg, #FFF0F5 0%, #F8F9FB 100%);
             padding: 60px 0 30px;
@@ -136,7 +39,6 @@
             text-decoration: none;
         }
 
-        /* Form Container */
         .form-section {
             padding: 30px 0 80px;
         }
@@ -297,8 +199,8 @@
             font-weight: 600;
             border: none;
             cursor: pointer;
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
+        }
+    </style>
 </head>
 <body>
 
@@ -410,7 +312,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             redirectIfNotLoggedIn('company');
-            renderNavbar('manage-jobs');
+            renderNavbar('post-job');
             renderFooter();
 
             const form = document.getElementById('post-job-form');

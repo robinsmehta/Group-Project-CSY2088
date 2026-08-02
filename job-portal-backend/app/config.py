@@ -29,6 +29,12 @@ class Config:
     # If someone knows this key, they can forge session data — keep it secret!
     SECRET_KEY = os.environ.get('SECRET_KEY', 'your_secret_key_here')
 
+    # --- Session Cookie Configuration ---
+    # These settings ensure session cookies work properly with CORS and credentials
+    SESSION_COOKIE_SAMESITE = 'Lax'  # Allows cookies in same-site and top-level navigations
+    SESSION_COOKIE_HTTPONLY = True   # Prevents JavaScript access to session cookies (XSS protection)
+    SESSION_COOKIE_SECURE = False    # Set to True in production with HTTPS
+
     # --- Database Configuration ---
     # We read database connection details from environment variables (.env file).
     # This keeps credentials secure and allows different settings in dev vs. production.

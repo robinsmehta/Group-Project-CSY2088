@@ -7,107 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background-color: #F8F9FB;
-            color: #111827;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navbar */
-        .navbar {
-            height: 72px;
-            background: #ffffff;
-            border-bottom: 1px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            width: 100%;
-        }
-
-        .nav-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 20px;
-            color: #000;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #111827;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            list-style: none;
-            font-size: 13px;
-            font-weight: 500;
-            color: #4B5563;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .nav-action-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #374151;
-            text-decoration: none;
-        }
-
-        .btn-register {
-            background: #111827;
-            color: #ffffff;
-            padding: 9px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Hero */
+        /* Applicant-specific styles that don't conflict with shared CSS */
         .applicant-hero {
             background: linear-gradient(180deg, #FFF5F7 0%, #F8F9FB 100%);
             padding: 50px 0 30px;
@@ -127,82 +30,8 @@
             margin: 0 auto;
         }
 
-        /* Main Table Section */
         .applicant-body {
             padding: 30px 0 80px;
-        }
-
-        .table-card {
-            background: #ffffff;
-            border-radius: 24px;
-            border: 1px solid #F3F4F6;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-        }
-
-        .table-toolbar {
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .toolbar-title {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .search-input-box {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            padding: 8px 14px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 220px;
-        }
-
-        .search-input-box input {
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 12px;
-            width: 100%;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        .data-table th {
-            background: #F9FAFB;
-            padding: 14px 24px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #6B7280;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .data-table td {
-            padding: 18px 24px;
-            font-size: 13px;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .user-name-cell {
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .user-email-cell {
-            font-size: 11px;
-            color: #9CA3AF;
         }
 
         .badge-status {
@@ -219,13 +48,6 @@
         .status-pending { background: #F3F4F6; color: #6B7280; }
         .status-rejected { background: #FEE2E2; color: #B91C1C; }
 
-        .action-icons {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #6B7280;
-        }
-
         .action-icon-btn {
             cursor: pointer;
             width: 28px;
@@ -236,34 +58,7 @@
             justify-content: center;
             border: 1px solid #E5E7EB;
         }
-
-        .table-footer {
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-            font-size: 12px;
-        }
-
-        .page-num {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: #374151;
-            font-weight: 600;
-        }
-
-        .page-num.active {
-            background: #111827;
-            color: #ffffff;
-        }
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
+    </style>
 </head>
 <body>
 
@@ -327,6 +122,7 @@
 
         async function loadApplicants() {
             const tbody = document.getElementById('applicants-tbody');
+            const user = getLoggedInUser();
             
             // 1. Get all jobs posted by company
             const { ok: jobsOk, data: jobs } = await apiGetJobs();
@@ -335,9 +131,16 @@
                 return;
             }
 
+            // Filter jobs to only show this company's jobs
+            const companyJobs = jobs.filter(job => job.company_id === user.id || job.company_id === user.company_id);
+            if (companyJobs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">No active job postings found. Post a job first to receive applications.</td></tr>`;
+                return;
+            }
+
             // 2. Fetch applicants for each job
             let allApplicants = [];
-            for (const job of jobs) {
+            for (const job of companyJobs) {
                 const { ok, data } = await apiGetJobApplicants(job.id);
                 if (ok && Array.isArray(data)) {
                     data.forEach(app => {

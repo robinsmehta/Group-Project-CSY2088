@@ -63,7 +63,13 @@ def create_app(config_name: str = None) -> Flask:
     bcrypt.init_app(app)                # Attach Bcrypt for password hashing
     migrate.init_app(app, db)           # Attach Flask-Migrate (needs both app and db)
     cors.init_app(app, supports_credentials=True, resources={
-        r"/api/*": {"origins": r"https?://.*"}
+        r"/api/*": {
+            "origins": ["http://localhost:5500", "http://127.0.0.1:5500", "http://[::1]:5500", "http://[::]:5500", "http://192.168.16.100:5500"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "expose_headers": ["Content-Type"],
+            "supports_credentials": True
+        }
     })
 
     # --------------------------------------------------------
@@ -104,6 +110,17 @@ def create_app(config_name: str = None) -> Flask:
             'company_id': session.get('user_id'),
             'role': session.get('role'),
             'approval_status': session.get('status')
+        }), 200
+
+    @app.route('/api/session/debug', methods=['GET'])
+    def session_debug():
+        from flask import session
+        return jsonify({
+            'session_data': dict(session),
+            'user_id': session.get('user_id'),
+            'role': session.get('role'),
+            'company_id': session.get('company_id'),
+            'status': session.get('status')
         }), 200
 
     @app.route('/api/health', methods=['GET'])

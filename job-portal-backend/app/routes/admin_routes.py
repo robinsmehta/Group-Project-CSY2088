@@ -168,3 +168,31 @@ def delete_company(company_id):
     """
     result, status_code = admin_service.delete_company(company_id)
     return jsonify(result), status_code
+
+
+# ============================================================
+# GET /api/admin/stats
+# ============================================================
+@admin_bp.route('/stats', methods=['GET'])
+@role_required('admin')
+def get_stats():
+    """
+    Get platform statistics for admin dashboard.
+
+    Success response (200 OK):
+        {
+            "stats": {
+                "total_users": 10,
+                "total_companies": 5,
+                "total_jobs": 20,
+                "total_applications": 15,
+                "pending_companies": 2
+            }
+        }
+
+    Error responses:
+        401 — Not logged in
+        403 — Not an admin
+    """
+    result, status_code = admin_service.get_admin_stats()
+    return jsonify(result), status_code

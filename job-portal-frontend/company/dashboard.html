@@ -9,6 +9,144 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Company dashboard specific styles */
+        .dashboard-banner {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            padding: 60px 0;
+            color: white;
+        }
+
+        .banner-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recruiter-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .banner-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .banner-sub {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .banner-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 2px solid white;
+        }
+
+        .btn-black {
+            background: white;
+            color: #1e3a5f;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .dashboard-body {
+            padding: 40px 0;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section-header p {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #F3F4F6;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .table-toolbar {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .toolbar-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .search-mini {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            padding: 8px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-mini input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 12px;
+            width: 150px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #F9FAFB;
+            padding: 12px 24px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #6B7280;
+            text-transform: uppercase;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .data-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .table-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #F3F4F6;
+        }
+    </style>
 </head>
 <body>
 
@@ -129,6 +267,7 @@
             const countText = document.getElementById('showing-count-text');
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading jobs from database…</td></tr>`;
 
+            const user = getLoggedInUser();
             const { ok, data } = await apiGetJobs();
             const jobs = ok ? (data.jobs || (Array.isArray(data) ? data : [])) : null;
 
@@ -137,7 +276,8 @@
                 return;
             }
 
-            allJobs = jobs;
+            // Filter jobs to only show this company's jobs
+            allJobs = jobs.filter(job => job.company_id === user.id || job.company_id === user.company_id);
             renderFilteredJobs();
         }
 

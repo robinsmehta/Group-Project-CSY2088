@@ -16,16 +16,15 @@ function renderNavbar(activePage) {
     } else if (user.role === 'company') {
         links = [
             { href: '/company/dashboard.html',             label: 'Dashboard',       key: 'dashboard' },
-            { href: '/company/dashboard.html#manage-jobs',  label: 'Manage Jobs',     key: 'manage-jobs' },
+            { href: '/company/dashboard.html',             label: 'Manage Jobs',     key: 'manage-jobs' },
             { href: '/company/applicants.html',            label: 'Applicants',      key: 'applicants' },
-            { href: '/company/dashboard.html#profile',      label: 'Company Profile', key: 'profile' }
+            { href: '/company/post-job.html',             label: 'Post Job',        key: 'post-job' }
         ];
     } else {
         links = [
             { href: '/user/dashboard.html',             label: 'Dashboard',       key: 'dashboard' },
-            { href: '/jobs/listing.html',               label: 'Jobs',            key: 'jobs' },
-            { href: '/user/dashboard.html#applications',label: 'My Applications', key: 'applications' },
-            { href: '/user/dashboard.html#profile',     label: 'Profile',         key: 'profile' }
+            { href: '/jobs/listing.html',               label: 'Browse Jobs',     key: 'jobs' },
+            { href: '/user/dashboard.html',             label: 'My Applications', key: 'applications' }
         ];
     }
 

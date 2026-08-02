@@ -1,89 +1,67 @@
 // js/jobs.js — Job Listings: Browse, Search, Detail, Post, Edit, Delete
 //
-// Handles basic fetch() calls related to job listings.
+// Refactored to use centralized API functions from api.js
 // Used by: index.html, jobs/listing.html, jobs/detail.html,
 //          company/dashboard.html, company/post-job.html
-// Depends on: config.js (for API_BASE_URL), shared.js
+// Depends on: config.js, shared.js, api.js
 
 
 // loadJobs()
-// Sends basic GET request to /api/jobs endpoint.
+// Uses apiGetJobs from api.js
 async function loadJobs() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/jobs`);
-        const data = await response.json();
-        console.log('[Jobs Route Connection - Load Jobs]:', data);
-        return data;
-    } catch (error) {
-        console.error('[Jobs Route Error - Load Jobs]:', error);
-    }
+    const { ok, data } = await apiGetJobs();
+    console.log('[Jobs Route Connection - Load Jobs]:', data);
+    return { ok, data };
 }
 
 
 // loadFeaturedJobs()
-// Sends basic GET request to /api/jobs endpoint.
+// Uses apiGetJobs from api.js
 async function loadFeaturedJobs() {
     return await loadJobs();
 }
 
 
 // searchJobs(query)
-// Sends basic GET request with search query.
+// Uses apiGetJobs with keyword parameter from api.js
 async function searchJobs(query) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/jobs?search=${encodeURIComponent(query || '')}`);
-        const data = await response.json();
-        console.log('[Jobs Route Connection - Search Jobs]:', data);
-        return data;
-    } catch (error) {
-        console.error('[Jobs Route Error - Search Jobs]:', error);
-    }
+    const { ok, data } = await apiGetJobs({ keyword: query });
+    console.log('[Jobs Route Connection - Search Jobs]:', data);
+    return { ok, data };
 }
 
 
 // loadJobDetail(jobId)
-// Sends basic GET request to /api/jobs/<id> endpoint.
+// Uses apiGetJob from api.js
 async function loadJobDetail(jobId = 1) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`);
-        const data = await response.json();
-        console.log('[Jobs Route Connection - Job Detail]:', data);
-        return data;
-    } catch (error) {
-        console.error('[Jobs Route Error - Job Detail]:', error);
-    }
+    const { ok, data } = await apiGetJob(jobId);
+    console.log('[Jobs Route Connection - Job Detail]:', data);
+    return { ok, data };
 }
 
 
 // postJob(event)
-// Sends basic POST request to /api/jobs endpoint.
+// Uses apiCreateJob from api.js
 async function postJob(event) {
     if (event) event.preventDefault();
-    try {
-        const response = await fetch(`${API_BASE_URL}/jobs`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: 'Test Job', description: 'Test', location: 'Remote', category: 'Tech', salary: '$50k' })
-        });
-        const data = await response.json();
-        console.log('[Jobs Route Connection - Post Job]:', data);
-        return data;
-    } catch (error) {
-        console.error('[Jobs Route Error - Post Job]:', error);
-    }
+    const jobData = {
+        title: 'Test Job',
+        description: 'Test',
+        location: 'Remote',
+        category: 'Tech',
+        salary: '$50k'
+    };
+    const { ok, data } = await apiCreateJob(jobData);
+    console.log('[Jobs Route Connection - Post Job]:', data);
+    return { ok, data };
 }
 
 
 // deleteJob(jobId)
-// Sends basic DELETE request to /api/jobs/<id> endpoint.
+// Uses apiDeleteJob from api.js
 async function deleteJob(jobId) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, { method: 'DELETE' });
-        const data = await response.json();
-        console.log('[Jobs Route Connection - Delete Job]:', data);
-        return data;
-    } catch (error) {
-        console.error('[Jobs Route Error - Delete Job]:', error);
-    }
+    const { ok, data } = await apiDeleteJob(jobId);
+    console.log('[Jobs Route Connection - Delete Job]:', data);
+    return { ok, data };
 }
 
