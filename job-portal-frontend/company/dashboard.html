@@ -244,7 +244,7 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             // Protected Route Verification
-            redirectIfNotLoggedIn('company');
+            await redirectIfNotLoggedIn('company');
 
             // Render Nav & Footer
             renderNavbar('dashboard');

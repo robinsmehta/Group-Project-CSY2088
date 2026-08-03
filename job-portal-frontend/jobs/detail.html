@@ -383,15 +383,16 @@
             }
 
             const { ok, data } = await apiGetJob(currentJobId);
+            const job = data?.job || null;
 
-            if (!ok || !data.id) {
+            if (!ok || !job || !job.id) {
                 document.getElementById('header-content').innerHTML = '<p style="color:#DC2626;">Job not found or has been removed.</p>';
                 document.getElementById('job-content').innerHTML = '';
                 document.getElementById('apply-sidebar').innerHTML = '';
                 return;
             }
 
-            renderJobDetail(data);
+            renderJobDetail(job);
 
             // Modal controls
             document.getElementById('close-modal').addEventListener('click', () => modal.style.display = 'none');

@@ -30,10 +30,11 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'your_secret_key_here')
 
     # --- Session Cookie Configuration ---
-    # These settings ensure session cookies work properly with CORS and credentials
-    SESSION_COOKIE_SAMESITE = 'Lax'  # Allows cookies in same-site and top-level navigations
+    # In this project’s local dev flow the frontend is served from the same host/port
+    # as the Flask app, so the session cookie can stay same-site and work over plain HTTP.
+    SESSION_COOKIE_SAMESITE = 'Lax'
     SESSION_COOKIE_HTTPONLY = True   # Prevents JavaScript access to session cookies (XSS protection)
-    SESSION_COOKIE_SECURE = False    # Set to True in production with HTTPS
+    SESSION_COOKIE_SECURE = False    # Local HTTP development does not use HTTPS
 
     # --- Database Configuration ---
     # We read database connection details from environment variables (.env file).
@@ -71,7 +72,7 @@ class Config:
 
     # --- File Uploads ---
     # Where uploaded résumé files will be stored on the server's filesystem.
-    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads/resumes')
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
 
     # Allowed extensions for uploaded résumé files
     ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'}

@@ -16,6 +16,14 @@ async function apiFetch(path, options = {}) {
     const res = await fetch(url, merged);
     let data;
     try { data = await res.json(); } catch (_) { data = {}; }
+
+    if (res.status === 401) {
+        clearAuthState();
+        if (typeof window !== 'undefined' && window.location) {
+            window.location.href = resolveSitePath('auth/login.html');
+        }
+    }
+
     return { ok: res.ok, status: res.status, data };
 }
 

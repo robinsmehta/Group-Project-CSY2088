@@ -310,8 +310,8 @@
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            redirectIfNotLoggedIn('company');
+        document.addEventListener('DOMContentLoaded', async () => {
+            await redirectIfNotLoggedIn('company');
             renderNavbar('post-job');
             renderFooter();
 
@@ -343,7 +343,7 @@
                 if (ok) {
                     showToast('Job posted successfully!', 'success');
                     setTimeout(() => {
-                        window.location.href = 'dashboard.html';
+                        window.location.href = resolveSitePath('company/dashboard.html');
                     }, 1000);
                 } else {
                     errDiv.textContent = data.error || data.message || 'Failed to create job posting. Check company approval status.';

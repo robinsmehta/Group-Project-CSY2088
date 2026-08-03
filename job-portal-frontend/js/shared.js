@@ -10,21 +10,21 @@ function renderNavbar(activePage) {
     let links = [];
     if (!user) {
         links = [
-            { href: '/index.html',        label: 'Home',      key: 'home' },
-            { href: '/jobs/listing.html', label: 'Find Jobs', key: 'jobs' }
+            { href: resolveSitePath('index.html'),        label: 'Home',      key: 'home' },
+            { href: resolveSitePath('jobs/listing.html'), label: 'Find Jobs', key: 'jobs' }
         ];
     } else if (user.role === 'company') {
         links = [
-            { href: '/company/dashboard.html',             label: 'Dashboard',       key: 'dashboard' },
-            { href: '/company/dashboard.html',             label: 'Manage Jobs',     key: 'manage-jobs' },
-            { href: '/company/applicants.html',            label: 'Applicants',      key: 'applicants' },
-            { href: '/company/post-job.html',             label: 'Post Job',        key: 'post-job' }
+            { href: resolveSitePath('company/dashboard.html'), label: 'Dashboard',       key: 'dashboard' },
+            { href: resolveSitePath('company/dashboard.html'), label: 'Manage Jobs',     key: 'manage-jobs' },
+            { href: resolveSitePath('company/applicants.html'), label: 'Applicants',      key: 'applicants' },
+            { href: resolveSitePath('company/post-job.html'), label: 'Post Job',        key: 'post-job' }
         ];
     } else {
         links = [
-            { href: '/user/dashboard.html',             label: 'Dashboard',       key: 'dashboard' },
-            { href: '/jobs/listing.html',               label: 'Browse Jobs',     key: 'jobs' },
-            { href: '/user/dashboard.html',             label: 'My Applications', key: 'applications' }
+            { href: resolveSitePath('user/dashboard.html'), label: 'Dashboard',       key: 'dashboard' },
+            { href: resolveSitePath('jobs/listing.html'), label: 'Browse Jobs',     key: 'jobs' },
+            { href: resolveSitePath('user/dashboard.html'), label: 'My Applications', key: 'applications' }
         ];
     }
 
@@ -38,10 +38,10 @@ function renderNavbar(activePage) {
         const name = user.name || user.company_name || 'User';
         const initials = name.charAt(0).toUpperCase();
         const dashHref = user.role === 'company'
-            ? '/company/dashboard.html'
+            ? resolveSitePath('company/dashboard.html')
             : user.role === 'admin'
-                ? '/admin/dashboard.html'
-                : '/user/dashboard.html';
+                ? resolveSitePath('admin/dashboard.html')
+                : resolveSitePath('user/dashboard.html');
 
         authSection = `
             <a href="${dashHref}" class="navbar-user">
@@ -52,8 +52,8 @@ function renderNavbar(activePage) {
         `;
     } else {
         authSection = `
-            <a href="/auth/login.html" class="btn btn-ghost btn-sm">Sign in</a>
-            <a href="/auth/register.html" class="btn btn-primary btn-sm">Register</a>
+            <a href="${resolveSitePath('auth/login.html')}" class="btn btn-ghost btn-sm">Sign in</a>
+            <a href="${resolveSitePath('auth/register.html')}" class="btn btn-primary btn-sm">Register</a>
         `;
     }
 
@@ -64,7 +64,7 @@ function renderNavbar(activePage) {
     const html = `
         <nav class="navbar" id="navbar">
             <div class="navbar-inner">
-                <a href="/index.html" class="navbar-brand">HireHub</a>
+                <a href="${resolveSitePath('index.html')}" class="navbar-brand">HireHub</a>
                 <div class="navbar-links">${navLinks}</div>
                 <div class="navbar-actions">${authSection}</div>
                 <button class="navbar-hamburger" id="nav-hamburger" aria-label="Menu">
@@ -76,8 +76,8 @@ function renderNavbar(activePage) {
                 <div class="mobile-actions">
                     ${user
                         ? `<button class="btn btn-ghost btn-sm" id="btn-logout-mobile">Logout</button>`
-                        : `<a href="/auth/login.html" class="btn btn-outline btn-sm">Sign in</a>
-                           <a href="/auth/register.html" class="btn btn-primary btn-sm">Register</a>`
+                        : `<a href="${resolveSitePath('auth/login.html')}" class="btn btn-outline btn-sm">Sign in</a>
+                           <a href="${resolveSitePath('auth/register.html')}" class="btn btn-primary btn-sm">Register</a>`
                     }
                 </div>
             </div>
@@ -108,16 +108,16 @@ function renderFooter() {
                 <div class="footer-col">
                     <h4>For Job Seekers</h4>
                     <ul>
-                        <li><a href="/jobs/listing.html">Browse Jobs</a></li>
-                        <li><a href="/auth/register.html">Create Account</a></li>
+                        <li><a href="${resolveSitePath('jobs/listing.html')}">Browse Jobs</a></li>
+                        <li><a href="${resolveSitePath('auth/register.html')}">Create Account</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h4>For Employers</h4>
                     <ul>
-                        <li><a href="/auth/register.html">Post a Job</a></li>
-                        <li><a href="/company/dashboard.html">Employer Dashboard</a></li>
-                        <li><a href="/company/applicants.html">View Applicants</a></li>
+                        <li><a href="${resolveSitePath('auth/register.html')}">Post a Job</a></li>
+                        <li><a href="${resolveSitePath('company/dashboard.html')}">Employer Dashboard</a></li>
+                        <li><a href="${resolveSitePath('company/applicants.html')}">View Applicants</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -139,7 +139,45 @@ function renderFooter() {
     if (el) el.outerHTML = html;
 }
 
+// Path Helpers
+
+function resolveSitePath(route) {
+    if (typeof window === 'undefined' || !window.location || !route) return route || '';
+
+    const normalizedRoute = String(route).trim();
+    if (!normalizedRoute || normalizedRoute.startsWith('#') || normalizedRoute.startsWith('?') || /^[a-z]+:\/\//i.test(normalizedRoute)) {
+        return normalizedRoute;
+    }
+
+    const currentPath = window.location.pathname.replace(/\\/g, '/');
+    const segments = currentPath.split('/').filter(Boolean);
+    const rootIndex = segments.lastIndexOf('job-portal-frontend');
+    const siteSegments = rootIndex >= 0 ? segments.slice(rootIndex + 1) : segments;
+    const currentDirSegments = siteSegments.length > 1 ? siteSegments.slice(0, -1) : [];
+    const targetSegments = normalizedRoute.replace(/^\/+/, '').split('/').filter(Boolean);
+
+    let commonLength = 0;
+    while (commonLength < currentDirSegments.length && commonLength < targetSegments.length && currentDirSegments[commonLength] === targetSegments[commonLength]) {
+        commonLength += 1;
+    }
+
+    const relParts = [
+        ...Array.from({ length: currentDirSegments.length - commonLength }, () => '..'),
+        ...targetSegments.slice(commonLength)
+    ];
+
+    const relativePath = relParts.join('/').replace(/\/{2,}/g, '/');
+    return relativePath || './';
+}
+
 // Auth Helpers
+
+function clearAuthState() {
+    if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('user_kanban_applications');
+    }
+}
 
 function getLoggedInUser() {
     const raw = sessionStorage.getItem('user');
@@ -147,23 +185,44 @@ function getLoggedInUser() {
 }
 
 function setLoggedInUser(data) {
+    if (!data) {
+        clearAuthState();
+        return;
+    }
     sessionStorage.setItem('user', JSON.stringify(data));
 }
 
-function redirectIfNotLoggedIn(requiredRole) {
-    const user = getLoggedInUser();
-    if (!user) {
-        window.location.href = '/auth/login.html';
-        return;
-    }
-    if (requiredRole && user.role !== requiredRole) {
-        if (user.role === 'company') {
-            window.location.href = '/company/dashboard.html';
-        } else if (user.role === 'user' || user.role === 'candidate') {
-            window.location.href = '/user/dashboard.html';
-        } else {
-            window.location.href = '/index.html';
+async function redirectIfNotLoggedIn(requiredRole) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/auth/me`, { credentials: 'include' });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data.user) {
+            clearAuthState();
+            window.location.href = resolveSitePath('auth/login.html');
+            return false;
         }
+
+        setLoggedInUser(data.user);
+
+        if (requiredRole && data.user.role !== requiredRole) {
+            if (data.user.role === 'company') {
+                window.location.href = resolveSitePath('company/dashboard.html');
+            } else if (data.user.role === 'user') {
+                window.location.href = resolveSitePath('user/dashboard.html');
+            } else if (data.user.role === 'admin') {
+                window.location.href = resolveSitePath('admin/dashboard.html');
+            } else {
+                window.location.href = resolveSitePath('index.html');
+            }
+            return false;
+        }
+
+        return true;
+    } catch (_) {
+        clearAuthState();
+        window.location.href = resolveSitePath('auth/login.html');
+        return false;
     }
 }
 
@@ -171,8 +230,8 @@ async function handleLogout() {
     try {
         await fetch(`${API_BASE_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
     } catch (_) {}
-    sessionStorage.clear();
-    window.location.href = '/index.html';
+    clearAuthState();
+    window.location.href = resolveSitePath('index.html');
 }
 
 // Toast Notifications
@@ -279,7 +338,7 @@ function showEmpty(containerId, title = 'Nothing here yet', message = '', action
 
 async function checkApiHealth() {
     try {
-        const res = await fetch(`${API_BASE_URL}/health`);
+        const res = await fetch(`${API_BASE_URL}/health`, { credentials: 'include' });
         const data = await res.json();
         console.log('[API] Connected:', data.message);
         return true;

@@ -430,6 +430,12 @@
             errorBox.style.cssText = 'display:none;color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:12px;';
             form.prepend(errorBox);
 
+            const params = new URLSearchParams(window.location.search);
+            const roleParam = params.get('role');
+            if (roleParam === 'employer' || roleParam === 'seeker') {
+                setRole(roleParam);
+            }
+
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 errorBox.style.display = 'none';
@@ -456,7 +462,7 @@
 
                 if (result.ok) {
                     showToast('Account created! Please log in.', 'success');
-                    setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+                    setTimeout(() => { window.location.href = resolveSitePath('auth/login.html'); }, 1200);
                 } else {
                     const msg = result.data.error || result.data.message || 'Registration failed. Please try again.';
                     errorBox.textContent = msg;

@@ -31,7 +31,6 @@ job-portal-frontend/
 ├── js/
 │   ├── config.js           # API base URL configuration
 │   ├── auth.js             # API integrations for authentication (register, login, logout)
-│   ├── jobs.js             # API integrations for job search and management
 │   ├── applications.js     # API integrations for job applications
 │   ├── admin.js            # API integrations for administrative functions
 │   └── shared.js           # Utilities and UI helpers shared across views
@@ -40,21 +39,30 @@ job-portal-frontend/
 
 ## Running the Application Locally
 
-The frontend relies on standard Web API standards. Serve the files over HTTP to enable API integration and CORS credentials support.
+This project is designed to run with the frontend served by the Flask backend on
+`http://127.0.0.1:5001/`.
 
-### Method 1: VS Code Live Server (Recommended)
-1. Install the **Live Server** extension in VS Code.
-2. Right-click `index.html` and select **Open with Live Server**.
-3. Access the application at `http://127.0.0.1:5500`.
+> Important: Do not open the frontend separately via Live Server, Python
+> `http.server`, or `file://`.
+> Those approaches create a different origin and will break authentication
+> because the Flask session cookie is same-site and only works from
+> `http://127.0.0.1:5001`.
 
-### Method 2: Python HTTP Server Module
+### Supported Local Run Mode
+1. Start the Flask backend from the `job-portal-backend` directory:
 ```bash
-cd job-portal-frontend
-python3 -m http.server 5500
+cd job-portal-backend
+python run.py
 ```
-Access the application by navigating to `http://localhost:5500` in your web browser.
+2. Open a browser to:
+```text
+http://127.0.0.1:5001/
+```
 
-> **Note**: Ensure the backend API service is running on `http://localhost:5001/api` prior to executing API requests.
+The backend serves the frontend and API from the same host and port.
+
+> **Note**: The backend API base URL is `http://127.0.0.1:5001/api`, matching the
+> same-origin frontend deployment.
 
 ---
 

@@ -262,7 +262,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             // Protected Route Verification
-            redirectIfNotLoggedIn('user');
+            await redirectIfNotLoggedIn('user');
 
             // Render Nav & Footer
             renderNavbar('dashboard');
@@ -294,16 +294,17 @@
         async function initKanbanBoard() {
             // Show loading state
             document.querySelectorAll('.kanban-column').forEach(col => {
-                col.querySelector('.kanban-cards').innerHTML = '<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:12px;">Loading…</div>';
+                col.querySelector('.kanban-cards-container').innerHTML = '<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:12px;">Loading…</div>';
             });
 
             // Try to load from API
             let apps = getApplicationsState();
             if (!apps) {
                 const { ok, data } = await apiGetMyApplications();
-                if (ok && Array.isArray(data)) {
+                const applications = ok ? (data?.applications || []) : [];
+                if (applications.length) {
                     // Map API response fields to kanban format
-                    apps = data.map(app => ({
+                    apps = applications.map(app => ({
                         id:           app.id,
                         position:     app.job?.title   || app.job_title   || 'Unknown Position',
                         company:      app.job?.company_name || app.company_name || 'Unknown Company',

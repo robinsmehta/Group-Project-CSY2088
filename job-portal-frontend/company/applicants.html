@@ -113,7 +113,7 @@
     <script src="../js/api.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            redirectIfNotLoggedIn('company');
+            await redirectIfNotLoggedIn('company');
             renderNavbar('applicants');
             renderFooter();
 
@@ -142,8 +142,9 @@
             let allApplicants = [];
             for (const job of companyJobs) {
                 const { ok, data } = await apiGetJobApplicants(job.id);
-                if (ok && Array.isArray(data)) {
-                    data.forEach(app => {
+                const applications = ok ? (data?.applications || []) : [];
+                if (applications.length) {
+                    applications.forEach(app => {
                         allApplicants.push({
                             ...app,
                             job_title: job.title
@@ -160,8 +161,8 @@
             tbody.innerHTML = allApplicants.map(app => `
                 <tr style="border-bottom:1px solid #F3F4F6;">
                     <td style="padding:16px 24px;">
-                        <div class="user-name-cell">${escapeHtml(app.user?.name || app.user_name || 'Applicant #' + app.user_id)}</div>
-                        <div class="user-email-cell">${escapeHtml(app.user?.email || app.user_email || '')}</div>
+                        <div class="user-name-cell">${escapeHtml(app.applicant_name || app.user?.name || app.user_name || 'Applicant #' + app.user_id)}</div>
+                        <div class="user-email-cell">${escapeHtml(app.applicant_email || app.user?.email || app.user_email || '')}</div>
                     </td>
                     <td style="padding:16px 24px;font-size:13px;">${escapeHtml(app.job_title)}</td>
                     <td style="padding:16px 24px;font-size:13px;color:#6B7280;">${(app.applied_at || app.created_at || '').split('T')[0] || 'Recently'}</td>
@@ -174,7 +175,7 @@
                         </select>
                     </td>
                     <td style="padding:16px 24px;">
-                        ${app.resume_path ? `<a href="${API_BASE_URL.replace('/api', '')}/${app.resume_path}" target="_blank" class="action-icon-btn" title="Download Resume" style="text-decoration:none;display:inline-block;">📥 Resume</a>` : '<span style="font-size:12px;color:#9CA3AF;">No file</span>'}
+                        ${app.resume_url ? `<a href="${API_BASE_URL.replace('/api', '')}${app.resume_url}" target="_blank" class="action-icon-btn" title="Download Resume" style="text-decoration:none;display:inline-block;">📥 Resume</a>` : '<span style="font-size:12px;color:#9CA3AF;">No file</span>'}
                     </td>
                 </tr>
             `).join('');

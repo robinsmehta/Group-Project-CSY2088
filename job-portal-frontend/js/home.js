@@ -1,14 +1,22 @@
 // js/home.js — Home page logic
-// Depends on: config.js, shared.js, jobs.js
+// Depends on: config.js, shared.js
 
 document.addEventListener('DOMContentLoaded', () => {
     renderNavbar('home');
     renderFooter();
+    setHomeCtaLinks();
     loadHomeFeaturedJobs();
     renderCategories();
     wireHeroSearch();
     loadStats();
 });
+
+function setHomeCtaLinks() {
+    document.getElementById('hero-browse-jobs')?.setAttribute('href', resolveSitePath('jobs/listing.html'));
+    document.getElementById('view-all-jobs')?.setAttribute('href', resolveSitePath('jobs/listing.html'));
+    document.getElementById('role-seeker-link')?.setAttribute('href', `${resolveSitePath('auth/register.html')}?role=seeker`);
+    document.getElementById('role-employer-link')?.setAttribute('href', `${resolveSitePath('auth/register.html')}?role=employer`);
+}
 
 // Featured Jobs
 
@@ -39,7 +47,7 @@ function buildJobCard(job) {
     const posted   = timeAgo(job.created_at || job.posted_date || '');
 
     return `
-        <article class="job-card" onclick="window.location.href='jobs/detail.html?id=${job.id}'" role="button" tabindex="0">
+        <article class="job-card" onclick="window.location.href='${resolveSitePath(`jobs/detail.html`)}?id=${job.id}'" role="button" tabindex="0">
             <div class="job-card-top">
                 <div class="job-company-logo">${initials}</div>
                 <button class="job-bookmark" title="Save job" onclick="event.stopPropagation()">
@@ -72,6 +80,9 @@ function buildJobCard(job) {
                 ${salary}
                 <div class="job-type-tags">${jobType}</div>
                 <span class="job-date">${posted}</span>
+                <a href="${resolveSitePath(`jobs/detail.html`)}?id=${job.id}" class="arrow-btn" aria-label="View job details">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
             </div>
         </article>
     `;
@@ -125,7 +136,7 @@ function renderCategories() {
     };
 
     grid.innerHTML = categories.map(cat => `
-        <a href="jobs/listing.html?category=${encodeURIComponent(cat.query)}" class="category-card">
+        <a href="${resolveSitePath('jobs/listing.html')}?category=${encodeURIComponent(cat.query)}" class="category-card">
             <div class="category-icon">${iconSvg[cat.icon]}</div>
             <div class="category-info">
                 <h4>${cat.label}</h4>
@@ -148,7 +159,7 @@ function wireHeroSearch() {
         const params = new URLSearchParams();
         if (kw)  params.set('keyword', kw);
         if (loc) params.set('location', loc);
-        window.location.href = `jobs/listing.html?${params.toString()}`;
+        window.location.href = `${resolveSitePath('jobs/listing.html')}?${params.toString()}`;
     }
 
     btn?.addEventListener('click', doSearch);

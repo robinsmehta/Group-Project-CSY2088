@@ -220,24 +220,33 @@ def login(email, password=None, role=None):
     session['user_id'] = account.id
     session['role'] = role
 
+    account_name = getattr(account, 'name', getattr(account, 'company_name', ''))
+    session['name'] = account_name
+    session['email'] = account.email
+
     approval_status = None
     if role == 'company':
         approval_status = account.status
         session['status'] = approval_status
         session['company_id'] = account.id  # Set company_id for consistency
+        session['company_name'] = getattr(account, 'company_name', '')
 
-    account_name = getattr(account, 'name', getattr(account, 'company_name', ''))
+    user_payload = {
+        'id': account.id,
+        'name': account_name,
+        'email': account.email,
+        'role': role,
+        'status': approval_status
+    }
+
+    if role == 'company':
+        user_payload['company_id'] = account.id
+        user_payload['company_name'] = getattr(account, 'company_name', '')
 
     return {
         'message': 'Login successful',
         'role': role,
-        'user': {
-            'id': account.id,
-            'name': account_name,
-            'email': account.email,
-            'role': role,
-            'status': approval_status
-        }
+        'user': user_payload
     }, 200
 
 

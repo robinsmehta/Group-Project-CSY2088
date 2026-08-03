@@ -78,7 +78,7 @@ def save_resume_file(file, upload_folder: str = None) -> str:
         return None, 'Invalid file type. Only PDF, DOC, and DOCX files are allowed.'
 
     if not upload_folder:
-        upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads/resumes')
+        upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads')
 
     # Ensure destination folder exists automatically
     os.makedirs(upload_folder, exist_ok=True)

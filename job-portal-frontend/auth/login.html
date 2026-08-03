@@ -405,20 +405,22 @@
                 const { ok, data } = await apiLogin(email, password, role);
 
                 if (ok) {
+                    const user = data.user || {};
                     // Build session object from real API response
                     const userObj = {
-                        id:           data.user_id || data.id || null,
-                        email:        email,
-                        role:         role,
-                        name:         data.name         || data.user?.name         || email.split('@')[0],
-                        company_name: data.company_name || data.user?.company_name || null,
+                        id:           user.id || null,
+                        email:        user.email || email,
+                        role:         user.role || role,
+                        name:         user.name || user.company_name || email.split('@')[0],
+                        company_name: user.company_name || null,
+                        status:       user.status || null
                     };
                     setLoggedInUser(userObj);
                     showToast('Logged in successfully!', 'success');
                     setTimeout(() => {
-                        if (role === 'company') window.location.href = '../company/dashboard.html';
-                        else if (role === 'admin') window.location.href = '../admin/dashboard.html';
-                        else window.location.href = '../user/dashboard.html';
+                        if (role === 'company') window.location.href = resolveSitePath('company/dashboard.html');
+                        else if (role === 'admin') window.location.href = resolveSitePath('admin/dashboard.html');
+                        else window.location.href = resolveSitePath('user/dashboard.html');
                     }, 600);
                 } else {
                     const msg = data.error || data.message || 'Invalid email or password.';

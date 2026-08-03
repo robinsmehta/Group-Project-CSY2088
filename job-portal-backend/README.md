@@ -92,7 +92,12 @@ Start the Flask development server:
 ```bash
 python run.py
 ```
-The backend service listens on **http://localhost:5001/api**.
+The backend service listens on **http://127.0.0.1:5001** and also serves the frontend from the same origin.
+
+> Important: For local development, open the app only at **http://127.0.0.1:5001/**.
+> Do not serve the frontend separately via Live Server, Python `http.server`, or
+> `file://` because session cookies are configured same-site and cross-origin
+> access will prevent authentication from working.
 
 ### Step 7: Verify Service Health
 Perform a HTTP GET request to verify API and database connectivity:

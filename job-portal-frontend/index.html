@@ -557,7 +557,7 @@
                         Get Started Now
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </a>
-                    <a href="#" class="btn-secondary">Browse All Jobs</a>
+                    <a href="#" id="hero-browse-jobs" class="btn-secondary">Browse All Jobs</a>
                 </div>
             </div>
         </div>
@@ -573,7 +573,7 @@
                         <span class="badge badge-candidate">Candidate</span>
                         <h2>I'm looking for a job</h2>
                         <p>Access thousands of job listings, personalized career advice, and tools to help you land your dream role.</p>
-                        <a href="#" class="role-link">
+                        <a href="#" id="role-seeker-link" class="role-link">
                             Create Seeker Profile
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </a>
@@ -587,7 +587,7 @@
                         <span class="badge badge-employer">Employer</span>
                         <h2>I'm hiring talent</h2>
                         <p>Reach the best candidates in the industry. Manage your hiring pipeline and scale your team with ease.</p>
-                        <a href="#" class="role-link">
+                        <a href="#" id="role-employer-link" class="role-link">
                             Post a Job Listing
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </a>
@@ -666,122 +666,10 @@
                     <h2>Featured Opportunities</h2>
                     <p>Hand-picked roles from top companies looking for talent like you. Explore the latest openings in tech and design.</p>
                 </div>
-                <a href="#" class="btn-view-all">View All Jobs</a>
+                <a href="#" id="view-all-jobs" class="btn-view-all">View All Jobs</a>
             </div>
 
-            <div class="jobs-grid">
-                <!-- Job 1 -->
-                <div class="job-card">
-                    <div>
-                        <div class="job-card-top">
-                            <img src="placeholder-logo-1.png" alt="Netflix" class="company-logo" />
-                            <span class="job-badge">Full-time</span>
-                        </div>
-                        <h3 class="job-title">Senior Product Designer</h3>
-                        <p class="company-name">Netflix</p>
-                        <div class="job-meta">
-                            <div class="meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                Los Gatos, CA
-                            </div>
-                            <div class="meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                2 days ago
-                            </div>
-                        </div>
-                    </div>
-                    <div class="job-card-bottom">
-                        <span class="salary">$180k - $240k</span>
-                        <a href="#" class="arrow-btn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Job 2 -->
-                <div class="job-card">
-                    <div>
-                        <div class="job-card-top">
-                            <img src="placeholder-logo-2.png" alt="Upwork" class="company-logo" />
-                            <span class="job-badge">Contract</span>
-                        </div>
-                        <h3 class="job-title">Full Stack Engineer</h3>
-                        <p class="company-name">Upwork</p>
-                        <div class="job-meta">
-                            <div class="meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                Remote
-                            </div>
-                            <div class="meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                5 hours ago
-                            </div>
-                        </div>
-                    </div>
-                    <div class="job-card-bottom">
-                        <span class="salary">$90 - $120 /hr</span>
-                        <a href="#" class="arrow-btn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Job 3 -->
-                <div class="job-card">
-                    <div>
-                        <div class="job-card-top">
-                            <img src="placeholder-logo-3.png" alt="Stripe" class="company-logo" />
-                            <span class="job-badge">Full-time</span>
-                        </div>
-                        <h3 class="job-title">Marketing Strategy Lead</h3>
-                        <p class="company-name">Stripe</p>
-                        <div class="job-meta">
-                            <div class="meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                San Francisco, CA
-                            </div>
-                            <div class="meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                1 week ago
-                            </div>
-                        </div>
-                    </div>
-                    <div class="job-card-bottom">
-                        <span class="salary">$135k - $210k</span>
-                        <a href="#" class="arrow-btn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Job 4 -->
-                <div class="job-card">
-                    <div>
-                        <div class="job-card-top">
-                            <img src="placeholder-logo-4.png" alt="Airbnb" class="company-logo" />
-                            <span class="job-badge">Full-time</span>
-                        </div>
-                        <h3 class="job-title">Senior Data Scientist</h3>
-                        <p class="company-name">Airbnb</p>
-                        <div class="job-meta">
-                            <div class="meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                Remote (US)
-                            </div>
-                            <div class="meta-item">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                3 days ago
-                            </div>
-                        </div>
-                    </div>
-                    <div class="job-card-bottom">
-                        <span class="salary">$170k - $255k</span>
-                        <a href="#" class="arrow-btn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <div class="jobs-grid" id="featured-jobs-grid"></div>
         </div>
     </section>
 

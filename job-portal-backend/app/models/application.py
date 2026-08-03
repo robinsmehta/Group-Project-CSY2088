@@ -48,7 +48,7 @@ class Application(db.Model):
     )
 
     # File path to the uploaded résumé PDF stored on the server.
-    # Example: "uploads/resumes/user_1_resume.pdf"
+    # Example: "uploads/user_1_resume.pdf"
     # TODO: When saving a file, generate a safe unique filename and store path here.
     resume_path = db.Column(db.String(300), nullable=True)
 
