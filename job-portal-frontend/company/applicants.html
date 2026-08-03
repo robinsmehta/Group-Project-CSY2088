@@ -125,8 +125,9 @@
             const user = getLoggedInUser();
             
             // 1. Get all jobs posted by company
-            const { ok: jobsOk, data: jobs } = await apiGetJobs();
-            if (!jobsOk || !Array.isArray(jobs) || jobs.length === 0) {
+            const { ok: jobsOk, data } = await apiGetJobs();
+            const jobs = jobsOk ? (data.jobs || (Array.isArray(data) ? data : [])) : [];
+            if (!jobsOk || jobs.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">No active job postings found. Post a job first to receive applications.</td></tr>`;
                 return;
             }
