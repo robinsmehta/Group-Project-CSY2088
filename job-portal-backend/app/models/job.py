@@ -56,6 +56,13 @@ class Job(db.Model):
     # Stored as a string for flexibility (ranges, "Negotiable", etc.)
     salary = db.Column(db.String(100), nullable=True)
 
+    # Optional closing date for the job listing.
+    # When this date passes, the listing is considered closed.
+    closing_date = db.Column(db.DateTime, nullable=True)
+
+    # Persistent status column to reflect current state ('active'|'closed')
+    status = db.Column(db.String(20), nullable=False, default='active')
+
     # When the job listing was created
     created_at = db.Column(
         db.DateTime,
@@ -92,17 +99,33 @@ class Job(db.Model):
     def __repr__(self):
         return f'<Job id={self.id} title="{self.title}" company_id={self.company_id}>'
 
+    @property
+    def is_closed(self):
+        if self.closing_date:
+            closing = self.closing_date
+            # If stored datetime is offset-naive, assume UTC for comparison
+            if closing.tzinfo is None:
+                closing = closing.replace(tzinfo=timezone.utc)
+            return closing <= datetime.now(timezone.utc)
+        return False
+
     def to_dict(self):
         """Serialise to dict for JSON API responses."""
+        # Compute status: if closing_date passed treat as closed, otherwise use stored status
+        computed_status = 'closed' if self.is_closed else (self.status or 'active')
+
         return {
-            'id':           self.id,
-            'company_id':   self.company_id,
-            'company_name': self.company.company_name if self.company else None,
-            'title':        self.title,
-            'description':  self.description,
-            'location':     self.location,
-            'category':     self.category,
-            'salary':       self.salary,
-            'created_at':   self.created_at.isoformat() if self.created_at else None,
-            'updated_at':   self.updated_at.isoformat() if self.updated_at else None,
+            'id':                self.id,
+            'company_id':        self.company_id,
+            'company_name':      self.company.company_name if self.company else None,
+            'title':             self.title,
+            'description':       self.description,
+            'location':          self.location,
+            'category':          self.category,
+            'salary':            self.salary,
+            'closing_date':      self.closing_date.isoformat() if self.closing_date else None,
+            'status':            computed_status,
+            'application_count': self.applications.count() if hasattr(self.applications, 'count') else len(self.applications),
+            'created_at':        self.created_at.isoformat() if self.created_at else None,
+            'updated_at':        self.updated_at.isoformat() if self.updated_at else None,
         }

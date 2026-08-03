@@ -219,6 +219,7 @@
                             <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">STATUS</th>
                             <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">APPLICANTS</th>
                             <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">POSTED DATE</th>
+                            <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody id="jobs-table-body">
@@ -230,6 +231,31 @@
                     <div id="showing-count-text">Showing 5 of 5 listings</div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Edit Job Modal -->
+    <div id="edit-job-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:2000;">
+        <div style="background:#fff;border-radius:12px;max-width:780px;width:94%;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.2);position:relative;">
+            <button onclick="closeEditModal()" style="position:absolute;right:14px;top:12px;background:none;border:none;font-size:18px;cursor:pointer;color:#374151;">✕</button>
+            <h3 style="margin-top:0;margin-bottom:8px;font-size:20px;color:#111827;">Edit Job</h3>
+            <form id="edit-job-form">
+                <input type="hidden" id="edit-job-id">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <input id="edit-job-title" placeholder="Job title" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;" required>
+                    <input id="edit-job-category" placeholder="Category" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;">
+                    <input id="edit-job-location" placeholder="Location" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;">
+                    <input id="edit-job-salary" placeholder="Salary" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;">
+                    <input id="edit-job-closing-date" placeholder="Closing date (YYYY-MM-DDTHH:MM:SS)" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;">
+                </div>
+                <div style="margin-top:12px;">
+                    <textarea id="edit-job-description" placeholder="Description" rows="6" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:8px;"></textarea>
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+                    <button type="button" onclick="closeEditModal()" style="background:#F3F4F6;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;color:#374151;">Cancel</button>
+                    <button type="submit" style="background:#1E3A5F;color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;">Save changes</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -313,14 +339,17 @@
                         <span class="badge" style="background:#F3F4F6;color:#4B5563;padding:3px 10px;border-radius:12px;">${escapeHtml(job.category || 'General')}</span>
                     </td>
                     <td style="padding: 16px 24px;">
-                        <span style="background:#DCFCE7;color:#166534;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;">Active</span>
+                        <span style="background:${job.status === 'closed' ? '#FECACA' : '#DCFCE7'};color:${job.status === 'closed' ? '#991B1B' : '#166534'};padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;">${escapeHtml(job.status === 'closed' ? 'Closed' : 'Active')}</span>
                     </td>
                     <td style="padding: 16px 24px; font-size: 14px; font-weight: 600; color: #111827;">
-                        —
+                        ${typeof job.application_count === 'number' ? job.application_count : '0'}
                     </td>
-                    <td style="padding: 16px 24px; font-size: 13px; color: #6B7280;">
+                    <td style="padding: 16px 24px; font-size: 13px; color: #6B7280; display: flex; align-items: center; gap: 12px;">
                         <span>${timeAgo(job.created_at)}</span>
-                        <button onclick="deleteJob(${job.id})" style="margin-left:12px;background:none;border:none;cursor:pointer;color:#DC2626;font-size:12px;font-weight:600;">Delete</button>
+                        <button onclick="deleteJob(${job.id})" style="background:none;border:none;cursor:pointer;color:#DC2626;font-size:12px;font-weight:600;">Delete</button>
+                    </td>
+                    <td style="padding: 16px 24px;">
+                        <button onclick="openEditModal(${job.id})" style="background:#1E3A5F;color:white;border:none;padding:8px 14px;border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;">Edit</button>
                     </td>
                 </tr>
             `).join('');
@@ -339,6 +368,62 @@
                 showToast(data.error || 'Failed to delete job.', 'error');
             }
         }
+
+        function openEditModal(jobId) {
+            const job = allJobs.find(j => j.id === jobId);
+            if (!job) return showToast('Job not found.', 'error');
+
+            document.getElementById('edit-job-id').value = job.id;
+            document.getElementById('edit-job-title').value = job.title || '';
+            document.getElementById('edit-job-category').value = job.category || '';
+            document.getElementById('edit-job-location').value = job.location || '';
+            document.getElementById('edit-job-salary').value = job.salary || '';
+            // Prefill datetime-local value (YYYY-MM-DDTHH:MM)
+            if (job.closing_date) {
+                const dt = job.closing_date.replace('Z','');
+                document.getElementById('edit-job-closing-date').value = dt.slice(0,16);
+            } else {
+                document.getElementById('edit-job-closing-date').value = '';
+            }
+            document.getElementById('edit-job-description').value = job.description || '';
+
+            const modal = document.getElementById('edit-job-modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('edit-job-modal');
+            modal.style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('edit-job-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const jobId = document.getElementById('edit-job-id').value;
+                    const payload = {
+                        title: document.getElementById('edit-job-title').value.trim(),
+                        category: document.getElementById('edit-job-category').value.trim(),
+                        location: document.getElementById('edit-job-location').value.trim(),
+                        salary: document.getElementById('edit-job-salary').value.trim(),
+                        description: document.getElementById('edit-job-description').value.trim(),
+                        closing_date: document.getElementById('edit-job-closing-date').value.trim() || null
+                    };
+
+                    const { ok, data } = await apiUpdateJob(jobId, payload);
+                    if (!ok) {
+                        showToast(data.error || 'Failed to update job.', 'error');
+                        return;
+                    }
+
+                    showToast('Job updated successfully.', 'success');
+                    allJobs = allJobs.map(j => j.id === data.job.id ? data.job : j);
+                    closeEditModal();
+                    renderFilteredJobs();
+                });
+            }
+        });
 
         function escapeHtml(str) {
             const div = document.createElement('div');

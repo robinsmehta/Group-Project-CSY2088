@@ -14,11 +14,15 @@ function renderNavbar(activePage) {
             { href: resolveSitePath('jobs/listing.html'), label: 'Find Jobs', key: 'jobs' }
         ];
     } else if (user.role === 'company') {
+        const dashboardHref = resolveSitePath('company/dashboard.html');
         links = [
-            { href: resolveSitePath('company/dashboard.html'), label: 'Dashboard',       key: 'dashboard' },
-            { href: resolveSitePath('company/dashboard.html'), label: 'Manage Jobs',     key: 'manage-jobs' },
+            { href: dashboardHref, label: 'Dashboard',       key: 'dashboard' },
             { href: resolveSitePath('company/applicants.html'), label: 'Applicants',      key: 'applicants' },
             { href: resolveSitePath('company/post-job.html'), label: 'Post Job',        key: 'post-job' }
+        ];
+    } else if (user.role === 'admin') {
+        links = [
+            { href: resolveSitePath('admin/dashboard.html'), label: 'Dashboard', key: 'dashboard' }
         ];
     } else {
         links = [

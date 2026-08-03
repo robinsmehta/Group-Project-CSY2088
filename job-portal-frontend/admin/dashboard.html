@@ -143,7 +143,7 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
-                        <input type="text" placeholder="Search companies...">
+                        <input id="company-search-input" type="text" placeholder="Search companies...">
                     </div>
                 </div>
 
@@ -158,41 +158,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><strong>NovaTech</strong></td>
-                            <td>Softwares</td>
-                            <td>2023-10-04</td>
-                            <td><span class="badge-pending">• Pending</span></td>
-                            <td><a href="#" class="btn-action-text">Approve / Reject</a></td>
-                        </tr>
-                        <tr>
-                            <td><strong>CrossScale</strong></td>
-                            <td>Infrastructure</td>
-                            <td>2023-10-09</td>
-                            <td><span class="badge-pending">• Pending</span></td>
-                            <td><a href="#" class="btn-action-text">Approve / Reject</a></td>
-                        </tr>
-                        <tr>
-                            <td><strong>GreenDrive</strong></td>
-                            <td>Automotive</td>
-                            <td>2023-10-12</td>
-                            <td><span class="badge-pending">• Pending</span></td>
-                            <td><a href="#" class="btn-action-text">Approve / Reject</a></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Artisan AI</strong></td>
-                            <td>Machine Learning</td>
-                            <td>2023-10-21</td>
-                            <td><span class="badge-pending">• Pending</span></td>
-                            <td><a href="#" class="btn-action-text">Approve / Reject</a></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Global Logistics</strong></td>
-                            <td>Shipping</td>
-                            <td>2023-10-30</td>
-                            <td><span class="badge-pending">• Pending</span></td>
-                            <td><a href="#" class="btn-action-text">Approve / Reject</a></td>
-                        </tr>
+                        <tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading pending company registrations…</td></tr>
                     </tbody>
                 </table>
 
@@ -211,7 +177,7 @@
             <div class="table-card">
                 <div class="table-toolbar">
                     <div class="toolbar-title">Directory Access</div>
-                    <button class="btn-add-admin">+ Add Master Admin</button>
+                        <button class="btn-add-admin">+ Add Master Admin</button>
                 </div>
 
                 <table class="data-table">
@@ -220,72 +186,31 @@
                             <th>Full Name & Email</th>
                             <th>System Role</th>
                             <th>Account Status</th>
-                            <th>Last Active</th>
+                            <th>Registration Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div style="font-weight:600;">Karen Jenkins</div>
-                                <div style="font-size:11px; color:#9CA3AF;">karen.j@designco.io</div>
-                            </td>
-                            <td><span class="role-pill">Job Seeker</span></td>
-                            <td><span class="status-dot dot-active"></span>Active</td>
-                            <td>2m ago</td>
-                            <td><a href="#" class="btn-action-text">Revoke Access</a></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div style="font-weight:600;">Marcus Thomas</div>
-                                <div style="font-size:11px; color:#9CA3AF;">m.thomas@techworks.dev</div>
-                            </td>
-                            <td><span class="role-pill">Employer</span></td>
-                            <td><span class="status-dot dot-active"></span>Active</td>
-                            <td>2h ago</td>
-                            <td><a href="#" class="btn-action-text">Revoke Access</a></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div style="font-weight:600;">Freya Rodriguez</div>
-                                <div style="font-size:11px; color:#9CA3AF;">freya.r@designport.org</div>
-                            </td>
-                            <td><span class="role-pill">Job Seeker</span></td>
-                            <td><span class="status-dot dot-suspended"></span>Suspended</td>
-                            <td>2d ago</td>
-                            <td><a href="#" class="btn-action-text">Restore Access</a></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div style="font-weight:600;">Jesse Lin</div>
-                                <div style="font-size:11px; color:#9CA3AF;">j.lin@insighthub.org</div>
-                            </td>
-                            <td><span class="role-pill">Employer</span></td>
-                            <td><span class="status-dot dot-active"></span>Active</td>
-                            <td>12m ago</td>
-                            <td><a href="#" class="btn-action-text">Revoke Access</a></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div style="font-weight:600;">Christine Wu</div>
-                                <div style="font-size:11px; color:#9CA3AF;">c.wu@artistagency.net</div>
-                            </td>
-                            <td><span class="role-pill">Master Admin</span></td>
-                            <td><span class="status-dot dot-pending"></span>Pending</td>
-                            <td>1d ago</td>
-                            <td><a href="#" class="btn-action-text">Revoke Access</a></td>
-                        </tr>
+                    <tbody id="users-tbody">
+                        <tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading users…</td></tr>
                     </tbody>
                 </table>
 
                 <div class="table-footer">
-                    <div>Showing 1 - 5 of 12,482 users</div>
-                    <div class="pagination">
-                        <a href="#" class="page-num active">1</a>
-                        <a href="#" class="page-num">2</a>
-                        <a href="#" class="page-num">3</a>
-                        <span>...</span>
-                        <a href="#" class="page-num">250</a>
+                    <div id="users-count">Showing 0 - 0 of 0 users</div>
+                    <div class="pagination" id="users-pagination"></div>
+                </div>
+            </div>
+
+            <!-- Add Admin Modal (hidden) -->
+            <div id="add-admin-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:80;">
+                <div style="background:#fff;padding:20px;border-radius:8px;max-width:420px;margin:0 auto;box-shadow:0 6px 24px rgba(2,6,23,0.08);">
+                    <h3 style="margin:0 0 12px;font-size:18px;">Create Master Admin</h3>
+                    <div style="margin-bottom:8px;"><input id="new-admin-name" placeholder="Full name" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:6px;" /></div>
+                    <div style="margin-bottom:8px;"><input id="new-admin-email" placeholder="Email" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:6px;" /></div>
+                    <div style="margin-bottom:12px;"><input id="new-admin-password" type="password" placeholder="Password" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:6px;" /></div>
+                    <div style="text-align:right;">
+                        <button id="cancel-add-admin" style="background:transparent;border:none;color:#6B7280;margin-right:8px;">Cancel</button>
+                        <button id="submit-add-admin" style="background:#111827;color:#fff;border:none;border-radius:6px;padding:8px 12px;">Create</button>
                     </div>
                 </div>
             </div>
@@ -307,8 +232,70 @@
             renderNavbar('dashboard');
             renderFooter();
 
+            // Wire up live search for pending companies with debounce
+            const searchInput = document.getElementById('company-search-input');
+            function debounce(fn, delay) {
+                let timer = null;
+                return function(...args) {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => fn.apply(this, args), delay);
+                };
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce(() => loadPendingCompanies(), 300));
+                // Optional: run search on Enter key as well
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        loadPendingCompanies();
+                    }
+                });
+            }
+
+
+            // Wire Add Admin button
+            const addBtn = document.querySelector('.btn-add-admin');
+            const modal = document.getElementById('add-admin-modal');
+            const cancelBtn = document.getElementById('cancel-add-admin');
+            const submitBtn = document.getElementById('submit-add-admin');
+
+            if (addBtn && modal) {
+                addBtn.addEventListener('click', () => {
+                    modal.style.display = 'flex';
+                    document.getElementById('new-admin-name').focus();
+                });
+            }
+            if (cancelBtn && modal) {
+                cancelBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+            }
+            if (submitBtn && modal) {
+                submitBtn.addEventListener('click', async () => {
+                    const name = document.getElementById('new-admin-name').value.trim();
+                    const email = document.getElementById('new-admin-email').value.trim();
+                    const password = document.getElementById('new-admin-password').value;
+                    if (!name || !email || !password) {
+                        showToast('Please provide name, email, and password.', 'error');
+                        return;
+                    }
+                    submitBtn.disabled = true;
+                    const { ok, data } = await apiCreateAdmin(name, email, password);
+                    submitBtn.disabled = false;
+                    if (ok) {
+                        showToast('Admin created successfully', 'success');
+                        modal.style.display = 'none';
+                        // Refresh users list
+                        await loadUsers(1);
+                    } else {
+                        showToast(data.error || 'Failed to create admin', 'error');
+                    }
+                });
+            }
+
             await loadPendingCompanies();
-            await loadAdminStats();
+            await loadUsers(1);
         });
 
         async function loadAdminStats() {
@@ -334,7 +321,10 @@
 
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading pending company registrations…</td></tr>`;
 
-            const { ok, data } = await apiGetPendingCompanies();
+            const searchInput = document.getElementById('company-search-input');
+            const searchTerm = searchInput ? (searchInput.value || '').trim() : '';
+
+            const { ok, data } = await apiGetPendingCompanies(searchTerm);
 
             if (!ok) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#DC2626;">Failed to load pending companies. (Requires admin login session)</td></tr>`;
@@ -365,6 +355,83 @@
             `).join('');
         }
 
+        async function loadUsers(page = 1) {
+            const tbody = document.getElementById('users-tbody');
+            const countEl = document.getElementById('users-count');
+            const paginationEl = document.getElementById('users-pagination');
+            if (!tbody) return;
+
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading users…</td></tr>`;
+
+            const searchInput = document.getElementById('company-search-input');
+            // reuse same search box — it's top-level for admin page
+            const searchTerm = searchInput ? (searchInput.value || '').trim() : '';
+
+            const per_page = 5;
+            const { ok, data } = await apiGetUsers(page, searchTerm, per_page);
+
+            if (!ok) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#DC2626;">Failed to load users. (Requires admin login)</td></tr>`;
+                return;
+            }
+
+            const users = data.users || [];
+            const total = data.total || 0;
+            const currentPage = data.page || page;
+            const perPage = data.per_page || per_page;
+
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">No users found.</td></tr>`;
+            } else {
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td>
+                            <div style="font-weight:600;">${escapeHtml(u.name)}</div>
+                            <div style="font-size:11px;color:#9CA3AF;">${escapeHtml(u.email)}</div>
+                        </td>
+                        <td><span class="role-pill">${escapeHtml(u.role)}</span></td>
+                        <td>${u.is_active ? '<span class="status-dot dot-active"></span>Active' : '<span class="status-dot dot-suspended"></span>Suspended'}</td>
+                        <td>${(u.created_at || '').split('T')[0] || 'Recently'}</td>
+                        <td>
+                            ${u.is_active ? (`<button onclick="event.preventDefault(); handleRevoke('${u.type}', ${u.id})" style="background:transparent;border:none;color:#DB2777;font-weight:600;cursor:pointer;">Revoke Access</button>`) : (`<button onclick="event.preventDefault(); handleRestore('${u.type}', ${u.id})" style="background:transparent;border:none;color:#0B84A5;font-weight:600;cursor:pointer;">Restore Access</button>`)}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Update count text
+            const start = total === 0 ? 0 : (currentPage - 1) * perPage + 1;
+            const end = Math.min(total, (currentPage - 1) * perPage + users.length);
+            if (countEl) countEl.textContent = `Showing ${start} - ${end} of ${total} users`;
+
+            // Render pagination (simple numbered pagination up to maxPages)
+            if (paginationEl) {
+                const maxPages = Math.max(1, Math.ceil(total / perPage));
+                const pages = [];
+                // show up to 7 page links with ellipses
+                const window = 3; // pages before/after current
+                const first = 1;
+                const last = maxPages;
+
+                const lower = Math.max(first, currentPage - window);
+                const upper = Math.min(last, currentPage + window);
+
+                if (lower > first) pages.push({ type: 'page', n: first });
+                if (lower > first + 1) pages.push({ type: 'dots' });
+
+                for (let i = lower; i <= upper; i++) pages.push({ type: 'page', n: i });
+
+                if (upper < last - 1) pages.push({ type: 'dots' });
+                if (upper < last) pages.push({ type: 'page', n: last });
+
+                paginationEl.innerHTML = pages.map(p => {
+                    if (p.type === 'dots') return `<span>...</span>`;
+                    if (p.n === currentPage) return `<a href="#" class="page-num active">${p.n}</a>`;
+                    return `<a href="#" class="page-num" onclick="event.preventDefault(); loadUsers(${p.n})">${p.n}</a>`;
+                }).join(' ');
+            }
+        }
+
         async function handleApprove(companyId) {
             const { ok, data } = await apiApproveCompany(companyId);
             if (ok) {
@@ -390,6 +457,38 @@
             const div = document.createElement('div');
             div.textContent = str || '';
             return div.innerHTML;
+        }
+
+        async function handleRevoke(type, id) {
+            if (!confirm('Are you sure you want to revoke access for this account?')) return;
+            let res;
+            if (type === 'user') res = await apiRevokeUser(id);
+            else if (type === 'company') res = await apiRevokeCompany(id);
+            else return showToast('Unknown account type', 'error');
+
+            if (res.ok) {
+                showToast('Account revoked', 'success');
+                // reload current page of users
+                const currentPage = parseInt(document.querySelector('#users-pagination .page-num.active')?.textContent || '1', 10) || 1;
+                await loadUsers(currentPage);
+            } else {
+                showToast(res.data?.error || 'Failed to revoke account', 'error');
+            }
+        }
+
+        async function handleRestore(type, id) {
+            let res;
+            if (type === 'user') res = await apiRestoreUser(id);
+            else if (type === 'company') res = await apiRestoreCompany(id);
+            else return showToast('Unknown account type', 'error');
+
+            if (res.ok) {
+                showToast('Account restored', 'success');
+                const currentPage = parseInt(document.querySelector('#users-pagination .page-num.active')?.textContent || '1', 10) || 1;
+                await loadUsers(currentPage);
+            } else {
+                showToast(res.data?.error || 'Failed to restore account', 'error');
+            }
         }
     </script>
 </body>

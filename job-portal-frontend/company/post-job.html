@@ -283,6 +283,16 @@
                         </div>
                     </div>
 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Closing Date (optional)</label>
+                            <input type="datetime-local" id="job-closing-date" placeholder="Closing date (optional)">
+                        </div>
+                        <div class="form-group">
+                            <!-- spacer to keep layout consistent -->
+                        </div>
+                    </div>
+
                     <!-- Step 3 -->
                     <div class="section-header-step">
                         <span class="step-num">3</span>
@@ -328,6 +338,7 @@
                 const location    = document.getElementById('job-location').value.trim();
                 const salary      = document.getElementById('job-salary').value.trim();
                 const description = document.getElementById('job-description').value.trim();
+                const closing_date = (document.getElementById('job-closing-date').value || '').trim() || null;
 
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Publishing…';
@@ -338,6 +349,7 @@
                     location,
                     salary,
                     description
+                    , closing_date
                 });
 
                 if (ok) {

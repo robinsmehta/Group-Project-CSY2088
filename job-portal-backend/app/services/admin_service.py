@@ -22,22 +22,32 @@
 # zero orphaned rows remain in the database.
 # ============================================================
 
-from app.extensions import db
+from app.extensions import db, bcrypt
 from app.models.user import User
 from app.models.company import Company
 from app.models.job import Job
 from app.models.application import Application
+from app.models.admin import Admin
 
 
-def get_pending_companies():
+def get_pending_companies(search: str = None):
     """
-    Retrieve all companies with status = 'pending'.
+    Retrieve companies with status = 'pending'. Optionally filter by a search
+    term matching `company_name` or `email` (case-insensitive substring match).
+
+    Args:
+        search (str, optional): Search term to filter company_name or email.
 
     Returns:
         tuple: (response_dict, http_status_code)
                200 OK with list of pending company dicts (including name, email, description, created_at).
     """
-    pending_companies = Company.query.filter_by(status='pending').all()
+    q = Company.query.filter_by(status='pending')
+    if search:
+        term = f"%{search}%"
+        q = q.filter((Company.company_name.ilike(term)) | (Company.email.ilike(term)))
+
+    pending_companies = q.all()
     companies_data = [company.to_dict() for company in pending_companies]
 
     return {'companies': companies_data}, 200
@@ -224,3 +234,145 @@ def get_admin_stats():
             'pending_companies': pending_companies
         }
     }, 200
+
+
+def get_users(page: int = 1, per_page: int = 10, search: str = None):
+    """
+    Retrieve a combined list of users and companies for the admin user directory.
+
+    Supports pagination and optional case-insensitive search against name/company_name and email.
+
+    Args:
+        page (int): 1-based page number.
+        per_page (int): Number of items per page.
+        search (str, optional): Search term to filter by name or email.
+
+    Returns:
+        tuple: (response_dict, http_status_code)
+               200 OK with paginated list and total count:
+               { 'users': [...], 'total': N, 'page': page, 'per_page': per_page }
+    """
+    page = max(1, int(page or 1))
+    per_page = max(1, int(per_page or 10))
+
+    # Query Users (job seekers)
+    u_q = User.query
+    if search:
+        term = f"%{search}%"
+        u_q = u_q.filter((User.name.ilike(term)) | (User.email.ilike(term)))
+    users = [
+        {
+            'id': u.id,
+            'name': u.name,
+            'email': u.email,
+            'role': 'Job Seeker',
+            'type': 'user',
+            'is_active': bool(u.is_active),
+            'created_at': u.created_at.isoformat() if u.created_at else None
+        }
+        for u in u_q.all()
+    ]
+
+    # Query Companies (employers)
+    c_q = Company.query
+    if search:
+        term = f"%{search}%"
+        c_q = c_q.filter((Company.company_name.ilike(term)) | (Company.email.ilike(term)))
+    companies = [
+        {
+            'id': c.id,
+            'name': c.company_name,
+            'email': c.email,
+            'role': 'Employer',
+            'type': 'company',
+            'is_active': bool(c.is_active),
+            'created_at': c.created_at.isoformat() if c.created_at else None
+        }
+        for c in c_q.all()
+    ]
+
+    # Combine and sort by created_at desc (newest first)
+    combined = users + companies
+    combined.sort(key=lambda x: x.get('created_at') or '', reverse=True)
+
+    total = len(combined)
+    start = (page - 1) * per_page
+    end = start + per_page
+    page_items = combined[start:end]
+
+    return {
+        'users': page_items,
+        'total': total,
+        'page': page,
+        'per_page': per_page
+    }, 200
+
+
+def create_admin(name: str, email: str, password: str):
+    """
+    Create a new Admin account. Protected admin-only action.
+
+    Args:
+        name (str): Admin display name
+        email (str): Admin email
+        password (str): Plain text password
+
+    Returns:
+        tuple: (response_dict, http_status_code)
+    """
+    name = (name or '').strip()
+    email = (email or '').strip().lower()
+    password = password or ''
+
+    if not name or not email or not password:
+        return {'error': 'Name, email, and password are required fields'}, 400
+
+    existing = Admin.query.filter_by(email=email).first()
+    if existing:
+        return {'error': 'Email is already registered'}, 409
+
+    hashed = bcrypt.generate_password_hash(password).decode('utf-8')
+    admin = Admin(name=name, email=email, password_hash=hashed)
+    db.session.add(admin)
+    db.session.commit()
+
+    return {'message': 'Admin account created', 'admin': admin.to_dict()}, 201
+
+
+def revoke_user(user_id: int):
+    """
+    Set user's is_active = False
+    """
+    user = db.session.get(User, user_id)
+    if not user:
+        return {'error': 'User not found'}, 404
+    user.is_active = False
+    db.session.commit()
+    return {'message': 'User revoked', 'user': user.to_dict()}, 200
+
+
+def restore_user(user_id: int):
+    user = db.session.get(User, user_id)
+    if not user:
+        return {'error': 'User not found'}, 404
+    user.is_active = True
+    db.session.commit()
+    return {'message': 'User restored', 'user': user.to_dict()}, 200
+
+
+def revoke_company(company_id: int):
+    company = db.session.get(Company, company_id)
+    if not company:
+        return {'error': 'Company not found'}, 404
+    company.is_active = False
+    db.session.commit()
+    return {'message': 'Company revoked', 'company': company.to_dict()}, 200
+
+
+def restore_company(company_id: int):
+    company = db.session.get(Company, company_id)
+    if not company:
+        return {'error': 'Company not found'}, 404
+    company.is_active = True
+    db.session.commit()
+    return {'message': 'Company restored', 'company': company.to_dict()}, 200

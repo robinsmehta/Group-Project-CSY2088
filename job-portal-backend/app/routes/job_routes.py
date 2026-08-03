@@ -139,7 +139,7 @@ def update_job(job_id):
     company_id = session.get('company_id') or session.get('user_id')
     data = request.get_json(silent=True) or {}
 
-    updatable_fields = ['title', 'description', 'location', 'category', 'salary']
+    updatable_fields = ['title', 'description', 'location', 'category', 'salary', 'closing_date']
     provided_updates = {k: v for k, v in data.items() if k in updatable_fields}
 
     if not provided_updates:

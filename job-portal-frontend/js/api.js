@@ -72,6 +72,10 @@ async function apiDeleteJob(jobId) {
     return apiFetch(`/jobs/${jobId}`, { method: 'DELETE' });
 }
 
+async function apiUpdateJob(jobId, jobData) {
+    return apiFetch(`/jobs/${jobId}`, { method: 'PUT', body: jobData });
+}
+
 // ===========================================================================
 // APPLICATIONS
 // ===========================================================================
@@ -102,8 +106,40 @@ async function apiUpdateApplicationStatus(applicationId, status) {
 // ADMIN
 // ===========================================================================
 
-async function apiGetPendingCompanies() {
-    return apiFetch('/admin/companies/pending');
+async function apiGetPendingCompanies(search) {
+    const qs = new URLSearchParams();
+    if (search) qs.set('search', search);
+    const query = qs.toString() ? `?${qs.toString()}` : '';
+    return apiFetch(`/admin/companies/pending${query}`);
+}
+
+async function apiGetUsers(page = 1, search, per_page) {
+    const qs = new URLSearchParams();
+    if (page) qs.set('page', String(page));
+    if (per_page) qs.set('per_page', String(per_page));
+    if (search) qs.set('search', search);
+    const query = qs.toString() ? `?${qs.toString()}` : '';
+    return apiFetch(`/admin/users${query}`);
+}
+
+async function apiCreateAdmin(name, email, password) {
+    return apiFetch('/admin/admins', { method: 'POST', body: { name, email, password } });
+}
+
+async function apiRevokeUser(userId) {
+    return apiFetch(`/admin/users/${userId}/revoke`, { method: 'PUT' });
+}
+
+async function apiRestoreUser(userId) {
+    return apiFetch(`/admin/users/${userId}/restore`, { method: 'PUT' });
+}
+
+async function apiRevokeCompany(companyId) {
+    return apiFetch(`/admin/companies/${companyId}/revoke`, { method: 'PUT' });
+}
+
+async function apiRestoreCompany(companyId) {
+    return apiFetch(`/admin/companies/${companyId}/restore`, { method: 'PUT' });
 }
 
 async function apiApproveCompany(companyId) {

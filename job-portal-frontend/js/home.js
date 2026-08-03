@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function setHomeCtaLinks() {
     document.getElementById('hero-browse-jobs')?.setAttribute('href', resolveSitePath('jobs/listing.html'));
+    document.getElementById('hero-get-started')?.setAttribute('href', resolveSitePath('auth/register.html'));
     document.getElementById('view-all-jobs')?.setAttribute('href', resolveSitePath('jobs/listing.html'));
     document.getElementById('role-seeker-link')?.setAttribute('href', `${resolveSitePath('auth/register.html')}?role=seeker`);
     document.getElementById('role-employer-link')?.setAttribute('href', `${resolveSitePath('auth/register.html')}?role=employer`);

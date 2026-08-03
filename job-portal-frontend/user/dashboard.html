@@ -102,7 +102,8 @@
             background: white;
             border-radius: 16px;
             padding: 16px;
-            min-height: 200px;
+            min-height: 220px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
         }
 
         .kanban-column-header {
@@ -112,6 +113,23 @@
             margin-bottom: 16px;
             padding-bottom: 12px;
             border-bottom: 1px solid #F3F4F6;
+        }
+
+        .kanban-note {
+            font-size: 13px;
+            color: #52525B;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .kanban-card {
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+            cursor: default;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         }
 
         .kanban-column-header span:first-child {
@@ -190,8 +208,10 @@
             <!-- Kanban Board Section -->
             <div class="kanban-section" id="applications">
                 <div class="kanban-header">
-                    <h2>Application Status Board</h2>
-                    <span style="font-size:13px; color:#64748B;">Drag and drop cards between columns to update application status</span>
+                    <div>
+                        <h2>Application Status Board</h2>
+                        <p class="kanban-note">Your application progress is updated by hiring teams. This board reflects current status only and cannot be changed from your dashboard.</p>
+                    </div>
                 </div>
 
                 <div class="kanban-board">
@@ -268,7 +288,7 @@
             renderNavbar('dashboard');
             renderFooter();
 
-            // Load & Initialize Kanban Board from real API
+            // Load & render the candidate application board in read-only mode
             await initKanbanBoard();
         });
 
@@ -330,7 +350,6 @@
             if (document.getElementById('stat-offered')) document.getElementById('stat-offered').textContent = offered;
 
             renderKanbanCards(apps);
-            setupDragAndDrop();
         }
 
         function renderKanbanCards(apps) {
@@ -352,7 +371,6 @@
 
                 const card = document.createElement('div');
                 card.className = 'kanban-card';
-                card.draggable = true;
                 card.dataset.id = app.id;
                 card.dataset.status = st;
 
@@ -380,59 +398,26 @@
             document.getElementById('stat-offered').textContent = counts.offered;
         }
 
-        function setupDragAndDrop() {
-            const columns = document.querySelectorAll('.kanban-column');
-            let draggedCard = null;
-
-            document.addEventListener('dragstart', (e) => {
-                if (e.target.classList.contains('kanban-card')) {
-                    draggedCard = e.target;
-                    e.target.classList.add('dragging');
-                    e.dataTransfer.setData('text/plain', e.target.dataset.id);
-                }
-            });
-
-            document.addEventListener('dragend', (e) => {
-                if (draggedCard) {
-                    draggedCard.classList.remove('dragging');
-                    draggedCard = null;
-                }
-                columns.forEach(col => col.classList.remove('drag-over'));
-            });
-
-            columns.forEach(column => {
-                column.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    column.classList.add('drag-over');
-                });
-
-                column.addEventListener('dragleave', () => {
-                    column.classList.remove('drag-over');
-                });
-
-                column.addEventListener('drop', async (e) => {
-                    e.preventDefault();
-                    column.classList.remove('drag-over');
-                    const targetStatus = column.dataset.status;
-
-                    if (draggedCard && targetStatus) {
-                        const appId = parseInt(draggedCard.dataset.id, 10);
-                        let apps = getApplicationsState();
-                        const app = apps.find(a => a.id === appId);
-
-                        if (app && app.status !== targetStatus) {
-                            app.status = targetStatus;
-                            saveApplicationsState(apps);
-                            renderKanbanCards(apps);
-                            showToast(`Application updated to ${targetStatus.replace(/_/g, ' ')}`, 'success');
-                            
-                            try {
-                                await apiUpdateApplicationStatus(appId, targetStatus);
-                            } catch (_) {}
-                        }
-                    }
-                });
-            });
+        function createStatusBadge(status) {
+            const labels = {
+                applied: 'Applied',
+                under_review: 'Under Review',
+                interview_scheduled: 'Interview Scheduled',
+                shortlisted: 'Shortlisted',
+                offered: 'Offered',
+                rejected: 'Rejected'
+            };
+            const classes = {
+                applied: 'status-badge-applied',
+                under_review: 'status-badge-under-review',
+                interview_scheduled: 'status-badge-interview',
+                shortlisted: 'status-badge-shortlisted',
+                offered: 'status-badge-offered',
+                rejected: 'status-badge-rejected'
+            };
+            const label = labels[status] || status.replace(/_/g, ' ');
+            const cls = classes[status] || 'status-badge-default';
+            return `<span class="status-badge ${cls}">${escapeHtml(label)}</span>`;
         }
 
         function escapeHtml(str) {

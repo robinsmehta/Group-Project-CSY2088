@@ -208,6 +208,12 @@ def login(email, password=None, role=None):
     if not bcrypt.check_password_hash(account.password_hash, password):
         return {'error': 'Invalid email or password'}, 401
 
+    # Prevent login if account has been suspended (users and companies only)
+    if role in ('user', 'company'):
+        is_active = getattr(account, 'is_active', None)
+        if is_active is False:
+            return {'error': 'This account has been suspended. Contact support.'}, 403
+
     # -------------------------------------------------------------------------
     # 4. STORE IDENTITY AND ROLE IN FLASK SESSION
     #
