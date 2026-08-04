@@ -134,7 +134,7 @@
         }
 
         .listing-title span {
-            color: #9333EA;
+            color: #DB2777;
         }
 
         .listing-subtitle {
@@ -473,56 +473,27 @@
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                     </div>
 
-                    <div class="filter-section">
+                    <div class="filter-section" data-filter="category">
                         <div class="filter-title">Job Category</div>
                         <div class="filter-options">
                             <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox" checked> Design</div>
-                                <span class="count">142</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox"> Development</div>
-                                <span class="count">320</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox"> Marketing</div>
-                                <span class="count">89</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox"> Business</div>
-                                <span class="count">54</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox"> Product Science</div>
-                                <span class="count">112</span>
+                                <div class="checkbox-left"><input type="checkbox"> Loading…</div>
                             </label>
                         </div>
                     </div>
 
-                    <div class="filter-section">
+                    <div class="filter-section" data-filter="type">
                         <div class="filter-title">Job Type</div>
                         <div class="filter-options">
                             <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox" checked> Full-time</div>
-                            </label>
-                            <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox"> Part-time</div>
-                            </label>
-                            <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox" checked> Remote</div>
-                            </label>
-                            <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox"> Contract</div>
-                            </label>
-                            <label class="checkbox-label">
-                                <div class="checkbox-left"><input type="checkbox"> Freelance</div>
+                                <div class="checkbox-left"><input type="checkbox"> Loading…</div>
                             </label>
                         </div>
                     </div>
 
                     <div class="filter-section" style="border: none;">
                         <div class="filter-title">Salary Range</div>
-                        <input type="range" class="range-slider" min="0" max="200000" value="100000">
+                        <input type="range" class="range-slider" min="0" max="200000" value="200000">
                         <div class="range-values">
                             <span>$0k</span>
                             <span>$100k</span>
@@ -616,8 +587,8 @@
                 if (s && s > highestSalary) highestSalary = s;
             });
 
-            const catContainer = document.querySelector('.filter-section:nth-of-type(1) .filter-options');
-            const typeContainer = document.querySelector('.filter-section:nth-of-type(2) .filter-options');
+            const catContainer = document.querySelector('.filter-section[data-filter="category"] .filter-options');
+            const typeContainer = document.querySelector('.filter-section[data-filter="type"] .filter-options');
             if (catContainer) {
                 catContainer.innerHTML = Array.from(catMap.entries()).map(([c, count]) => {
                     const id = `cat-${cssSafe(c)}`;
@@ -640,7 +611,9 @@
             if (slider) {
                 const maxVal = highestSalary ? Math.ceil(highestSalary / 1000) * 1000 : 200000;
                 slider.max = maxVal;
-                if (!slider.value) slider.value = Math.min(maxVal, 100000);
+                // Default to the top of the range so no jobs are hidden until the
+                // user deliberately drags the slider down.
+                slider.value = maxVal;
                 if (rangeValues) {
                     const mid = Math.round(Number(slider.value) / 1000);
                     const span = rangeValues.querySelector('span:nth-child(2)');
@@ -669,11 +642,11 @@
             grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;">Loading…</div>`;
 
             // Collect filter selections (use data-value on inputs)
-            const selectedCategories = Array.from(document.querySelectorAll('.filter-section:nth-of-type(1) .filter-options input[type="checkbox"]'))
+            const selectedCategories = Array.from(document.querySelectorAll('.filter-section[data-filter="category"] .filter-options input[type="checkbox"]'))
                 .filter(i => i.checked)
                 .map(i => i.dataset.value);
 
-            const selectedJobTypes = Array.from(document.querySelectorAll('.filter-section:nth-of-type(2) .filter-options input[type="checkbox"]'))
+            const selectedJobTypes = Array.from(document.querySelectorAll('.filter-section[data-filter="type"] .filter-options input[type="checkbox"]'))
                 .filter(i => i.checked)
                 .map(i => i.dataset.value);
 
@@ -737,6 +710,7 @@
             const salary   = job.salary ? `<span class="salary-amount">${escapeHtml(job.salary)}</span>` : '';
             const posted   = timeAgo(job.created_at);
             const category = job.category ? `<span class="meta-tag">🏷 ${escapeHtml(job.category)}</span>` : '';
+            const jobType  = job.job_type ? `<span class="meta-tag">💼 ${escapeHtml(job.job_type)}</span>` : '';
             return `
                 <div class="job-card">
                     <div class="job-card-top">
@@ -744,6 +718,7 @@
                         <div class="job-card-company">${company} • ${location}</div>
                         <div class="job-details-meta">
                             ${category}
+                            ${jobType}
                             <span class="meta-tag">🕒 ${posted}</span>
                         </div>
                     </div>

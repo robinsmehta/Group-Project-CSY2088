@@ -13,7 +13,22 @@ async function apiFetch(path, options = {}) {
         merged.headers = { 'Content-Type': 'application/json', ...(merged.headers || {}) };
         merged.body = JSON.stringify(merged.body);
     }
-    const res = await fetch(url, merged);
+    let res;
+    try {
+        res = await fetch(url, merged);
+    } catch (networkErr) {
+        // Network failure (backend unreachable, CORS block, offline, etc.)
+        // Return the same {ok,status,data} shape callers already expect instead
+        // of throwing, so every page's existing "couldn't load" fallback runs
+        // instead of leaving the UI stuck on its loading state forever.
+        console.warn(`[API] Network error calling ${url}:`, networkErr.message);
+        return {
+            ok: false,
+            status: 0,
+            data: { error: 'Could not reach the server. Please check your connection and try again.' }
+        };
+    }
+
     let data;
     try { data = await res.json(); } catch (_) { data = {}; }
 

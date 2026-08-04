@@ -52,6 +52,9 @@ class Job(db.Model):
     # TODO: You could turn this into an ENUM or a separate table later
     category = db.Column(db.String(100), nullable=True)
 
+    # Employment type (e.g., "Full-time", "Part-time", "Remote", "Contract", "Freelance")
+    job_type = db.Column(db.String(50), nullable=True)
+
     # Expected salary (e.g., "£40,000 - £50,000 per year")
     # Stored as a string for flexibility (ranges, "Negotiable", etc.)
     salary = db.Column(db.String(100), nullable=True)
@@ -122,6 +125,7 @@ class Job(db.Model):
             'description':       self.description,
             'location':          self.location,
             'category':          self.category,
+            'job_type':          self.job_type,
             'salary':            self.salary,
             'closing_date':      self.closing_date.isoformat() if self.closing_date else None,
             'status':            computed_status,

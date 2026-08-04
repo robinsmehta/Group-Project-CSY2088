@@ -258,10 +258,12 @@
                         <div class="form-group">
                             <label>Employment Type *</label>
                             <select id="job-type" required>
-                                <option value="">Full-time / Part-time</option>
+                                <option value="">Select employment type</option>
                                 <option value="Full-time">Full-time</option>
                                 <option value="Part-time">Part-time</option>
+                                <option value="Remote">Remote</option>
                                 <option value="Contract">Contract</option>
+                                <option value="Freelance">Freelance</option>
                             </select>
                         </div>
                     </div>
@@ -335,6 +337,7 @@
 
                 const title       = document.getElementById('job-title').value.trim();
                 const category    = document.getElementById('job-category').value;
+                const job_type    = document.getElementById('job-type').value;
                 const location    = document.getElementById('job-location').value.trim();
                 const salary      = document.getElementById('job-salary').value.trim();
                 const description = document.getElementById('job-description').value.trim();
@@ -346,6 +349,7 @@
                 const { ok, data } = await apiCreateJob({
                     title,
                     category,
+                    job_type,
                     location,
                     salary,
                     description

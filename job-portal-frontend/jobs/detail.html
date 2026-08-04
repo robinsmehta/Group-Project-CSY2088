@@ -273,6 +273,12 @@
             margin-bottom: 24px;
         }
 
+        .btn-already-applied {
+            background: #E5E7EB;
+            color: #4B5563;
+            cursor: not-allowed;
+        }
+
         .sidebar-meta-list {
             display: flex;
             flex-direction: column;
@@ -395,6 +401,23 @@
             }
 
             renderJobDetail(job);
+
+            // If a logged-in job seeker has already applied to this job, reflect
+            // that in the Apply button instead of letting them submit a duplicate.
+            const currentUser = getLoggedInUser();
+            if (currentUser && currentUser.role === 'user') {
+                const { ok: mok, data: mdata } = await apiGetMyApplications();
+                const alreadyApplied = mok && Array.isArray(mdata.applications) &&
+                    mdata.applications.some(a => String(a.job_id) === String(currentJobId));
+                if (alreadyApplied) {
+                    const btn = document.getElementById('open-apply-btn');
+                    if (btn) {
+                        btn.textContent = '✓ Already Applied';
+                        btn.disabled = true;
+                        btn.classList.add('btn-already-applied');
+                    }
+                }
+            }
 
             // Modal controls
             document.getElementById('close-modal').addEventListener('click', () => modal.style.display = 'none');
