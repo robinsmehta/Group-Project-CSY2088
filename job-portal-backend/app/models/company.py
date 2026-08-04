@@ -60,6 +60,10 @@ class Company(db.Model):
         nullable=False
     )
 
+    # Active flag separate from `status` (approved/pending/rejected)
+    # `is_active` allows admins to suspend an otherwise-approved company.
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
     # --- Relationships ---
 
     # One Company → Many Jobs
@@ -86,4 +90,5 @@ class Company(db.Model):
             'description':  self.description,
             'status':       self.status,
             'created_at':   self.created_at.isoformat() if self.created_at else None,
+            'is_active':    bool(self.is_active)
         }

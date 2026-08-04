@@ -2,5 +2,6 @@
     "python.defaultInterpreterPath": "${workspaceFolder}/job-portal-backend/venv/bin/python",
     "python.analysis.extraPaths": [
         "${workspaceFolder}/job-portal-backend"
-    ]
+    ],
+    "liveServer.settings.port": 5501
 }

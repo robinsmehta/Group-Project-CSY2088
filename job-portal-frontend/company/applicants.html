@@ -1,47 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Applicants — Job Portal</title>
-    <link rel="stylesheet" href="../css/style.css" />
-    <link rel="stylesheet" href="../css/dashboard.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireMe — Applicant Review</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Applicant-specific styles that don't conflict with shared CSS */
+        .applicant-hero {
+            background: linear-gradient(180deg, #FFF5F7 0%, #F8F9FB 100%);
+            padding: 50px 0 30px;
+            text-align: center;
+        }
+
+        .applicant-hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .applicant-hero p {
+            font-size: 13px;
+            color: #6B7280;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .applicant-body {
+            padding: 30px 0 80px;
+        }
+
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-shortlisted { background: #F3E8FF; color: #7E22CE; }
+        .status-interview { background: #FEF3C7; color: #D97706; }
+        .status-reviewing { background: #E0F2FE; color: #0369A1; }
+        .status-pending { background: #F3F4F6; color: #6B7280; }
+        .status-rejected { background: #FEE2E2; color: #B91C1C; }
+
+        .action-icon-btn {
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #E5E7EB;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- TODO: Add shared navbar here -->
-    <header id="navbar"></header>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar"></nav>
 
-    <main>
-        <!--
-            APPLICANTS PAGE (Company only)
-            Shows all applicants who applied to a specific job listing.
-            TODO: Read the job_id from the URL query string: ?job_id=<id>
-
-            TODO: Fetch applicants via GET /api/jobs/<id>/applications using applications.js.
-                  Display each applicant with: name, email, resume download link, current status.
-
-            TODO: For each applicant, add a status dropdown or buttons to change their
-                  application status: applied → under_review → shortlisted / rejected.
-                  Calls PUT /api/applications/<id>/status via applications.js.
-        -->
-
-        <h1>Applicants</h1>
-        <p id="job-title-display">
-            <!-- TODO: Show the job title here, e.g. "Applicants for: Software Engineer" -->
-        </p>
-
-        <div id="applicants-list">
-            <!-- TODO: Applicant rows will be rendered here by applications.js -->
+    <!-- Applicant Hero -->
+    <section class="applicant-hero">
+        <div class="container">
+            <h1>Review Your Talent</h1>
+            <p>Manage, evaluate, and communicate with applicants across all your active job postings from one centralized scorecard.</p>
         </div>
-    </main>
+    </section>
 
-    <!-- TODO: Add shared footer here -->
-    <footer id="footer"></footer>
+    <!-- Applicant Body -->
+    <div class="applicant-body">
+        <div class="container">
+            <div class="table-card">
+                <div class="table-toolbar">
+                    <div class="toolbar-title">Applicant List</div>
+                    <div class="search-input-box">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" placeholder="Search applicants...">
+                    </div>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Applicant Name</th>
+                            <th>Role</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicants-tbody">
+                        <tr>
+                            <td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading applicants…</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer"></footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
-    <script src="../js/applications.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await redirectIfNotLoggedIn('company');
+            renderNavbar('applicants');
+            renderFooter();
 
+            await loadApplicants();
+        });
+
+        async function loadApplicants() {
+            const tbody = document.getElementById('applicants-tbody');
+            const user = getLoggedInUser();
+            
+            // 1. Get all jobs posted by company
+            const { ok: jobsOk, data } = await apiGetJobs();
+            const jobs = jobsOk ? (data.jobs || (Array.isArray(data) ? data : [])) : [];
+            if (!jobsOk || jobs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">No active job postings found. Post a job first to receive applications.</td></tr>`;
+                return;
+            }
+
+            // Filter jobs to only show this company's jobs
+            const companyJobs = jobs.filter(job => job.company_id === user.id || job.company_id === user.company_id);
+            if (companyJobs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">No active job postings found. Post a job first to receive applications.</td></tr>`;
+                return;
+            }
+
+            // 2. Fetch applicants for each job
+            let allApplicants = [];
+            for (const job of companyJobs) {
+                const { ok, data } = await apiGetJobApplicants(job.id);
+                const applications = ok ? (data?.applications || []) : [];
+                if (applications.length) {
+                    applications.forEach(app => {
+                        allApplicants.push({
+                            ...app,
+                            job_title: job.title
+                        });
+                    });
+                }
+            }
+
+            if (allApplicants.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">No candidates have applied to your jobs yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = allApplicants.map(app => `
+                <tr style="border-bottom:1px solid #F3F4F6;">
+                    <td style="padding:16px 24px;">
+                        <div class="user-name-cell">${escapeHtml(app.applicant_name || app.user?.name || app.user_name || 'Applicant #' + app.user_id)}</div>
+                        <div class="user-email-cell">${escapeHtml(app.applicant_email || app.user?.email || app.user_email || '')}</div>
+                    </td>
+                    <td style="padding:16px 24px;font-size:13px;">${escapeHtml(app.job_title)}</td>
+                    <td style="padding:16px 24px;font-size:13px;color:#6B7280;">${(app.applied_at || app.created_at || '').split('T')[0] || 'Recently'}</td>
+                    <td style="padding:16px 24px;">
+                        <select onchange="handleStatusChange(${app.id}, this.value)" style="padding:4px 8px;border-radius:8px;border:1px solid #D1D5DB;font-size:12px;font-weight:600;">
+                            <option value="applied" ${app.status === 'applied' ? 'selected' : ''}>Applied</option>
+                            <option value="under_review" ${app.status === 'under_review' ? 'selected' : ''}>Under Review</option>
+                            <option value="shortlisted" ${app.status === 'shortlisted' ? 'selected' : ''}>Shortlisted</option>
+                            <option value="rejected" ${app.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                        </select>
+                    </td>
+                    <td style="padding:16px 24px;">
+                        ${app.resume_url ? `<a href="${API_BASE_URL.replace('/api', '')}${app.resume_url}" target="_blank" class="action-icon-btn" title="Download Resume" style="text-decoration:none;display:inline-block;">📥 Resume</a>` : '<span style="font-size:12px;color:#9CA3AF;">No file</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function handleStatusChange(appId, newStatus) {
+            const { ok, data } = await apiUpdateApplicationStatus(appId, newStatus);
+            if (ok) {
+                showToast('Status updated successfully!', 'success');
+            } else {
+                showToast(data.error || 'Failed to update status.', 'error');
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+    </script>
 </body>
 </html>

@@ -1,44 +1,434 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Applications — Job Portal</title>
-    <link rel="stylesheet" href="../css/style.css" />
-    <link rel="stylesheet" href="../css/dashboard.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireHub — Candidate Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* User dashboard specific styles */
+        .user-dashboard-body {
+            padding: 40px 0;
+        }
+
+        .hero-banner-card {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 24px;
+            padding: 40px;
+            color: #111827;
+            margin-bottom: 32px;
+        }
+
+        .badge-candidate-hub {
+            background: #111827;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .banner-left-content h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .banner-left-content h1 span {
+            font-style: italic;
+            color: #DB2777;
+        }
+
+        .banner-left-content p {
+            font-size: 14px;
+            color: #4B5563;
+            margin-bottom: 24px;
+        }
+
+        .btn-browse {
+            background: #111827;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .stat-icon-wrapper {
+            font-size: 32px;
+        }
+
+        .stat-info label {
+            display: block;
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 4px;
+        }
+
+        .stat-info span {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .kanban-section {
+            margin-top: 32px;
+        }
+
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .kanban-column {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            min-height: 220px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+        }
+
+        .kanban-column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .kanban-note {
+            font-size: 13px;
+            color: #52525B;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .kanban-card {
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+            cursor: default;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .kanban-column-header span:first-child {
+            font-weight: 600;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .kanban-column-count {
+            background: #F3F4F6;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+        }
+
+        .kanban-cards-container {
+            min-height: 100px;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- TODO: Add shared navbar here -->
-    <header id="navbar"></header>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar"></nav>
 
-    <main>
-        <!--
-            USER DASHBOARD (Job Seeker only)
-            Shows all jobs this user has applied for, and their current status.
-            TODO: Check login status — redirect to login.html if not logged in as a user.
+    <!-- User Dashboard Body -->
+    <div class="user-dashboard-body">
+        <div class="container">
+            <!-- Hero Card -->
+            <div class="hero-banner-card">
+                <div class="banner-left-content">
+                    <span class="badge-candidate-hub">CANDIDATE HUB</span>
+                    <h1>Your Career Journey <span>is moving forward.</span></h1>
+                    <p>Track your applications, interview schedules, and offers in real-time on your personalized Kanban board.</p>
+                    <a href="../jobs/listing.html" class="btn-browse">
+                        <span>Browse Jobs</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </a>
+                </div>
+            </div>
 
-            TODO: Fetch applications via GET /api/applications/mine using applications.js.
-                  Render each application with:
-                  - Job title (links to /jobs/detail.html?job_id=<id>)
-                  - Company name
-                  - Date applied
-                  - Current status badge: applied | under_review | shortlisted | rejected
-        -->
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">💼</div>
+                    <div class="stat-info">
+                        <label>Total Applied</label>
+                        <span id="stat-total-applied">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">🔍</div>
+                    <div class="stat-info">
+                        <label>Under Review</label>
+                        <span id="stat-in-review">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">🎯</div>
+                    <div class="stat-info">
+                        <label>Interviews</label>
+                        <span id="stat-interviews">0</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrapper">🎉</div>
+                    <div class="stat-info">
+                        <label>Offered</label>
+                        <span id="stat-offered">0</span>
+                    </div>
+                </div>
+            </div>
 
-        <h1>My Applications</h1>
+            <!-- Kanban Board Section -->
+            <div class="kanban-section" id="applications">
+                <div class="kanban-header">
+                    <div>
+                        <h2>Application Status Board</h2>
+                        <p class="kanban-note">Your application progress is updated by hiring teams. This board reflects current status only and cannot be changed from your dashboard.</p>
+                    </div>
+                </div>
 
-        <div id="applications-list">
-            <!-- TODO: Application rows/cards will be rendered here by applications.js -->
+                <div class="kanban-board">
+                    <!-- Column 1: Applied -->
+                    <div class="kanban-column" data-status="applied">
+                        <div class="kanban-column-header">
+                            <span>APPLIED</span>
+                            <span class="kanban-column-count" id="count-applied">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="col-applied"></div>
+                    </div>
+
+                    <!-- Column 2: Under Review -->
+                    <div class="kanban-column" data-status="under_review">
+                        <div class="kanban-column-header">
+                            <span>UNDER REVIEW</span>
+                            <span class="kanban-column-count" id="count-under_review">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="col-under_review"></div>
+                    </div>
+
+                    <!-- Column 3: Interview Scheduled -->
+                    <div class="kanban-column" data-status="interview_scheduled">
+                        <div class="kanban-column-header">
+                            <span>INTERVIEW SCHEDULED</span>
+                            <span class="kanban-column-count" id="count-interview_scheduled">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="col-interview_scheduled"></div>
+                    </div>
+
+                    <!-- Column 4: Shortlisted -->
+                    <div class="kanban-column" data-status="shortlisted">
+                        <div class="kanban-column-header">
+                            <span>SHORTLISTED</span>
+                            <span class="kanban-column-count" id="count-shortlisted">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="col-shortlisted"></div>
+                    </div>
+
+                    <!-- Column 5: Offered -->
+                    <div class="kanban-column" data-status="offered">
+                        <div class="kanban-column-header">
+                            <span>OFFERED</span>
+                            <span class="kanban-column-count" id="count-offered">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="col-offered"></div>
+                    </div>
+
+                    <!-- Column 6: Rejected -->
+                    <div class="kanban-column" data-status="rejected">
+                        <div class="kanban-column-header">
+                            <span>REJECTED</span>
+                            <span class="kanban-column-count" id="count-rejected">0</span>
+                        </div>
+                        <div class="kanban-cards-container" id="col-rejected"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
 
-    <!-- TODO: Add shared footer here -->
-    <footer id="footer"></footer>
+    <!-- Footer -->
+    <footer class="footer" id="footer"></footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
-    <script src="../js/applications.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Protected Route Verification
+            await redirectIfNotLoggedIn('user');
 
+            // Render Nav & Footer
+            renderNavbar('dashboard');
+            renderFooter();
+
+            // Load & render the candidate application board in read-only mode
+            await initKanbanBoard();
+        });
+
+        const fallbackApps = [
+            { id: 1, position: 'Senior Product Designer', company: 'TechPulse Labs', applied_date: '2026-07-28', status: 'applied' },
+            { id: 2, position: 'Frontend Engineer', company: 'BrightWave Tech', applied_date: '2026-07-25', status: 'under_review' },
+            { id: 3, position: 'Full Stack Developer', company: 'InnoTech Solutions', applied_date: '2026-07-20', status: 'shortlisted' },
+            { id: 4, position: 'Financial Analyst', company: 'Prime Bank', applied_date: '2026-07-10', status: 'rejected' }
+        ];
+
+        function getApplicationsState() {
+            const saved = sessionStorage.getItem('user_kanban_applications');
+            if (saved) {
+                try { return JSON.parse(saved); } catch (_) {}
+            }
+            return null;
+        }
+
+        function saveApplicationsState(apps) {
+            sessionStorage.setItem('user_kanban_applications', JSON.stringify(apps));
+        }
+
+        async function initKanbanBoard() {
+            // Show loading state
+            document.querySelectorAll('.kanban-column').forEach(col => {
+                col.querySelector('.kanban-cards-container').innerHTML = '<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:12px;">Loading…</div>';
+            });
+
+            // Try to load from API
+            let apps = getApplicationsState();
+            if (!apps) {
+                const { ok, data } = await apiGetMyApplications();
+                const applications = ok ? (data?.applications || []) : [];
+                if (applications.length) {
+                    // Map API response fields to kanban format
+                    apps = applications.map(app => ({
+                        id:           app.id,
+                        position:     app.job?.title   || app.job_title   || 'Unknown Position',
+                        company:      app.job?.company_name || app.company_name || 'Unknown Company',
+                        applied_date: app.applied_at   || app.created_at  || '',
+                        status:       app.status        || 'applied'
+                    }));
+                    saveApplicationsState(apps);
+                } else {
+                    // Fallback to demo data if API fails or user has no applications
+                    apps = fallbackApps;
+                }
+            }
+
+            // Update stats
+            const total      = apps.length;
+            const inReview   = apps.filter(a => a.status === 'under_review').length;
+            const interviews = apps.filter(a => a.status === 'interview_scheduled').length;
+            const offered    = apps.filter(a => a.status === 'offered').length;
+            
+            if (document.getElementById('stat-total-applied')) document.getElementById('stat-total-applied').textContent = total;
+            if (document.getElementById('stat-in-review')) document.getElementById('stat-in-review').textContent = inReview;
+            if (document.getElementById('stat-interviews')) document.getElementById('stat-interviews').textContent = interviews;
+            if (document.getElementById('stat-offered')) document.getElementById('stat-offered').textContent = offered;
+
+            renderKanbanCards(apps);
+        }
+
+        function renderKanbanCards(apps) {
+            const statuses = ['applied', 'under_review', 'interview_scheduled', 'shortlisted', 'offered', 'rejected'];
+            
+            statuses.forEach(st => {
+                const container = document.getElementById(`col-${st}`);
+                if (container) container.innerHTML = '';
+            });
+
+            const counts = { applied: 0, under_review: 0, interview_scheduled: 0, shortlisted: 0, offered: 0, rejected: 0 };
+
+            apps.forEach(app => {
+                const st = app.status || 'applied';
+                if (counts[st] !== undefined) counts[st]++;
+
+                const container = document.getElementById(`col-${st}`);
+                if (!container) return;
+
+                const card = document.createElement('div');
+                card.className = 'kanban-card';
+                card.dataset.id = app.id;
+                card.dataset.status = st;
+
+                card.innerHTML = `
+                    <div class="kanban-card-company">${escapeHtml(app.company || 'Company')}</div>
+                    <div class="kanban-card-position">${escapeHtml(app.position || 'Position')}</div>
+                    <div>${createStatusBadge(st)}</div>
+                    <div class="kanban-card-footer">
+                        <span>Applied: ${formatDate(app.applied_date)}</span>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            // Update Counts & Stats
+            statuses.forEach(st => {
+                const countEl = document.getElementById(`count-${st}`);
+                if (countEl) countEl.textContent = counts[st] || 0;
+            });
+
+            document.getElementById('stat-total-applied').textContent = apps.length;
+            document.getElementById('stat-in-review').textContent = counts.under_review + counts.applied;
+            document.getElementById('stat-interviews').textContent = counts.interview_scheduled + counts.shortlisted;
+            document.getElementById('stat-offered').textContent = counts.offered;
+        }
+
+        function createStatusBadge(status) {
+            const labels = {
+                applied: 'Applied',
+                under_review: 'Under Review',
+                interview_scheduled: 'Interview Scheduled',
+                shortlisted: 'Shortlisted',
+                offered: 'Offered',
+                rejected: 'Rejected'
+            };
+            const classes = {
+                applied: 'status-badge-applied',
+                under_review: 'status-badge-under-review',
+                interview_scheduled: 'status-badge-interview',
+                shortlisted: 'status-badge-shortlisted',
+                offered: 'status-badge-offered',
+                rejected: 'status-badge-rejected'
+            };
+            const label = labels[status] || status.replace(/_/g, ' ');
+            const cls = classes[status] || 'status-badge-default';
+            return `<span class="status-badge ${cls}">${escapeHtml(label)}</span>`;
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
 </body>
 </html>

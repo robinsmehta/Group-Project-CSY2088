@@ -15,6 +15,9 @@
 
 from functools import wraps
 from flask import session, jsonify
+from app.extensions import db
+from app.models.user import User
+from app.models.company import Company
 
 
 def role_required(role: str):
@@ -58,9 +61,22 @@ def role_required(role: str):
                 }), 403
 
             # ------------------------------------------------
-            # Step 3: Allow the request to proceed to the route handler
+            # Step 3: Re-check that the account is still active.
+            # We re-query the DB for 'user' and 'company' roles so that mid-session
+            # revocations take effect immediately. Admin accounts are not checked here.
             # ------------------------------------------------
-            # Both authentication and authorization checks passed cleanly.
+            if user_role == 'user':
+                u = db.session.get(User, user_id)
+                if u and getattr(u, 'is_active', True) is False:
+                    return jsonify({'error': 'Account suspended'}), 403
+            elif user_role == 'company':
+                c = db.session.get(Company, user_id)
+                if c and getattr(c, 'is_active', True) is False:
+                    return jsonify({'error': 'Company account suspended'}), 403
+
+            # ------------------------------------------------
+            # Step 4: Allow the request to proceed to the route handler
+            # ------------------------------------------------
             return f(*args, **kwargs)
 
         return decorated_function

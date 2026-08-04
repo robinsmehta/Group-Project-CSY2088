@@ -1,47 +1,226 @@
-/* ============================================================
-   css/dashboard.css — Shared Styles for Dashboard Pages
-   Imported by: company/dashboard.html, company/post-job.html,
-                company/applicants.html, user/dashboard.html,
-                admin/dashboard.html
-   (Do NOT put styles here that are needed on other pages —
-    put those in style.css instead.)
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr;
+    gap: 24px;
+    padding: 32px 0;
+    align-items: start;
+}
 
-   Contains:
-   - Dashboard page layout (sidebar or top-nav + content area)
-   - .dashboard-header — welcome banner with user/company name
-   - .dashboard-section — each section block (heading + content)
-   - Table styles for applicant lists, job lists, user lists
-   - Status update dropdown/button styles
-   - .form-group styles for post-job form (if not already in auth.css)
-   - Admin-specific: approve/reject button row styles
-============================================================ */
+.dashboard-sidebar {
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 16px 12px;
+    position: sticky;
+    top: calc(var(--nav-height) + 16px);
+}
 
-/* TODO: Style the overall dashboard layout:
-         Option A — full-width stacked sections
-         Option B — sidebar navigation + main content area
-*/
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
 
-/* TODO: Style .dashboard-header — greeting text, company/user name, logout button */
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--color-muted);
+    border-radius: var(--radius-md);
+    transition: background var(--transition), color var(--transition);
+}
 
-/* TODO: Style .dashboard-section — margin-bottom, border-bottom divider, heading style */
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: var(--color-bg);
+    color: var(--color-primary);
+    font-weight: 600;
+}
 
-/* TODO: Style dashboard tables:
-   table      — full width, border-collapse
-   th         — background colour, text-align left, padding
-   td         — padding, border-bottom
-   tr:hover   — light background highlight
-*/
+.dashboard-content {}
 
-/* TODO: Style action button groups inside tables:
-   .action-btn-group — flex row, gap
-   Edit button, Delete button, View Applicants button
-*/
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
 
-/* TODO: Style the post-job form (similar to auth form but wider):
-   form max-width, label + input groups, textarea, submit button
-*/
+.stat-card {
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
 
-/* TODO: Style admin approve/reject buttons:
-   .btn-approve — green
-   .btn-reject  — red
-*/
+.stat-card-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-card-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.dashboard-card {
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.dashboard-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-card-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+@media (max-width: 860px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-sidebar {
+        position: static;
+    }
+}
+
+/* KANBAN BOARD STYLES */
+.kanban-section {
+    margin-top: 32px;
+}
+
+.kanban-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.kanban-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(220px, 1fr));
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+}
+
+.kanban-column {
+    background: #F1F5F9;
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 450px;
+    border: 2px dashed transparent;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.kanban-column.drag-over {
+    background: #E2E8F0;
+    border-color: #1E3A5F;
+}
+
+.kanban-column-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #CBD5E1;
+}
+
+.kanban-column-count {
+    background: #CBD5E1;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 2px 8px;
+}
+
+.kanban-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.kanban-card {
+    background: #FFFFFF;
+    border-radius: var(--radius-md);
+    padding: 14px;
+    border: 1px solid #E2E8F0;
+    box-shadow: var(--shadow-sm);
+    cursor: grab;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+}
+
+.kanban-card.dragging {
+    opacity: 0.5;
+    transform: scale(0.96);
+}
+
+.kanban-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: #1E3A5F;
+}
+
+.kanban-card-company {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kanban-card-position {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0F172A;
+    margin: 4px 0 8px;
+}
+
+.kanban-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #94A3B8;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #F1F5F9;
+}

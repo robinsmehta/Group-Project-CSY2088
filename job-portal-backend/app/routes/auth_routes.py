@@ -144,6 +144,32 @@ def login():
 # ============================================================
 # POST /api/auth/logout
 # ============================================================
+@auth_bp.route('/me', methods=['GET'])
+def current_user():
+    """Return the currently authenticated user from the server-side session."""
+    user_id = session.get('user_id')
+    role = session.get('role')
+
+    if not user_id or not role:
+        return jsonify({
+            'error': 'Authentication required. Please log in to access this resource.'
+        }), 401
+
+    user = {
+        'id': user_id,
+        'role': role,
+        'name': session.get('name') or session.get('company_name') or '',
+        'email': session.get('email') or '',
+        'status': session.get('status')
+    }
+
+    if role == 'company':
+        user['company_id'] = session.get('company_id', user_id)
+        user['company_name'] = session.get('company_name') or user['name'] or ''
+
+    return jsonify({'user': user}), 200
+
+
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
     """

@@ -46,12 +46,14 @@ def get_all_jobs():
     keyword = request.args.get('keyword')
     location = request.args.get('location')
     category = request.args.get('category')
+    job_type = request.args.get('job_type')
 
     # Forward query parameters to service layer for SQL filtering
     result, status_code = job_service.get_all_jobs(
         keyword=keyword,
         location=location,
-        category=category
+        category=category,
+        job_type=job_type
     )
     return jsonify(result), status_code
 
@@ -139,7 +141,7 @@ def update_job(job_id):
     company_id = session.get('company_id') or session.get('user_id')
     data = request.get_json(silent=True) or {}
 
-    updatable_fields = ['title', 'description', 'location', 'category', 'salary']
+    updatable_fields = ['title', 'description', 'location', 'category', 'job_type', 'salary', 'closing_date']
     provided_updates = {k: v for k, v in data.items() if k in updatable_fields}
 
     if not provided_updates:

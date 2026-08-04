@@ -1,72 +1,495 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard — Job Portal</title>
-    <link rel="stylesheet" href="../css/style.css" />
-    <link rel="stylesheet" href="../css/dashboard.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireMe — Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Admin-specific styles that don't conflict with shared CSS */
+        .admin-hero {
+            background: linear-gradient(180deg, #FFF0F5 0%, #F8F9FB 100%);
+            padding: 60px 0 40px;
+            text-align: center;
+        }
+
+        .admin-hero h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .admin-hero p {
+            font-size: 14px;
+            color: #6B7280;
+            max-width: 580px;
+            margin: 0 auto;
+        }
+
+        .admin-body {
+            padding: 40px 0 80px;
+        }
+
+        .section-header-center {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .section-header-center h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .section-header-center p {
+            font-size: 13px;
+            color: #6B7280;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .badge-pending {
+            color: #D97706;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .role-pill {
+            background: #F3F4F6;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .dot-active {
+            background: #10B981;
+        }
+
+        .dot-suspended {
+            background: #EF4444;
+        }
+
+        .dot-pending {
+            background: #F59E0B;
+        }
+
+        .btn-action-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: #DB2777;
+            text-decoration: none;
+        }
+
+        .table-center-link {
+            text-align: center;
+            padding: 16px;
+            border-top: 1px solid #F3F4F6;
+        }
+
+        .table-center-link a {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            text-decoration: none;
+        }
+    </style>
 </head>
+
 <body>
 
-    <!-- TODO: Add shared navbar here -->
-    <header id="navbar"></header>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar"></nav>
 
-    <main>
-        <!--
-            ADMIN DASHBOARD (Admin only)
-            Central control panel for platform moderation.
-            TODO: Check login status — redirect to login.html if not logged in as admin.
+    <!-- Admin Hero -->
+    <section class="admin-hero">
+        <div class="container">
+            <h1>Platform Overview & Moderation</h1>
+            <p>Monitor system health, manage quality listings, and approve verified employers to maintain the HireMe
+                standard of excellence.</p>
+        </div>
+    </section>
 
-            SECTION 1 — Pending Companies
-            TODO: Fetch via GET /api/admin/companies/pending using admin.js.
-                  Display each pending company with: name, email, description.
-                  Provide Approve and Reject buttons per company.
-                  - Approve → PUT /api/admin/companies/<id>/approve
-                  - Reject  → PUT /api/admin/companies/<id>/reject
+    <!-- Admin Body -->
+    <div class="admin-body">
+        <div class="container">
+            <!-- Section 1: Company Approvals -->
+            <div class="section-header-center">
+                <h2>Company Approvals</h2>
+                <p>Review and verify newly registered organizations. Verified companies receive a benchmark badge and
+                    can post unlimited listings.</p>
+            </div>
 
-            SECTION 2 — Manage Jobs
-            TODO: List all jobs with a Delete button per job.
-                  Delete → DELETE /api/admin/jobs/<id> via admin.js.
+            <div class="table-card">
+                <div class="table-toolbar">
+                    <div class="toolbar-title">Awaiting Verification</div>
+                    <div class="search-mini">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input id="company-search-input" type="text" placeholder="Search companies...">
+                    </div>
+                </div>
 
-            SECTION 3 — Manage Users
-            TODO: List all users with a Delete button per user.
-                  Delete → DELETE /api/admin/users/<id> via admin.js.
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Industry</th>
+                            <th>Registration Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading pending company registrations…</td></tr>
+                    </tbody>
+                </table>
 
-            SECTION 4 — Manage Companies
-            TODO: List all companies with a Delete button per company.
-                  Delete → DELETE /api/admin/companies/<id> via admin.js.
-        -->
+                <div class="table-center-link">
+                    <a href="#">View all pending requests →</a>
+                </div>
+            </div>
 
-        <h1>Admin Dashboard</h1>
+            <!-- Section 2: User Directory -->
+            <div class="section-header-center">
+                <h2>User Directory</h2>
+                <p>Manage the identities of all platform users. Admins can edit accounts, revoke access, and manage
+                    permission access levels.</p>
+            </div>
 
-        <section id="pending-companies-section">
-            <h2>Pending Company Approvals</h2>
-            <!-- TODO: Pending company rows will be rendered here by admin.js -->
-        </section>
+            <div class="table-card">
+                <div class="table-toolbar">
+                    <div class="toolbar-title">Directory Access</div>
+                        <button class="btn-add-admin">+ Add Master Admin</button>
+                </div>
 
-        <section id="manage-jobs-section">
-            <h2>All Jobs</h2>
-            <!-- TODO: Job rows with delete buttons will be rendered here by admin.js -->
-        </section>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Full Name & Email</th>
+                            <th>System Role</th>
+                            <th>Account Status</th>
+                            <th>Registration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-tbody">
+                        <tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading users…</td></tr>
+                    </tbody>
+                </table>
 
-        <section id="manage-users-section">
-            <h2>All Users</h2>
-            <!-- TODO: User rows with delete buttons will be rendered here by admin.js -->
-        </section>
+                <div class="table-footer">
+                    <div id="users-count">Showing 0 - 0 of 0 users</div>
+                    <div class="pagination" id="users-pagination"></div>
+                </div>
+            </div>
 
-        <section id="manage-companies-section">
-            <h2>All Companies</h2>
-            <!-- TODO: Company rows with delete buttons will be rendered here by admin.js -->
-        </section>
-    </main>
-
-    <!-- TODO: Add shared footer here -->
-    <footer id="footer"></footer>
+            <!-- Add Admin Modal (hidden) -->
+            <div id="add-admin-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:80;">
+                <div style="background:#fff;padding:20px;border-radius:8px;max-width:420px;margin:0 auto;box-shadow:0 6px 24px rgba(2,6,23,0.08);">
+                    <h3 style="margin:0 0 12px;font-size:18px;">Create Master Admin</h3>
+                    <div style="margin-bottom:8px;"><input id="new-admin-name" placeholder="Full name" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:6px;" /></div>
+                    <div style="margin-bottom:8px;"><input id="new-admin-email" placeholder="Email" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:6px;" /></div>
+                    <div style="margin-bottom:12px;"><input id="new-admin-password" type="password" placeholder="Password" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:6px;" /></div>
+                    <div style="text-align:right;">
+                        <button id="cancel-add-admin" style="background:transparent;border:none;color:#6B7280;margin-right:8px;">Cancel</button>
+                        <button id="submit-add-admin" style="background:#111827;color:#fff;border:none;border-radius:6px;padding:8px 12px;">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="footer" id="footer"></footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
-    <script src="../js/admin.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = getLoggedInUser();
+            if (!user || user.role !== 'admin') {
+                window.location.href = resolveSitePath('auth/login.html');
+                return;
+            }
+            renderNavbar('dashboard');
+            renderFooter();
 
+            // Wire up live search for pending companies with debounce
+            const searchInput = document.getElementById('company-search-input');
+            function debounce(fn, delay) {
+                let timer = null;
+                return function(...args) {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => fn.apply(this, args), delay);
+                };
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce(() => loadPendingCompanies(), 300));
+                // Optional: run search on Enter key as well
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        loadPendingCompanies();
+                    }
+                });
+            }
+
+
+            // Wire Add Admin button
+            const addBtn = document.querySelector('.btn-add-admin');
+            const modal = document.getElementById('add-admin-modal');
+            const cancelBtn = document.getElementById('cancel-add-admin');
+            const submitBtn = document.getElementById('submit-add-admin');
+
+            if (addBtn && modal) {
+                addBtn.addEventListener('click', () => {
+                    modal.style.display = 'flex';
+                    document.getElementById('new-admin-name').focus();
+                });
+            }
+            if (cancelBtn && modal) {
+                cancelBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+            }
+            if (submitBtn && modal) {
+                submitBtn.addEventListener('click', async () => {
+                    const name = document.getElementById('new-admin-name').value.trim();
+                    const email = document.getElementById('new-admin-email').value.trim();
+                    const password = document.getElementById('new-admin-password').value;
+                    if (!name || !email || !password) {
+                        showToast('Please provide name, email, and password.', 'error');
+                        return;
+                    }
+                    submitBtn.disabled = true;
+                    const { ok, data } = await apiCreateAdmin(name, email, password);
+                    submitBtn.disabled = false;
+                    if (ok) {
+                        showToast('Admin created successfully', 'success');
+                        modal.style.display = 'none';
+                        // Refresh users list
+                        await loadUsers(1);
+                    } else {
+                        showToast(data.error || 'Failed to create admin', 'error');
+                    }
+                });
+            }
+
+            await loadPendingCompanies();
+            await loadUsers(1);
+        });
+
+        async function loadAdminStats() {
+            const { ok, data } = await apiGetAdminStats();
+            if (ok && data.stats) {
+                const stats = data.stats;
+                // Update stats display if elements exist
+                const statUsers = document.getElementById('stat-users');
+                const statCompanies = document.getElementById('stat-companies');
+                const statJobs = document.getElementById('stat-jobs');
+                const statApplications = document.getElementById('stat-applications');
+                
+                if (statUsers) statUsers.textContent = stats.total_users || 0;
+                if (statCompanies) statCompanies.textContent = stats.total_companies || 0;
+                if (statJobs) statJobs.textContent = stats.total_jobs || 0;
+                if (statApplications) statApplications.textContent = stats.total_applications || 0;
+            }
+        }
+
+        async function loadPendingCompanies() {
+            const tbody = document.querySelector('.data-table tbody');
+            if (!tbody) return;
+
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading pending company registrations…</td></tr>`;
+
+            const searchInput = document.getElementById('company-search-input');
+            const searchTerm = searchInput ? (searchInput.value || '').trim() : '';
+
+            const { ok, data } = await apiGetPendingCompanies(searchTerm);
+
+            if (!ok) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#DC2626;">Failed to load pending companies. (Requires admin login session)</td></tr>`;
+                return;
+            }
+
+            const companies = data.companies || (Array.isArray(data) ? data : []);
+
+            if (companies.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">No pending company approval requests. All registered companies are up to date!</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = companies.map(c => `
+                <tr style="border-bottom:1px solid #F3F4F6;">
+                    <td style="padding:16px 24px;">
+                        <div style="font-weight:600;color:#111827;">${escapeHtml(c.company_name)}</div>
+                        <div style="font-size:11px;color:#9CA3AF;">${escapeHtml(c.email)}</div>
+                    </td>
+                    <td style="padding:16px 24px;"><span class="role-pill">Employer</span></td>
+                    <td style="padding:16px 24px;"><span class="status-dot dot-pending"></span>Pending Approval</td>
+                    <td style="padding:16px 24px;font-size:12px;color:#6B7280;">${(c.created_at || '').split('T')[0] || 'Recently'}</td>
+                    <td style="padding:16px 24px;">
+                        <button onclick="handleApprove(${c.id})" style="background:#166534;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;margin-right:6px;font-weight:600;">Approve</button>
+                        <button onclick="handleReject(${c.id})" style="background:#DC2626;color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-weight:600;">Reject</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadUsers(page = 1) {
+            const tbody = document.getElementById('users-tbody');
+            const countEl = document.getElementById('users-count');
+            const paginationEl = document.getElementById('users-pagination');
+            if (!tbody) return;
+
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading users…</td></tr>`;
+
+            const searchInput = document.getElementById('company-search-input');
+            // reuse same search box — it's top-level for admin page
+            const searchTerm = searchInput ? (searchInput.value || '').trim() : '';
+
+            const per_page = 5;
+            const { ok, data } = await apiGetUsers(page, searchTerm, per_page);
+
+            if (!ok) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#DC2626;">Failed to load users. (Requires admin login)</td></tr>`;
+                return;
+            }
+
+            const users = data.users || [];
+            const total = data.total || 0;
+            const currentPage = data.page || page;
+            const perPage = data.per_page || per_page;
+
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">No users found.</td></tr>`;
+            } else {
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td>
+                            <div style="font-weight:600;">${escapeHtml(u.name)}</div>
+                            <div style="font-size:11px;color:#9CA3AF;">${escapeHtml(u.email)}</div>
+                        </td>
+                        <td><span class="role-pill">${escapeHtml(u.role)}</span></td>
+                        <td>${u.is_active ? '<span class="status-dot dot-active"></span>Active' : '<span class="status-dot dot-suspended"></span>Suspended'}</td>
+                        <td>${(u.created_at || '').split('T')[0] || 'Recently'}</td>
+                        <td>
+                            ${u.is_active ? (`<button onclick="event.preventDefault(); handleRevoke('${u.type}', ${u.id})" style="background:transparent;border:none;color:#DB2777;font-weight:600;cursor:pointer;">Revoke Access</button>`) : (`<button onclick="event.preventDefault(); handleRestore('${u.type}', ${u.id})" style="background:transparent;border:none;color:#0B84A5;font-weight:600;cursor:pointer;">Restore Access</button>`)}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // Update count text
+            const start = total === 0 ? 0 : (currentPage - 1) * perPage + 1;
+            const end = Math.min(total, (currentPage - 1) * perPage + users.length);
+            if (countEl) countEl.textContent = `Showing ${start} - ${end} of ${total} users`;
+
+            // Render pagination (simple numbered pagination up to maxPages)
+            if (paginationEl) {
+                const maxPages = Math.max(1, Math.ceil(total / perPage));
+                const pages = [];
+                // show up to 7 page links with ellipses
+                const window = 3; // pages before/after current
+                const first = 1;
+                const last = maxPages;
+
+                const lower = Math.max(first, currentPage - window);
+                const upper = Math.min(last, currentPage + window);
+
+                if (lower > first) pages.push({ type: 'page', n: first });
+                if (lower > first + 1) pages.push({ type: 'dots' });
+
+                for (let i = lower; i <= upper; i++) pages.push({ type: 'page', n: i });
+
+                if (upper < last - 1) pages.push({ type: 'dots' });
+                if (upper < last) pages.push({ type: 'page', n: last });
+
+                paginationEl.innerHTML = pages.map(p => {
+                    if (p.type === 'dots') return `<span>...</span>`;
+                    if (p.n === currentPage) return `<a href="#" class="page-num active">${p.n}</a>`;
+                    return `<a href="#" class="page-num" onclick="event.preventDefault(); loadUsers(${p.n})">${p.n}</a>`;
+                }).join(' ');
+            }
+        }
+
+        async function handleApprove(companyId) {
+            const { ok, data } = await apiApproveCompany(companyId);
+            if (ok) {
+                showToast('Company approved successfully!', 'success');
+                await loadPendingCompanies();
+            } else {
+                showToast(data.error || 'Failed to approve company.', 'error');
+            }
+        }
+
+        async function handleReject(companyId) {
+            if (!confirm('Are you sure you want to reject this company?')) return;
+            const { ok, data } = await apiRejectCompany(companyId);
+            if (ok) {
+                showToast('Company rejected.', 'success');
+                await loadPendingCompanies();
+            } else {
+                showToast(data.error || 'Failed to reject company.', 'error');
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        async function handleRevoke(type, id) {
+            if (!confirm('Are you sure you want to revoke access for this account?')) return;
+            let res;
+            if (type === 'user') res = await apiRevokeUser(id);
+            else if (type === 'company') res = await apiRevokeCompany(id);
+            else return showToast('Unknown account type', 'error');
+
+            if (res.ok) {
+                showToast('Account revoked', 'success');
+                // reload current page of users
+                const currentPage = parseInt(document.querySelector('#users-pagination .page-num.active')?.textContent || '1', 10) || 1;
+                await loadUsers(currentPage);
+            } else {
+                showToast(res.data?.error || 'Failed to revoke account', 'error');
+            }
+        }
+
+        async function handleRestore(type, id) {
+            let res;
+            if (type === 'user') res = await apiRestoreUser(id);
+            else if (type === 'company') res = await apiRestoreCompany(id);
+            else return showToast('Unknown account type', 'error');
+
+            if (res.ok) {
+                showToast('Account restored', 'success');
+                const currentPage = parseInt(document.querySelector('#users-pagination .page-num.active')?.textContent || '1', 10) || 1;
+                await loadUsers(currentPage);
+            } else {
+                showToast(res.data?.error || 'Failed to restore account', 'error');
+            }
+        }
+    </script>
 </body>
 </html>

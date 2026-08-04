@@ -1,81 +1,45 @@
-// ============================================================
 // js/applications.js — Application Management & Status Tracking
 //
-// Handles basic fetch() calls related to job applications and status updates.
+// Refactored to use centralized API functions from api.js
 // Used by: jobs/detail.html, user/dashboard.html, company/applicants.html
-// Depends on: config.js (for API_BASE_URL), shared.js
-// ============================================================
+// Depends on: config.js, shared.js, api.js
 
 
-// ------------------------------------------------------------
 // applyToJob(event)
-// Sends basic POST request to /api/applications endpoint.
-// ------------------------------------------------------------
+// Uses apiApplyToJob from api.js
 async function applyToJob(event) {
     if (event) event.preventDefault();
-    try {
-        const response = await fetch(`${API_BASE_URL}/applications`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ job_id: 1, user_id: 1, resume_path: 'uploads/sample.pdf' })
-        });
-        const data = await response.json();
-        console.log('[Application Route Connection - Apply]:', data);
-        return data;
-    } catch (error) {
-        console.error('[Application Route Error - Apply]:', error);
-    }
+    const resumeFile = event?.target?.querySelector('#resume-file')?.files[0];
+    const jobId = 1; // This should be passed as parameter in real usage
+    const { ok, data } = await apiApplyToJob(jobId, resumeFile);
+    console.log('[Application Route Connection - Apply]:', data);
+    return { ok, data };
 }
 
 
-// ------------------------------------------------------------
 // loadMyApplications()
-// Sends basic GET request to /api/applications/mine endpoint.
-// ------------------------------------------------------------
+// Uses apiGetMyApplications from api.js
 async function loadMyApplications() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/applications/mine`);
-        const data = await response.json();
-        console.log('[Application Route Connection - My Applications]:', data);
-        return data;
-    } catch (error) {
-        console.error('[Application Route Error - My Applications]:', error);
-    }
+    const { ok, data } = await apiGetMyApplications();
+    console.log('[Application Route Connection - My Applications]:', data);
+    return { ok, data };
 }
 
 
-// ------------------------------------------------------------
 // loadJobApplicants(jobId)
-// Sends basic GET request to /api/jobs/<id>/applications endpoint.
-// ------------------------------------------------------------
+// Uses apiGetJobApplicants from api.js
 async function loadJobApplicants(jobId = 1) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/applications`);
-        const data = await response.json();
-        console.log('[Application Route Connection - Job Applicants]:', data);
-        return data;
-    } catch (error) {
-        console.error('[Application Route Error - Job Applicants]:', error);
-    }
+    const { ok, data } = await apiGetJobApplicants(jobId);
+    console.log('[Application Route Connection - Job Applicants]:', data);
+    return { ok, data };
 }
 
 
-// ------------------------------------------------------------
 // updateApplicationStatus(applicationId, newStatus)
-// Sends basic PUT request to /api/applications/<id>/status endpoint.
-// ------------------------------------------------------------
+// Uses apiUpdateApplicationStatus from api.js
 async function updateApplicationStatus(applicationId = 1, newStatus = 'under_review') {
-    try {
-        const response = await fetch(`${API_BASE_URL}/applications/${applicationId}/status`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus })
-        });
-        const data = await response.json();
-        console.log('[Application Route Connection - Update Status]:', data);
-        return data;
-    } catch (error) {
-        console.error('[Application Route Error - Update Status]:', error);
-    }
+    const { ok, data } = await apiUpdateApplicationStatus(applicationId, newStatus);
+    console.log('[Application Route Connection - Update Status]:', data);
+    return { ok, data };
 }
 

@@ -157,7 +157,7 @@ def download_resume(filename):
     Path parameter:
         filename (str): Sanitized unique filename stored in DB.
     """
-    upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads/resumes')
+    upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads')
 
     # Convert relative path to absolute directory for send_from_directory
     abs_upload_folder = os.path.abspath(upload_folder)

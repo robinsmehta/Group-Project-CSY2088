@@ -15,7 +15,7 @@
 # ============================================================
 
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from sqlalchemy import text
 from .config import config_by_name
 from .extensions import db, bcrypt, migrate, cors
@@ -63,11 +63,43 @@ def create_app(config_name: str = None) -> Flask:
     bcrypt.init_app(app)                # Attach Bcrypt for password hashing
     migrate.init_app(app, db)           # Attach Flask-Migrate (needs both app and db)
     cors.init_app(app, supports_credentials=True, resources={
-        r"/api/*": {"origins": r"https?://.*"}
+        r"/api/*": {
+            # The frontend is served by the same Flask app on http://127.0.0.1:5001.
+            # Only same-origin API requests are supported locally. Live server or
+            # file:// usage is unsupported because Flask session cookies are
+            # expected to be same-site and will be blocked across origins.
+            "origins": ["http://127.0.0.1:5001"],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "expose_headers": ["Content-Type"],
+            "supports_credentials": True
+        }
     })
 
     # --------------------------------------------------------
-    # 4. Register Blueprints (Route Groups)
+    # 4. Serve the frontend from the same origin in local development
+    # --------------------------------------------------------
+    frontend_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'job-portal-frontend'))
+
+    @app.route('/', defaults={'path': ''}, methods=['GET'])
+    @app.route('/<path:path>', methods=['GET'])
+    def serve_frontend(path):
+        if path.startswith('api/') or path == 'api':
+            return jsonify({'error': 'Not Found'}), 404
+
+        safe_path = path or 'index.html'
+        full_path = os.path.join(frontend_root, safe_path)
+
+        if os.path.isdir(full_path):
+            full_path = os.path.join(full_path, 'index.html')
+
+        if os.path.exists(full_path):
+            return send_from_directory(frontend_root, os.path.relpath(full_path, frontend_root))
+
+        return send_from_directory(frontend_root, 'index.html')
+
+    # --------------------------------------------------------
+    # 5. Register Blueprints (Route Groups)
     # --------------------------------------------------------
     # Each Blueprint is a group of related routes defined in a separate file.
     # We import them here (inside the function) to avoid circular imports.
@@ -84,14 +116,14 @@ def create_app(config_name: str = None) -> Flask:
     app.register_blueprint(admin_bp,       url_prefix='/api/admin')
 
     # --------------------------------------------------------
-    # 5. Import all models so Flask-Migrate & db.create_all() detect them
+    # 6. Import all models so Flask-Migrate & db.create_all() detect them
     # --------------------------------------------------------
     # Even though we don't use the models directly here,
     # SQLAlchemy needs to "see" them before it can create/migrate tables.
     from .models import user, company, job, application, admin  # noqa: F401
 
     # --------------------------------------------------------
-    # 6. Database Health-Check & Demonstration Protected Routes
+    # 7. Database Health-Check & Demonstration Protected Routes
     # --------------------------------------------------------
     from .utils.decorators import role_required
 
@@ -104,6 +136,17 @@ def create_app(config_name: str = None) -> Flask:
             'company_id': session.get('user_id'),
             'role': session.get('role'),
             'approval_status': session.get('status')
+        }), 200
+
+    @app.route('/api/session/debug', methods=['GET'])
+    def session_debug():
+        from flask import session
+        return jsonify({
+            'session_data': dict(session),
+            'user_id': session.get('user_id'),
+            'role': session.get('role'),
+            'company_id': session.get('company_id'),
+            'status': session.get('status')
         }), 200
 
     @app.route('/api/health', methods=['GET'])
@@ -136,12 +179,12 @@ def create_app(config_name: str = None) -> Flask:
     @app.route('/api/uploads/resumes/<filename>', methods=['GET'])
     def download_resume_direct(filename):
         from flask import send_from_directory
-        upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads/resumes')
+        upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
         return send_from_directory(os.path.abspath(upload_folder), filename, as_attachment=False)
 
 
     # --------------------------------------------------------
-    # 7. Register Flask CLI Commands
+    # 8. Register Flask CLI Commands
     # --------------------------------------------------------
     @app.cli.command("init-db")
     def init_db_command():

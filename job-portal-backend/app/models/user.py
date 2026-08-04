@@ -51,6 +51,9 @@ class User(db.Model):
         nullable=False
     )
 
+    # Active flag for suspension (admins can revoke access without deleting)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
     # --- Relationships ---
 
     # One User → Many Applications
@@ -86,4 +89,5 @@ class User(db.Model):
             'name':       self.name,
             'email':      self.email,
             'created_at': self.created_at.isoformat() if self.created_at else None,
+            'is_active':  bool(self.is_active)
         }

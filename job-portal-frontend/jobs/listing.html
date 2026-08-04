@@ -1,53 +1,749 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Browse Jobs — Job Portal</title>
-    <link rel="stylesheet" href="../css/style.css" />
-    <link rel="stylesheet" href="../css/jobs.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireMe — Job Listings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #F8F9FB;
+            color: #111827;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #111827;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4B5563;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .nav-action-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #374151;
+            text-decoration: none;
+        }
+
+        .btn-register {
+            background: #111827;
+            color: #ffffff;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Hero Header */
+        .listing-hero {
+            padding: 60px 0 40px;
+            text-align: center;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F8F9FB 100%);
+        }
+
+        .badge-pill {
+            display: inline-block;
+            background: #111827;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .listing-title {
+            font-size: 38px;
+            font-weight: 700;
+            line-height: 1.2;
+            color: #111827;
+            margin-bottom: 14px;
+        }
+
+        .listing-title span {
+            color: #DB2777;
+        }
+
+        .listing-subtitle {
+            font-size: 14px;
+            color: #6B7280;
+            max-width: 580px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+
+        /* Search Bar */
+        .search-box {
+            background: #ffffff;
+            border: 1px solid #E5E7EB;
+            border-radius: 40px;
+            padding: 6px 8px 6px 20px;
+            display: flex;
+            align-items: center;
+            max-width: 720px;
+            margin: 0 auto 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .search-input-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input-group svg {
+            color: #9CA3AF;
+        }
+
+        .search-input-group input {
+            border: none;
+            outline: none;
+            font-size: 13px;
+            width: 100%;
+            background: transparent;
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: #E5E7EB;
+            margin: 0 16px;
+        }
+
+        .btn-search {
+            background: #111827;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .tags-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        .tag-pill {
+            background: #ffffff;
+            border: 1px solid #E5E7EB;
+            padding: 4px 12px;
+            border-radius: 14px;
+            color: #374151;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        /* Listing Grid Layout */
+        .listing-layout {
+            padding: 40px 0 80px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* Sidebar Filters */
+        .filters-sidebar {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #F3F4F6;
+        }
+
+        .filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .filter-section {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .filter-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #9CA3AF;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .checkbox-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .count {
+            font-size: 11px;
+            color: #9CA3AF;
+        }
+
+        .range-slider {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .range-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* Main Content Area */
+        .results-header {
+            margin-bottom: 20px;
+        }
+
+        .results-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .results-header p {
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        .jobs-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .job-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #F3F4F6;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .job-card-top {
+            margin-bottom: 16px;
+        }
+
+        .job-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .job-card-company {
+            font-size: 12px;
+            color: #6B7280;
+            margin-bottom: 14px;
+        }
+
+        .job-details-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #9CA3AF;
+        }
+
+        .meta-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .job-card-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #F9FAFB;
+        }
+
+        .salary-amount {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .btn-apply {
+            background: #111827;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        .page-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #374151;
+            text-decoration: none;
+        }
+
+        .page-btn.active {
+            background: #111827;
+            color: #ffffff;
+            border-color: #111827;
+        }
+
+        @media (max-width: 992px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+            .jobs-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/jobs.css">
 </head>
 <body>
 
-    <!-- TODO: Add shared navbar here -->
-    <header id="navbar"></header>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar"></nav>
 
-    <main>
-        <!--
-            JOB LISTING PAGE (Public — no login required)
-            Displays all approved job listings with search and filter controls.
+    <!-- Listing Hero -->
+    <section class="listing-hero">
+        <div class="container">
+            <span class="badge-pill">Browse 1,200+ Open Positions</span>
+            <h1 class="listing-title">Find the perfect job that <span>elevates your career</span></h1>
+            <p class="listing-subtitle">Browse through thousands of job opportunities from top companies around the world. Filter by role, location, and salary to find your match.</p>
 
-            TODO: On page load, call jobs.js → loadJobs() to fetch all jobs
-                  from GET /api/jobs and render them as cards in #jobs-grid.
+            <div class="search-box">
+                <div class="search-input-group">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="keyword-input" placeholder="Job title, keywords, or company...">
+                </div>
+                <div class="divider"></div>
+                <div class="search-input-group">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <input type="text" id="location-input" placeholder="Location (e.g. London, Remote)">
+                </div>
+                <button class="btn-search" id="search-btn">Search Jobs</button>
+            </div>
 
-            TODO: Search bar — on input/submit, call jobs.js → searchJobs(query)
-                  which filters results by title, company, or location.
-
-            TODO: Filter controls — allow filtering by category or location.
-                  Call jobs.js → filterJobs() when filters change.
-
-            TODO: Each job card links to /jobs/detail.html?job_id=<id>
-        -->
-
-        <h1>Browse Jobs</h1>
-
-        <!-- TODO: Add search input and filter dropdowns here -->
-        <div id="search-filter-bar">
-            <!-- Search input and filter controls go here -->
+            <div class="tags-row">
+                <span>Popular:</span>
+                <a href="#" class="tag-pill">UX Design</a>
+                <a href="#" class="tag-pill">React Dev</a>
+                <a href="#" class="tag-pill">Marketing</a>
+                <a href="#" class="tag-pill">Product Manager</a>
+                <a href="#" class="tag-pill">Remote</a>
+            </div>
         </div>
+    </section>
 
-        <!-- TODO: jobs.js → loadJobs() renders job cards into this grid -->
-        <div id="jobs-grid">
-            <!-- Job cards will be rendered here dynamically -->
+    <!-- Listing Content -->
+    <section class="listing-layout">
+        <div class="container">
+            <div class="layout-grid">
+                <!-- Sidebar Filters -->
+                <aside class="filters-sidebar">
+                    <div class="filter-header">
+                        <span>Filters</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    </div>
+
+                    <div class="filter-section" data-filter="category">
+                        <div class="filter-title">Job Category</div>
+                        <div class="filter-options">
+                            <label class="checkbox-label">
+                                <div class="checkbox-left"><input type="checkbox"> Loading…</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-section" data-filter="type">
+                        <div class="filter-title">Job Type</div>
+                        <div class="filter-options">
+                            <label class="checkbox-label">
+                                <div class="checkbox-left"><input type="checkbox"> Loading…</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-section" style="border: none;">
+                        <div class="filter-title">Salary Range</div>
+                        <input type="range" class="range-slider" min="0" max="200000" value="200000">
+                        <div class="range-values">
+                            <span>$0k</span>
+                            <span>$100k</span>
+                            <span>$200k+</span>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Cards Grid (populated by JS from API) -->
+                <div>
+                    <div class="results-header">
+                        <h3 id="results-count">Loading jobs…</h3>
+                        <p>Jobs from our database in real-time</p>
+                    </div>
+
+                    <div class="jobs-cards-grid" id="jobs-grid">
+                        <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 12px;display:block;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            Loading jobs from database…
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <span>Page 1 of 63</span>
+                        <a href="#" class="page-btn">&lt;</a>
+                        <a href="#" class="page-btn active">1</a>
+                        <a href="#" class="page-btn">2</a>
+                        <a href="#" class="page-btn">3</a>
+                        <span>...</span>
+                        <a href="#" class="page-btn">&gt;</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
+    </section>
 
-    <!-- TODO: Add shared footer here -->
-    <footer id="footer"></footer>
+    <!-- Footer -->
+    <footer class="footer" id="footer"></footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
-    <script src="../js/jobs.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNavbar('jobs');
+            renderFooter();
 
+            // Load full job set to build filters, then render initial results
+            loadInitialJobsAndFilters();
+
+            document.getElementById('search-btn').addEventListener('click', fetchAndRenderJobs);
+            document.getElementById('keyword-input').addEventListener('keydown', e => { if (e.key === 'Enter') fetchAndRenderJobs(); });
+            document.getElementById('location-input').addEventListener('keydown', e => { if (e.key === 'Enter') fetchAndRenderJobs(); });
+
+            // Tag pill quick-search
+            document.querySelectorAll('.tag-pill').forEach(pill => {
+                pill.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('keyword-input').value = pill.textContent.trim();
+                    fetchAndRenderJobs();
+                });
+            });
+        });
+
+        async function loadInitialJobsAndFilters() {
+            const { ok, data } = await apiGetJobs();
+            const jobs = ok ? (data.jobs || (Array.isArray(data) ? data : [])) : [];
+            buildFiltersFromJobs(jobs);
+            fetchAndRenderJobs();
+        }
+
+        function buildFiltersFromJobs(jobs) {
+            // Build categories with counts
+            const catMap = new Map();
+            const typeMap = new Map();
+            let highestSalary = 0;
+
+            function parseSalaryNumber(s) {
+                if (!s) return null;
+                const m = String(s).replace(/[,$\s]/g, '').match(/(\d+)/);
+                return m ? Number(m[1]) : null;
+            }
+
+            jobs.forEach(j => {
+                const c = (j.category || 'Unspecified').trim();
+                catMap.set(c, (catMap.get(c) || 0) + 1);
+                const t = (j.job_type || 'Other').trim();
+                typeMap.set(t, (typeMap.get(t) || 0) + 1);
+                const s = parseSalaryNumber(j.salary);
+                if (s && s > highestSalary) highestSalary = s;
+            });
+
+            const catContainer = document.querySelector('.filter-section[data-filter="category"] .filter-options');
+            const typeContainer = document.querySelector('.filter-section[data-filter="type"] .filter-options');
+            if (catContainer) {
+                catContainer.innerHTML = Array.from(catMap.entries()).map(([c, count]) => {
+                    const id = `cat-${cssSafe(c)}`;
+                    return `<label class="checkbox-label"><div class="checkbox-left"><input type="checkbox" data-value="${escapeHtmlAttr(c)}" id="${id}"> ${escapeHtml(c)}</div><span class="count">${count}</span></label>`;
+                }).join('');
+            }
+            if (typeContainer) {
+                typeContainer.innerHTML = Array.from(typeMap.entries()).map(([t, count]) => {
+                    const id = `type-${cssSafe(t)}`;
+                    return `<label class="checkbox-label"><div class="checkbox-left"><input type="checkbox" data-value="${escapeHtmlAttr(t)}" id="${id}"> ${escapeHtml(t)}</div><span class="count">${count}</span></label>`;
+                }).join('');
+            }
+
+            // Wire events for newly created checkboxes
+            document.querySelectorAll('.filter-options input[type="checkbox"]').forEach(cb => cb.addEventListener('change', fetchAndRenderJobs));
+
+            // Salary slider: set range to highest found (or default)
+            const slider = document.querySelector('.range-slider');
+            const rangeValues = slider ? slider.nextElementSibling : null;
+            if (slider) {
+                const maxVal = highestSalary ? Math.ceil(highestSalary / 1000) * 1000 : 200000;
+                slider.max = maxVal;
+                // Default to the top of the range so no jobs are hidden until the
+                // user deliberately drags the slider down.
+                slider.value = maxVal;
+                if (rangeValues) {
+                    const mid = Math.round(Number(slider.value) / 1000);
+                    const span = rangeValues.querySelector('span:nth-child(2)');
+                    if (span) span.textContent = `$${mid}k`;
+                }
+                slider.addEventListener('input', () => {
+                    if (rangeValues) {
+                        const mid = Math.round(Number(slider.value) / 1000);
+                        const span = rangeValues.querySelector('span:nth-child(2)');
+                        if (span) span.textContent = `$${mid}k`;
+                    }
+                });
+                slider.addEventListener('change', fetchAndRenderJobs);
+            }
+
+            function cssSafe(s) { return String(s).replace(/[^a-z0-9]+/gi, '-').toLowerCase(); }
+            function escapeHtmlAttr(s) { return String(s).replace(/"/g, '&quot;'); }
+        }
+
+        async function fetchAndRenderJobs() {
+            const keyword  = document.getElementById('keyword-input').value.trim();
+            const location = document.getElementById('location-input').value.trim();
+            const grid     = document.getElementById('jobs-grid');
+            const count    = document.getElementById('results-count');
+
+            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;">Loading…</div>`;
+
+            // Collect filter selections (use data-value on inputs)
+            const selectedCategories = Array.from(document.querySelectorAll('.filter-section[data-filter="category"] .filter-options input[type="checkbox"]'))
+                .filter(i => i.checked)
+                .map(i => i.dataset.value);
+
+            const selectedJobTypes = Array.from(document.querySelectorAll('.filter-section[data-filter="type"] .filter-options input[type="checkbox"]'))
+                .filter(i => i.checked)
+                .map(i => i.dataset.value);
+
+            const salarySlider = document.querySelector('.range-slider');
+            const maxSalary = salarySlider ? Number(salarySlider.value) : null;
+
+            const { ok, data } = await apiGetJobs({ keyword, location });
+            const jobs = ok ? (data.jobs || (Array.isArray(data) ? data : [])) : null;
+
+            // Client-side filtering for category/job type/salary (server supports basic keyword/location/category only)
+            function parseSalaryNumber(s) {
+                if (!s) return null;
+                const m = String(s).replace(/[,$\s]/g, '').match(/(\d+)/);
+                return m ? Number(m[1]) : null;
+            }
+
+            const filtered = (jobs || []).filter(job => {
+                // category filter
+                if (selectedCategories.length) {
+                    const jobCat = (job.category || 'Unspecified').trim();
+                    const matchCat = selectedCategories.some(c => jobCat.toLowerCase().includes((c||'').toLowerCase()));
+                    if (!matchCat) return false;
+                }
+
+                // job type filter
+                if (selectedJobTypes.length) {
+                    const jt = (job.job_type || 'Other').trim();
+                    const matchType = selectedJobTypes.some(t => jt.toLowerCase().includes((t||'').toLowerCase()));
+                    if (!matchType) return false;
+                }
+
+                // salary filter (max)
+                if (maxSalary) {
+                    const sVal = parseSalaryNumber(job.salary);
+                    if (sVal === null) return true; // keep negotiable/unspecified
+                    if (sVal > maxSalary) return false;
+                }
+
+                return true;
+            });
+
+            if (!ok || !jobs) {
+                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;">Could not load jobs. Make sure the backend is running.</div>`;
+                count.textContent = 'No jobs found';
+                return;
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;">No jobs match your search criteria.</div>`;
+                count.textContent = '0 Jobs Found';
+                return;
+            }
+
+            count.textContent = `Showing ${filtered.length} Job${filtered.length !== 1 ? 's' : ''}`;
+            grid.innerHTML = filtered.map(job => buildListingCard(job)).join('');
+        }
+
+        function buildListingCard(job) {
+            const company  = escapeHtml(job.company_name || 'Unknown Company');
+            const location = escapeHtml(job.location    || 'Not specified');
+            const salary   = job.salary ? `<span class="salary-amount">${escapeHtml(job.salary)}</span>` : '';
+            const posted   = timeAgo(job.created_at);
+            const category = job.category ? `<span class="meta-tag">🏷 ${escapeHtml(job.category)}</span>` : '';
+            const jobType  = job.job_type ? `<span class="meta-tag">💼 ${escapeHtml(job.job_type)}</span>` : '';
+            return `
+                <div class="job-card">
+                    <div class="job-card-top">
+                        <h4 class="job-card-title">${escapeHtml(job.title)}</h4>
+                        <div class="job-card-company">${company} • ${location}</div>
+                        <div class="job-details-meta">
+                            ${category}
+                            ${jobType}
+                            <span class="meta-tag">🕒 ${posted}</span>
+                        </div>
+                    </div>
+                    <div class="job-card-bottom">
+                        ${salary}
+                        <a href="detail.html?id=${job.id}" class="btn-apply">View &amp; Apply</a>
+                    </div>
+                </div>`;
+        }
+
+        function escapeHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
+        function timeAgo(isoStr) {
+            if (!isoStr) return 'Recently';
+            const diff = Date.now() - new Date(isoStr).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 60)  return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24)   return `${hrs}h ago`;
+            return `${Math.floor(hrs / 24)}d ago`;
+        }
+    </script>
 </body>
 </html>

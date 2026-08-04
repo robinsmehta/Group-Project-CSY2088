@@ -16,7 +16,7 @@
 #   DELETE /api/admin/companies/<id>         → remove a company account
 # ============================================================
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from app.services import admin_service
 from app.utils.decorators import role_required
 
@@ -40,7 +40,8 @@ def get_pending_companies():
         401 — Not logged in
         403 — Not an admin
     """
-    result, status_code = admin_service.get_pending_companies()
+    search = request.args.get('search') or None
+    result, status_code = admin_service.get_pending_companies(search=search)
     return jsonify(result), status_code
 
 
@@ -167,4 +168,123 @@ def delete_company(company_id):
         404 — Company not found
     """
     result, status_code = admin_service.delete_company(company_id)
+    return jsonify(result), status_code
+
+
+# ============================================================
+# GET /api/admin/stats
+# ============================================================
+@admin_bp.route('/stats', methods=['GET'])
+@role_required('admin')
+def get_stats():
+    """
+    Get platform statistics for admin dashboard.
+
+    Success response (200 OK):
+        {
+            "stats": {
+                "total_users": 10,
+                "total_companies": 5,
+                "total_jobs": 20,
+                "total_applications": 15,
+                "pending_companies": 2
+            }
+        }
+
+    Error responses:
+        401 — Not logged in
+        403 — Not an admin
+    """
+    result, status_code = admin_service.get_admin_stats()
+    return jsonify(result), status_code
+
+
+# ============================================================
+# GET /api/admin/users
+# ============================================================
+@admin_bp.route('/users', methods=['GET'])
+@role_required('admin')
+def get_users():
+    """
+    Return a paginated list of users and companies for the admin directory.
+
+    Query params:
+        page (int, optional): 1-based page number (default 1)
+        per_page (int, optional): items per page (default 10)
+        search (str, optional): case-insensitive substring match on name/company_name or email
+
+    Success response (200 OK):
+        { 'users': [ { ... } ], 'total': N, 'page': page, 'per_page': per_page }
+    """
+    page = request.args.get('page', 1)
+    per_page = request.args.get('per_page', 10)
+    search = request.args.get('search') or None
+
+    result, status_code = admin_service.get_users(page=page, per_page=per_page, search=search)
+    return jsonify(result), status_code
+
+
+# ============================================================
+# POST /api/admin/admins
+# ============================================================
+@admin_bp.route('/admins', methods=['POST'])
+@role_required('admin')
+def create_admin_route():
+    """
+    Create a new administrator account. Request body must include JSON:
+        { name, email, password }
+
+    Success: 201 Created with admin details (no password).
+    Error: 400 for missing fields, 409 for duplicate email.
+    """
+    data = None
+    try:
+        data = request.get_json(force=True)
+    except Exception:
+        data = None
+
+    if not data:
+        return jsonify({'error': 'Invalid JSON body'}), 400
+
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+
+    result, status_code = admin_service.create_admin(name=name, email=email, password=password)
+    return jsonify(result), status_code
+
+
+# ============================================================
+# PUT /api/admin/users/<id>/revoke
+# PUT /api/admin/users/<id>/restore
+# ============================================================
+@admin_bp.route('/users/<int:user_id>/revoke', methods=['PUT'])
+@role_required('admin')
+def revoke_user(user_id):
+    result, status_code = admin_service.revoke_user(user_id)
+    return jsonify(result), status_code
+
+
+@admin_bp.route('/users/<int:user_id>/restore', methods=['PUT'])
+@role_required('admin')
+def restore_user(user_id):
+    result, status_code = admin_service.restore_user(user_id)
+    return jsonify(result), status_code
+
+
+# ============================================================
+# PUT /api/admin/companies/<id>/revoke
+# PUT /api/admin/companies/<id>/restore
+# ============================================================
+@admin_bp.route('/companies/<int:company_id>/revoke', methods=['PUT'])
+@role_required('admin')
+def revoke_company(company_id):
+    result, status_code = admin_service.revoke_company(company_id)
+    return jsonify(result), status_code
+
+
+@admin_bp.route('/companies/<int:company_id>/restore', methods=['PUT'])
+@role_required('admin')
+def restore_company(company_id):
+    result, status_code = admin_service.restore_company(company_id)
     return jsonify(result), status_code

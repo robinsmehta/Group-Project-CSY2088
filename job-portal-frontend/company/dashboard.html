@@ -1,48 +1,445 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Company Dashboard — Job Portal</title>
-    <link rel="stylesheet" href="../css/style.css" />
-    <link rel="stylesheet" href="../css/dashboard.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireHub — Employer Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <style>
+        /* Company dashboard specific styles */
+        .dashboard-banner {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            padding: 60px 0;
+            color: white;
+        }
+
+        .banner-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recruiter-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .banner-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .banner-sub {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .banner-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 2px solid white;
+        }
+
+        .btn-black {
+            background: white;
+            color: #1e3a5f;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .dashboard-body {
+            padding: 40px 0;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section-header p {
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #F3F4F6;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .table-toolbar {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .toolbar-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .search-mini {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            padding: 8px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-mini input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 12px;
+            width: 150px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #F9FAFB;
+            padding: 12px 24px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #6B7280;
+            text-transform: uppercase;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .data-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .table-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #F3F4F6;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- TODO: Add shared navbar here -->
-    <header id="navbar"></header>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar"></nav>
 
-    <main>
-        <!-- 
-            COMPANY DASHBOARD
-            This page is only for logged-in, approved companies.
-            TODO: Check if user is logged in as a company (via shared.js / session).
-                  If not logged in or not approved, redirect to login.html.
+    <!-- Recruiter Banner (Logo section removed for clean modern UI) -->
+    <section class="dashboard-banner">
+        <div class="container">
+            <div class="banner-content">
+                <div>
+                    <div class="recruiter-tag">RECRUITER DASHBOARD</div>
+                    <h1 class="banner-title">Welcome back, <span id="company-name-display">Employer</span></h1>
+                    <p class="banner-sub">Your recruitment pipeline and active job postings at a glance.</p>
+                </div>
 
-            TODO: Display a welcome message with the company's name.
-
-            TODO: Fetch and display the company's own job listings via
-                  GET /api/jobs (filtered by company) using jobs.js.
-                  Render as a table or card list with Edit and Delete buttons.
-
-            TODO: "Edit" button opens post-job.html pre-filled with that job's data.
-            TODO: "Delete" button calls DELETE /api/jobs/<id> via jobs.js.
-            TODO: "View Applicants" button links to applicants.html?job_id=<id>
-        -->
-
-        <h1>Company Dashboard</h1>
-
-        <div id="company-jobs-section">
-            <!-- TODO: Job listings table/cards will be rendered here by jobs.js -->
+                <div class="banner-actions">
+                    <a href="applicants.html" class="btn-outline">View Applicants</a>
+                    <a href="post-job.html" class="btn-black">
+                        <span>+ Post New Job</span>
+                    </a>
+                </div>
+            </div>
         </div>
-    </main>
+    </section>
 
-    <!-- TODO: Add shared footer here -->
-    <footer id="footer"></footer>
+    <!-- Main Dashboard -->
+    <div class="dashboard-body" id="manage-jobs">
+        <div class="container">
+            <div class="section-header">
+                <h2>Account Overview</h2>
+                <p>Track your hiring performance and manage your active job postings.</p>
+            </div>
+
+            <!-- Table Card with Category Filter Dropdown at top -->
+            <div class="table-card">
+                <div class="table-toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div class="toolbar-title">Manage Job Postings</div>
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <!-- Category Filter Dropdown -->
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <label for="category-filter" style="font-size: 12px; font-weight: 600; color: #4B5563;">Category:</label>
+                            <select id="category-filter" style="padding: 8px 14px; border-radius: 20px; border: 1px solid #E5E7EB; font-size: 13px; outline: none; background: #F9FAFB; cursor: pointer; color: #1F2937;">
+                                <option value="All">All Categories</option>
+                                <option value="IT">IT</option>
+                                <option value="Design">Design</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Finance">Finance</option>
+                                <option value="HR">HR</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Customer Support">Customer Support</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Search Box -->
+                        <div class="search-mini">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="job-search-input" placeholder="Search roles...">
+                        </div>
+                    </div>
+                </div>
+
+                <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="text-align: left; background: #F9FAFB; border-bottom: 1px solid #E5E7EB;">
+                            <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">JOB ROLE</th>
+                            <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">CATEGORY</th>
+                            <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">STATUS</th>
+                            <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">APPLICANTS</th>
+                            <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">POSTED DATE</th>
+                            <th style="padding: 12px 24px; font-size: 12px; color: #6B7280; font-weight: 600;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobs-table-body">
+                        <!-- Dynamic job rows -->
+                    </tbody>
+                </table>
+
+                <div class="table-footer" style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+                    <div id="showing-count-text">Showing 5 of 5 listings</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Job Modal -->
+    <div id="edit-job-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:2000;">
+        <div style="background:#fff;border-radius:12px;max-width:780px;width:94%;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.2);position:relative;">
+            <button onclick="closeEditModal()" style="position:absolute;right:14px;top:12px;background:none;border:none;font-size:18px;cursor:pointer;color:#374151;">✕</button>
+            <h3 style="margin-top:0;margin-bottom:8px;font-size:20px;color:#111827;">Edit Job</h3>
+            <form id="edit-job-form">
+                <input type="hidden" id="edit-job-id">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <input id="edit-job-title" placeholder="Job title" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;" required>
+                    <input id="edit-job-category" placeholder="Category" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;">
+                    <input id="edit-job-location" placeholder="Location" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;">
+                    <input id="edit-job-salary" placeholder="Salary" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;">
+                    <input id="edit-job-closing-date" placeholder="Closing date (YYYY-MM-DDTHH:MM:SS)" style="padding:10px;border:1px solid #E5E7EB;border-radius:8px;">
+                </div>
+                <div style="margin-top:12px;">
+                    <textarea id="edit-job-description" placeholder="Description" rows="6" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:8px;"></textarea>
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+                    <button type="button" onclick="closeEditModal()" style="background:#F3F4F6;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;color:#374151;">Cancel</button>
+                    <button type="submit" style="background:#1E3A5F;color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer"></footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
-    <script src="../js/jobs.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        let allJobs = [];
 
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Protected Route Verification
+            await redirectIfNotLoggedIn('company');
+
+            // Render Nav & Footer
+            renderNavbar('dashboard');
+            renderFooter();
+
+            // Set User Greeting
+            const user = getLoggedInUser();
+            if (user) {
+                document.getElementById('company-name-display').textContent = user.company_name || user.name || 'Employer';
+            }
+
+            await loadCompanyJobs();
+
+            document.getElementById('category-filter').addEventListener('change', renderFilteredJobs);
+            document.getElementById('job-search-input').addEventListener('input', renderFilteredJobs);
+        });
+
+        async function loadCompanyJobs() {
+            const tbody = document.getElementById('jobs-table-body');
+            const countText = document.getElementById('showing-count-text');
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">Loading jobs from database…</td></tr>`;
+
+            const user = getLoggedInUser();
+            const { ok, data } = await apiGetJobs();
+            const jobs = ok ? (data.jobs || (Array.isArray(data) ? data : [])) : null;
+
+            if (!ok || !jobs) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#DC2626;">Failed to load jobs. Make sure the backend is running.</td></tr>`;
+                return;
+            }
+
+            // Filter jobs to only show this company's jobs
+            allJobs = jobs.filter(job => job.company_id === user.id || job.company_id === user.company_id);
+            renderFilteredJobs();
+        }
+
+        function renderFilteredJobs() {
+            const category = document.getElementById('category-filter').value;
+            const search   = document.getElementById('job-search-input').value.toLowerCase().trim();
+
+            const filtered = allJobs.filter(job => {
+                const matchesCategory = (category === 'All' || (job.category || '') === category);
+                const matchesSearch   = !search ||
+                    (job.title    || '').toLowerCase().includes(search) ||
+                    (job.category || '').toLowerCase().includes(search) ||
+                    (job.location || '').toLowerCase().includes(search);
+                return matchesCategory && matchesSearch;
+            });
+
+            const tbody     = document.getElementById('jobs-table-body');
+            const countText = document.getElementById('showing-count-text');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:#6B7280;">No job postings match your search.</td></tr>`;
+                countText.textContent = `Showing 0 of ${allJobs.length} listings`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(job => `
+                <tr style="border-bottom: 1px solid #F3F4F6;">
+                    <td style="padding: 16px 24px;">
+                        <div style="font-weight:600;color:#111827;">${escapeHtml(job.title)}</div>
+                        <div style="font-size:12px;color:#6B7280;">${escapeHtml(job.location || 'Not specified')}</div>
+                    </td>
+                    <td style="padding: 16px 24px; font-size: 13px; color: #374151;">
+                        <span class="badge" style="background:#F3F4F6;color:#4B5563;padding:3px 10px;border-radius:12px;">${escapeHtml(job.category || 'General')}</span>
+                    </td>
+                    <td style="padding: 16px 24px;">
+                        <span style="background:${job.status === 'closed' ? '#FECACA' : '#DCFCE7'};color:${job.status === 'closed' ? '#991B1B' : '#166534'};padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;">${escapeHtml(job.status === 'closed' ? 'Closed' : 'Active')}</span>
+                    </td>
+                    <td style="padding: 16px 24px; font-size: 14px; font-weight: 600; color: #111827;">
+                        ${typeof job.application_count === 'number' ? job.application_count : '0'}
+                    </td>
+                    <td style="padding: 16px 24px; font-size: 13px; color: #6B7280; display: flex; align-items: center; gap: 12px;">
+                        <span>${timeAgo(job.created_at)}</span>
+                        <button onclick="deleteJob(${job.id})" style="background:none;border:none;cursor:pointer;color:#DC2626;font-size:12px;font-weight:600;">Delete</button>
+                    </td>
+                    <td style="padding: 16px 24px;">
+                        <button onclick="openEditModal(${job.id})" style="background:#1E3A5F;color:white;border:none;padding:8px 14px;border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            countText.textContent = `Showing ${filtered.length} of ${allJobs.length} listings`;
+        }
+
+        async function deleteJob(jobId) {
+            if (!confirm('Are you sure you want to delete this job posting?')) return;
+            const { ok, data } = await apiDeleteJob(jobId);
+            if (ok) {
+                showToast('Job deleted successfully.', 'success');
+                allJobs = allJobs.filter(j => j.id !== jobId);
+                renderFilteredJobs();
+            } else {
+                showToast(data.error || 'Failed to delete job.', 'error');
+            }
+        }
+
+        function openEditModal(jobId) {
+            const job = allJobs.find(j => j.id === jobId);
+            if (!job) return showToast('Job not found.', 'error');
+
+            document.getElementById('edit-job-id').value = job.id;
+            document.getElementById('edit-job-title').value = job.title || '';
+            document.getElementById('edit-job-category').value = job.category || '';
+            document.getElementById('edit-job-location').value = job.location || '';
+            document.getElementById('edit-job-salary').value = job.salary || '';
+            // Prefill datetime-local value (YYYY-MM-DDTHH:MM)
+            if (job.closing_date) {
+                const dt = job.closing_date.replace('Z','');
+                document.getElementById('edit-job-closing-date').value = dt.slice(0,16);
+            } else {
+                document.getElementById('edit-job-closing-date').value = '';
+            }
+            document.getElementById('edit-job-description').value = job.description || '';
+
+            const modal = document.getElementById('edit-job-modal');
+            modal.style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('edit-job-modal');
+            modal.style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('edit-job-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const jobId = document.getElementById('edit-job-id').value;
+                    const payload = {
+                        title: document.getElementById('edit-job-title').value.trim(),
+                        category: document.getElementById('edit-job-category').value.trim(),
+                        location: document.getElementById('edit-job-location').value.trim(),
+                        salary: document.getElementById('edit-job-salary').value.trim(),
+                        description: document.getElementById('edit-job-description').value.trim(),
+                        closing_date: document.getElementById('edit-job-closing-date').value.trim() || null
+                    };
+
+                    const { ok, data } = await apiUpdateJob(jobId, payload);
+                    if (!ok) {
+                        showToast(data.error || 'Failed to update job.', 'error');
+                        return;
+                    }
+
+                    showToast('Job updated successfully.', 'success');
+                    allJobs = allJobs.map(j => j.id === data.job.id ? data.job : j);
+                    closeEditModal();
+                    renderFilteredJobs();
+                });
+            }
+        });
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        function timeAgo(isoStr) {
+            if (!isoStr) return 'Recently';
+            const diff = Date.now() - new Date(isoStr).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 60)  return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24)   return `${hrs}h ago`;
+            return `${Math.floor(hrs / 24)}d ago`;
+        }
+    </script>
 </body>
 </html>

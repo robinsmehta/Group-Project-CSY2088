@@ -29,12 +29,27 @@
 #    creating individual, redundant routes for every filter permutation (e.g. /jobs/category, /jobs/location).
 # ============================================================
 
+from datetime import datetime, timezone
+
 from app.extensions import db
 from app.models.job import Job
 from app.models.company import Company
+from sqlalchemy import text
 
 
-def create_job(company_id: int, title=None, description=None, location=None, category=None, salary=None):
+def refresh_job_statuses():
+    """Synchronously backfill/close jobs whose closing_date has passed."""
+    now = datetime.now(timezone.utc)
+    # Use raw SQL for efficiency
+    try:
+        sql = text("UPDATE jobs SET status='closed' WHERE closing_date IS NOT NULL AND closing_date <= :now AND status != 'closed'")
+        db.session.execute(sql, {'now': now})
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+
+def create_job(company_id: int, title=None, description=None, location=None, category=None, salary=None, job_type=None):
     """
     Create a new job listing for an approved company.
 
@@ -52,6 +67,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         tuple: (response_dict, http_status_code)
     """
     # Support receiving a dictionary as the second argument (data dict)
+    data = None
     if isinstance(title, dict):
         data = title
         title = data.get('title')
@@ -59,6 +75,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         location = data.get('location')
         category = data.get('category')
         salary = data.get('salary')
+        job_type = data.get('job_type')
 
     # Basic input checks
     title = (title or '').strip()
@@ -66,6 +83,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
     location = (location or '').strip()
     category = (category or '').strip() if category else None
     salary = (salary or '').strip() if salary else None
+    job_type = (job_type or '').strip() if job_type else None
 
     if not title or not description or not location:
         return {'error': 'Title, description, and location are required fields'}, 400
@@ -85,6 +103,20 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
             'error': 'Your company account is pending admin approval and cannot post jobs yet.'
         }, 403
 
+    closing_date = None
+    if isinstance(title, dict):
+        closing_date_raw = data.get('closing_date')
+    else:
+        closing_date_raw = None
+
+    if closing_date_raw:
+        try:
+            closing_date = datetime.fromisoformat(closing_date_raw)
+            if closing_date.tzinfo is None:
+                closing_date = closing_date.replace(tzinfo=timezone.utc)
+        except ValueError:
+            closing_date = None
+
     # Create new Job record linked to this company
     new_job = Job(
         company_id=company_id,
@@ -92,10 +124,14 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         description=description,
         location=location,
         category=category,
-        salary=salary
+        job_type=job_type,
+        salary=salary,
+        closing_date=closing_date
     )
 
     db.session.add(new_job)
+    # Determine persistent status based on closing_date
+    new_job.status = 'closed' if new_job.is_closed else 'active'
     db.session.commit()
 
     return {
@@ -104,7 +140,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
     }, 201
 
 
-def get_all_jobs(keyword=None, location=None, category=None):
+def get_all_jobs(keyword=None, location=None, category=None, job_type=None):
     """
     Retrieve all job listings, optionally filtered by keyword, location, and/or category.
     Joins with the companies table to include company information.
@@ -117,6 +153,9 @@ def get_all_jobs(keyword=None, location=None, category=None):
     Returns:
         tuple: (response_dict, http_status_code)
     """
+    # Ensure any expired jobs are marked closed in the DB before listing
+    refresh_job_statuses()
+
     # Query the jobs table and join with companies
     query = Job.query.join(Company)
 
@@ -126,6 +165,9 @@ def get_all_jobs(keyword=None, location=None, category=None):
     # -------------------------------------------------------------------------
     if category and category.strip():
         query = query.filter(Job.category.ilike(f'%{category.strip()}%'))
+
+    if job_type and job_type.strip():
+        query = query.filter(Job.job_type.ilike(f'%{job_type.strip()}%'))
 
     if location and location.strip():
         query = query.filter(Job.location.ilike(f'%{location.strip()}%'))
@@ -159,6 +201,9 @@ def get_job_by_id(job_id: int):
     Returns:
         tuple: (response_dict, http_status_code)
     """
+    # Ensure statuses are fresh
+    refresh_job_statuses()
+
     job = Job.query.get(job_id)
     if not job:
         return {'error': 'Job not found'}, 404
@@ -203,8 +248,25 @@ def update_job(job_id: int, company_id: int, updated_fields: dict = None, **kwar
         job.location = updated_fields['location'].strip()
     if 'category' in updated_fields and updated_fields['category'] is not None:
         job.category = updated_fields['category'].strip()
+    if 'job_type' in updated_fields and updated_fields['job_type'] is not None:
+        job.job_type = updated_fields['job_type'].strip()
     if 'salary' in updated_fields and updated_fields['salary'] is not None:
         job.salary = updated_fields['salary'].strip()
+    if 'closing_date' in updated_fields:
+        closing_date_raw = updated_fields.get('closing_date')
+        if closing_date_raw:
+            try:
+                closing_date = datetime.fromisoformat(closing_date_raw)
+                if closing_date.tzinfo is None:
+                    closing_date = closing_date.replace(tzinfo=timezone.utc)
+            except ValueError:
+                closing_date = None
+        else:
+            closing_date = None
+        job.closing_date = closing_date
+
+    # Update persistent status according to closing_date
+    job.status = 'closed' if job.is_closed else 'active'
 
     db.session.commit()
 
