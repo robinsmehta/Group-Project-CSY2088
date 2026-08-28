@@ -216,6 +216,51 @@ def update_application_status(application_id: int, company_id: int, new_status: 
     }, 200
 
 
+# ============================================================
+# TASK-007 — Build the "application stats" feature for the User Dashboard
+# ============================================================
+#
+# PROBLEM:
+# The new User Dashboard design shows 4 numbers at the top of the page:
+# Total Applied, In Review (i.e. under_review), Shortlisted, and Rejected.
+# This counting logic does not exist anywhere in the backend yet — there is
+# no function here, and no route in application_routes.py, that returns
+# these counts.
+#
+# (Note: This is NOT the same as the old "platform-wide admin stats" idea —
+# this only counts ONE job seeker's own applications, so it's simpler.)
+#
+# WHAT YOU NEED TO DO:
+# 1. Add a new function in this file, e.g. `get_my_application_stats(user_id)`,
+#    that looks a lot like `get_my_applications()` above it, except instead
+#    of returning the full list of applications, it counts how many of that
+#    user's applications currently have each status.
+#    Example return shape:
+#        {
+#          'total': 10,
+#          'applied': 4,
+#          'under_review': 3,
+#          'shortlisted': 2,
+#          'rejected': 1
+#        }
+# 2. Add a new route in application_routes.py, something like:
+#        GET /api/applications/mine/stats
+#    protected the same way as `get_my_applications` (role_required('user')),
+#    that calls your new function and returns the counts as JSON.
+# 3. On the frontend, the User Dashboard (job-portal-frontend/user/dashboard.html)
+#    needs to call this new endpoint and put the numbers into the 4 stat boxes
+#    at the top of the page — see the matching TODO in that file.
+#
+# WHAT "DONE" LOOKS LIKE:
+# If a job seeker has applied to 10 jobs and 3 of them are "shortlisted",
+# calling this new endpoint returns shortlisted: 3, and the dashboard shows
+# "3" in the Shortlisted box — and it updates correctly every time you check.
+#
+# ASSIGNED TASK:
+# Reeju (E4) — Build the User Dashboard's stat numbers.
+# ============================================================
+
+
 # Alias method names for backwards compatibility if needed
 submit_application = apply_to_job
 get_applications_by_user = get_my_applications

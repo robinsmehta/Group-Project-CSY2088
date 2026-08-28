@@ -185,6 +185,64 @@ def logout():
 
 
 # ============================================================
+# TASK-009 — Add "update my own profile" routes (User / Company / Admin)
+# ============================================================
+#
+# PROBLEM:
+# Right now, once someone registers, there is NO way for them to change
+# their own name, email, password (or, for companies, their description)
+# afterwards. This file has routes for registering and logging in, but
+# nothing for "update my account while I'm logged in."
+#
+# There are actually THREE separate small tasks hiding here, one per
+# account type — each assigned to a different team member, because each
+# person already owns that account type elsewhere in the app:
+#
+#   • Job seeker (User)  → Reeju      (E7) → update name, email, password
+#   • Company             → Simrika   (D4) → update company_name, email,
+#                                              password, AND description
+#   • Admin                → Ugeesha  (C3) → update name, email, password
+#
+# WHAT YOU NEED TO DO (same pattern for all three — copy this shape):
+# 1. Add a new route in this file, for example:
+#        @auth_bp.route('/me/user', methods=['PUT'])       (Reeju)
+#        @auth_bp.route('/me/company', methods=['PUT'])    (Simrika)
+#        @auth_bp.route('/me/admin', methods=['PUT'])      (Ugeesha)
+#    Protect it with @role_required('user') / ('company') / ('admin')
+#    (see how other routes in this file and in job_routes.py use it).
+# 2. Read the logged-in person's id from the session, the same way
+#    `session.get('user_id')` / `session.get('company_id')` is used
+#    elsewhere in this file.
+# 3. Read the new values (name/email/password, +description for company)
+#    from the JSON request body — look at how `register_company()` above
+#    reads `data.get(...)` for an example.
+# 4. Call a new function you'll add in auth_service.py (e.g.
+#    `update_user_profile(...)`, `update_company_profile(...)`,
+#    `update_admin_profile(...)`) that actually updates the database
+#    record. IMPORTANT: if a new password is provided, it must be
+#    hashed the same way `register_user`/`register_company` already
+#    hash passwords in auth_service.py — never save a plain-text password.
+# 5. Return the updated (safe — no password) profile info as JSON.
+#
+# HOW THIS PART CONNECTS:
+# Member B (Sagar) is building ONE shared popover (in shared.js) that opens
+# from the little circle icon in the navbar on every page. Once you've
+# built your route above, Sagar's popover code will call it. You do NOT
+# need to build any frontend for this — just the backend route + service
+# function. Member A (Robins) is building what the popover LOOKS like.
+#
+# WHAT "DONE" LOOKS LIKE:
+# You can send a PUT request with a new password to your route, and the
+# next time that account logs in, the new password works.
+#
+# ASSIGNED TASK:
+# TASK-009a — Reeju (E7): Job seeker profile editing route.
+# TASK-009b — Simrika (D4): Company profile editing route (incl. description).
+# TASK-009c — Ugeesha (C3): Admin's own profile editing route.
+# ============================================================
+
+
+# ============================================================
 # GET /api/auth/company/test — Protected Route Example
 # ============================================================
 @auth_bp.route('/company/test', methods=['GET'])

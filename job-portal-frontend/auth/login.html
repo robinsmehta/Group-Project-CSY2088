@@ -3,6 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--
+    ============================================================
+    TASK-001 — Naming update: "HireMe" → "Job Portal"
+    ============================================================
+    PROBLEM: This page's <title> below still says "HireMe" (an old name —
+    note other pages in this project even use a DIFFERENT old name,
+    "HireHub", so the naming has been inconsistent). The site is now
+    called "Job Portal". Update the <title> text below, and check the
+    rest of this page (and every other page) for any other leftover
+    "HireMe" / "HireHub" text (footer, navbar, headings) and replace with
+    "Job Portal".
+    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
+    ============================================================
+
+    ============================================================
+    TASK-003 — Move this page's CSS into shared .css files
+    ============================================================
+    PROBLEM: This page (like all 10 pages in the project) has its own
+    <style> block written directly inside the HTML file, IN ADDITION to
+    the separate CSS files already linked above (style.css). This means
+    styling lives in two places at once, which makes it easy for the same
+    kind of element (like a button) to end up looking different from page
+    to page.
+    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
+      1. Never write a <style> block directly inside an HTML page again.
+      2. Put anything used on almost every page (colors, fonts, button
+         styles, spacing, navbar, the new profile popover) into ONE shared
+         "global" CSS file that every page links to.
+      3. Put styling that is specific to just this page/section (e.g. auth
+         pages like this one) into its own CSS file (e.g. css/auth.css,
+         which already exists — check whether it already covers this).
+      4. Remove the whole <style>...</style> block below once its rules
+         have been moved into the right .css file(s).
+    WHAT "DONE" LOOKS LIKE: This page (and every other page) has NO <style>
+    tag in it anywhere, and still looks correct because it links to CSS
+    files instead.
+    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
+    ============================================================
+    -->
     <title>HireMe — Login</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -352,6 +391,20 @@
                         <div class="form-group">
                             <div class="label-row">
                                 <label>Password</label>
+                                <!--
+                                TODO — TASK-004 — Remove the "Forgot Password?" link
+                                PROBLEM: This link goes nowhere (href="#") and does
+                                nothing when clicked — it's left over from before.
+                                The team decided NOT to build a "forgot password"
+                                feature, so as you (Ugeesha/C4) wire up this new
+                                login page, simply DELETE this <a> element (and the
+                                .forgot-link CSS rule if it's not used elsewhere)
+                                instead of trying to make it work. You do not need
+                                to build anything new here — just make sure this
+                                broken link does not appear on the new page.
+                                ASSIGNED TASK: Ugeesha (C4) — Remove the "Forgot
+                                Password" link.
+                                -->
                                 <a href="#" class="forgot-link">Forgot Password?</a>
                             </div>
                             <div class="input-wrapper">
@@ -381,6 +434,17 @@
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
     <script>
+        // TODO — TASK-005 (Ugeesha / C1): Wire up Login on the new page
+        // NOTE: The login logic below (calling apiLogin, saving the user
+        // with setLoggedInUser, redirecting by role) already works today.
+        // Your job for C1 is mainly to make sure this SAME working logic
+        // survives once Robins (A1) rebuilds this page's HTML/CSS to match
+        // the new Figma design — i.e. keep the element IDs this script
+        // looks for (login-form, login-email, login-password, login-role)
+        // consistent with whatever the new page uses, or update this
+        // script to match the new page's IDs. Double check: correct role
+        // is used, correct redirect happens, and a clear error message
+        // shows for a wrong password, exactly like the old site did.
         document.addEventListener('DOMContentLoaded', () => {
             renderNavbar('login');
             renderFooter();

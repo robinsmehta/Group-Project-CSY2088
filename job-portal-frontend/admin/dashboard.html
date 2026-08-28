@@ -10,7 +10,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-    <style>
+        <!--
+    ============================================================
+    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
+    ============================================================
+    PROBLEM: This page's <title> above (and possibly other text further
+    down, like the navbar brand or footer) still uses an old site name
+    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
+    the <title> and any other leftover old-name text on this page.
+    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
+    ============================================================
+
+    ============================================================
+    TASK-003 — Move this page's CSS into shared .css files
+    ============================================================
+    PROBLEM: This page has its own <style> block written directly inside
+    the HTML file below, on top of the separate CSS files already linked
+    above. Styling ends up scattered in two places, which makes it easy
+    for the same kind of element (e.g. a button) to look different from
+    page to page.
+    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
+      1. Never write a <style> block directly inside an HTML page again.
+      2. Put anything used on almost every page (colors, fonts, buttons,
+         spacing, navbar, the new profile popover) into ONE shared global
+         CSS file that every page links to.
+      3. Put styling specific to just this page/section into its own CSS
+         file (e.g. one for dashboards, one for job pages, one for auth
+         pages) — check the css/ folder for files that may already fit.
+      4. Remove the <style>...</style> block below once its rules have
+         been moved into the right .css file(s).
+    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
+    and still looks correct because it links to CSS files instead.
+    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
+    ============================================================
+    -->
+<style>
         /* Admin-specific styles that don't conflict with shared CSS */
         .admin-hero {
             background: linear-gradient(180deg, #FFF0F5 0%, #F8F9FB 100%);
@@ -115,6 +149,42 @@
     <!-- Navbar -->
     <nav class="navbar" id="navbar"></nav>
 
+    <!--
+    ============================================================
+    TASK-023 — Split this single page into 3 real admin pages
+    ============================================================
+    PROBLEM: The team confirmed admin should now be 3 SEPARATE real pages,
+    not one long page with everything stacked on it like this file
+    currently is:
+      1. A Homepage — the "Platform Overview & Moderation" welcome screen
+         (see the <section class="admin-hero"> just below — this should
+         become its own simple landing page for admins).
+      2. Company Approvals — "Section 1" further down in this file.
+      3. User Directory — "Section 2" further down in this file.
+    "Add Admin" is NOT a 4th page — it stays as the small popup box you can
+    already see further down (search for `add-admin-modal`), which should
+    open when the "+ Add Master Admin" button is clicked, the same pattern
+    Sagar (B1) is building for the Profile Edit popover elsewhere in the
+    app — reuse that same popup approach here instead of inventing a new
+    one.
+    WHAT YOU NEED TO DO:
+      - Robins (A1): split this file into 3 separate HTML pages matching
+        the new Figma design (an admin homepage, a company-approvals page,
+        and a user-directory page), each linking to the others via the
+        admin nav links (see how `renderNavbar()` in js/shared.js already
+        builds an admin nav link to admin/dashboard.html — that will need
+        updating once there are 3 separate admin pages instead of one).
+      - Ugeesha (C2): once the 3 pages exist, connect each one to the
+        backend admin features that already work today (see
+        app/routes/admin_routes.py) — approving/rejecting companies,
+        viewing/searching users, revoking access — and build the "Add
+        Admin" popup using the same popup pattern as the Profile Edit
+        popover, with Name/Email/Password fields, connected to the
+        `apiCreateAdmin(...)` function already in js/api.js.
+    ASSIGNED TASK: Robins (A1, split into 3 pages) + Ugeesha (C2, wiring +
+    Add Admin popup).
+    ============================================================
+    -->
     <!-- Admin Hero -->
     <section class="admin-hero">
         <div class="container">
@@ -127,7 +197,8 @@
     <!-- Admin Body -->
     <div class="admin-body">
         <div class="container">
-            <!-- Section 1: Company Approvals -->
+            <!-- Section 1: Company Approvals (see TASK-023 above — this
+                 becomes its own page) -->
             <div class="section-header-center">
                 <h2>Company Approvals</h2>
                 <p>Review and verify newly registered organizations. Verified companies receive a benchmark badge and

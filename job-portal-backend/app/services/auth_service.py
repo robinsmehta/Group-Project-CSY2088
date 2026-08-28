@@ -19,6 +19,14 @@ from app.models.company import Company
 from app.models.admin import Admin
 
 
+# TODO — TASK-009 (see auth_routes.py for full details): the new profile-edit
+# routes (update_user_profile / update_company_profile / update_admin_profile)
+# should live in this file, following the same pattern as the register_*
+# functions below — look up the record by id, update the provided fields,
+# and if a new password is given, hash it with
+# `bcrypt.generate_password_hash(password).decode('utf-8')` exactly like
+# `register_user()` and `register_company()` do a few lines down, before
+# saving it. Never save a password that hasn't been hashed.
 def register_user(name, email=None, password=None):
     """
     Register a new job-seeker account.
