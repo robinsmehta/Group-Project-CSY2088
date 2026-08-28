@@ -2,6 +2,70 @@
 // Depends on: config.js
 // Load on every page after config.js
 
+// ============================================================
+// TODO — TASK-001 — Naming update: "HireHub" → "Job Portal"
+// ============================================================
+// PROBLEM: The site is now called "Job Portal", not "HireHub" (the old
+// name). This file builds the navbar brand text and the footer brand text
+// further down — search this file for the literal text "HireHub" (there
+// are 2 places: the navbar logo/brand link, and the footer heading) and
+// replace both with "Job Portal". The same text also appears in the
+// <title> tag and other spots across every HTML page — as you (Robins)
+// rebuild each page from Figma, make sure "HireHub" doesn't survive
+// anywhere (page titles, footer, navbar).
+// ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
+// ============================================================
+
+// ============================================================
+// TODO — TASK-002 — Build the shared Profile Edit popover's BEHAVIOUR
+// ============================================================
+//
+// PROBLEM:
+// Robins (A2) is building what the Profile Edit popover LOOKS like — a
+// small floating box with Name, Email, Password fields (+ Description for
+// companies) that opens when the circle icon in the navbar is clicked.
+// Right now nothing in this file makes that popover actually open, close,
+// load the current user's info, or save changes. Since the same circle
+// icon appears on almost every page, this needs to be built ONCE here in
+// shared.js, not separately on each page.
+//
+// WHAT YOU NEED TO DO:
+// 1. Once Robins has a rough version of the popover HTML/CSS, add a
+//    function here, e.g. `initProfilePopover()`, that:
+//      a) Finds the circle icon in the navbar (rendered inside
+//         `renderNavbar()` below — look for the `navbar-user-avatar` /
+//         `navbar-user` markup a little further down in this function)
+//         and adds a click listener that shows/hides the popover.
+//      b) When opened, fills the Name/Email fields with the currently
+//         logged-in user's info — you already have this in
+//         `getLoggedInUser()` further down this file.
+//      c) When the "Update" button inside the popover is clicked, sends
+//         the new name/email/password to the backend using the new
+//         `apiUpdateMyProfile(role, payload)` helper (see the TODO for
+//         this in js/api.js — TASK-010) and shows a success/error message
+//         (reuse `showToast()` from this same file).
+//      d) Closes when clicking outside the popover or on an "X" button.
+// 2. Call `initProfilePopover()` from inside `renderNavbar()` below, after
+//    the navbar HTML has been inserted into the page (so the circle icon
+//    actually exists in the DOM by the time you try to attach the click
+//    listener to it).
+//
+// HOW THIS PART CONNECTS:
+// renderNavbar() below (which runs on every page) builds the circle icon
+// markup. Your popover logic attaches to that same icon. The popover then
+// talks to the backend routes Ugeesha/Simrika/Reeju are each adding
+// (TASK-009 in app/routes/auth_routes.py) via the new apiUpdateMyProfile
+// helper (TASK-010 in js/api.js).
+//
+// WHAT "DONE" LOOKS LIKE:
+// On any page, clicking the circle icon lets you actually update your
+// name/email/password, and it behaves the same way no matter which page
+// you're on.
+//
+// ASSIGNED TASK:
+// Sagar (B1) — Build the Profile Edit popover's actual behavior.
+// ============================================================
+
 // Navbar & Footer Injection
 
 function renderNavbar(activePage) {
@@ -47,6 +111,11 @@ function renderNavbar(activePage) {
                 ? resolveSitePath('admin/dashboard.html')
                 : resolveSitePath('user/dashboard.html');
 
+        // NOTE for Robins (A2): the logged-in person's name label next to
+        // the profile circle (the "New small addition" in the brief) is
+        // already implemented right here — `${name}` is rendered next to
+        // the avatar circle below. When you rebuild the navbar to match
+        // Figma, just make sure this name label survives in your new markup.
         authSection = `
             <a href="${dashHref}" class="navbar-user">
                 <span class="navbar-user-avatar">${initials}</span>
@@ -68,6 +137,7 @@ function renderNavbar(activePage) {
     const html = `
         <nav class="navbar" id="navbar">
             <div class="navbar-inner">
+                <!-- TODO — TASK-001 (Robins/A1): rename "HireHub" to "Job Portal" below -->
                 <a href="${resolveSitePath('index.html')}" class="navbar-brand">HireHub</a>
                 <div class="navbar-links">${navLinks}</div>
                 <div class="navbar-actions">${authSection}</div>
@@ -106,6 +176,7 @@ function renderFooter() {
         <footer class="footer" id="footer">
             <div class="footer-inner">
                 <div>
+                    <!-- TODO — TASK-001 (Robins/A1): rename "HireHub" to "Job Portal" below (2 spots in this footer block) -->
                     <div class="footer-brand-name">HireHub</div>
                     <p class="footer-tagline">Connecting talent with opportunity. Find your next role or your next great hire.</p>
                 </div>

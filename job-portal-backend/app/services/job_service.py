@@ -117,6 +117,12 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         except ValueError:
             closing_date = None
 
+    # TODO — TASK-008 (continued, Simrika/D3): read the skills value the same
+    # way `category` and `job_type` are read above (e.g.
+    # `skills = data.get('skills')` inside the `if isinstance(title, dict):`
+    # block near the top of this function), then pass it into the Job(...)
+    # below as `skills=skills` — once you've added the `skills` column to
+    # app/models/job.py.
     # Create new Job record linked to this company
     new_job = Job(
         company_id=company_id,
@@ -252,6 +258,11 @@ def update_job(job_id: int, company_id: int, updated_fields: dict = None, **kwar
         job.job_type = updated_fields['job_type'].strip()
     if 'salary' in updated_fields and updated_fields['salary'] is not None:
         job.salary = updated_fields['salary'].strip()
+    # TODO — TASK-008 (continued, Simrika/D3): add the same kind of check here
+    # for 'skills', e.g.:
+    #   if 'skills' in updated_fields and updated_fields['skills'] is not None:
+    #       job.skills = updated_fields['skills'].strip()
+    # This lets the Edit Job form save updated skills, not just Post Job.
     if 'closing_date' in updated_fields:
         closing_date_raw = updated_fields.get('closing_date')
         if closing_date_raw:

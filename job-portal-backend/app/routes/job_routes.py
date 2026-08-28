@@ -141,6 +141,9 @@ def update_job(job_id):
     company_id = session.get('company_id') or session.get('user_id')
     data = request.get_json(silent=True) or {}
 
+    # TODO — TASK-008 (continued, Simrika/D3): once you've added the `skills`
+    # column to the Job model (see app/models/job.py), also add 'skills' to
+    # this list so an edit request is allowed to update it.
     updatable_fields = ['title', 'description', 'location', 'category', 'job_type', 'salary', 'closing_date']
     provided_updates = {k: v for k, v in data.items() if k in updatable_fields}
 

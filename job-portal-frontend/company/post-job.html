@@ -9,7 +9,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-    <style>
+        <!--
+    ============================================================
+    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
+    ============================================================
+    PROBLEM: This page's <title> above (and possibly other text further
+    down, like the navbar brand or footer) still uses an old site name
+    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
+    the <title> and any other leftover old-name text on this page.
+    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
+    ============================================================
+
+    ============================================================
+    TASK-003 — Move this page's CSS into shared .css files
+    ============================================================
+    PROBLEM: This page has its own <style> block written directly inside
+    the HTML file below, on top of the separate CSS files already linked
+    above. Styling ends up scattered in two places, which makes it easy
+    for the same kind of element (e.g. a button) to look different from
+    page to page.
+    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
+      1. Never write a <style> block directly inside an HTML page again.
+      2. Put anything used on almost every page (colors, fonts, buttons,
+         spacing, navbar, the new profile popover) into ONE shared global
+         CSS file that every page links to.
+      3. Put styling specific to just this page/section into its own CSS
+         file (e.g. one for dashboards, one for job pages, one for auth
+         pages) — check the css/ folder for files that may already fit.
+      4. Remove the <style>...</style> block below once its rules have
+         been moved into the right .css file(s).
+    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
+    and still looks correct because it links to CSS files instead.
+    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
+    ============================================================
+    -->
+<style>
         /* Post-job specific styles that don't conflict with shared CSS */
         .post-job-hero {
             background: linear-gradient(180deg, #FFF0F5 0%, #F8F9FB 100%);
@@ -226,6 +260,45 @@
                 <h2 class="form-card-title">Job Details</h2>
                 <p class="form-card-sub">Fields marked with an asterisk (*) are required</p>
 
+                <!--
+                ============================================================
+                TASK-020 — Turn this into ONE shared Post Job / Edit Job form
+                ============================================================
+                PROBLEM: In Figma, the "Post a New Opportunity" page (this
+                page) and the "Edit Post" page look almost identical — same
+                fields, same layout. Right now this page only handles
+                CREATING a new job (see the submit handler further down,
+                which always calls apiCreateJob). Building Edit Job as a
+                totally separate page would mean double the work and a risk
+                of the two pages drifting apart visually over time.
+                WHAT YOU NEED TO DO:
+                  - Robins (A3): Turn this page into one shared page/form
+                    that can show either "Post Job" or "Edit Job" mode, with
+                    small differences: Edit Job mode needs a red "Delete
+                    Job" button, and the submit button should say "Publish
+                    Job" for create vs "Edit Job"/"Save Changes" for edit
+                    (currently the button below always says "Publish Job" —
+                    search this file for `btn-publish`/"Publish Job" further
+                    down). One way to trigger "edit mode" is a query
+                    parameter, e.g. post-job.html?id=123, or a hidden field
+                    letting the JS below know which mode it's in.
+                  - Simrika (D2): Once the shared form exists, make it work
+                    in BOTH modes:
+                      1. Create mode (already partly working below via
+                         apiCreateJob) — keep this working.
+                      2. Edit mode — when the page loads with a job id, load
+                         that job's existing details into these same form
+                         fields first (using apiGetJob(jobId)), then save
+                         changes to that SAME job (using apiUpdateJob) when
+                         submitted, instead of creating a new job.
+                    Also wire up the new "Delete Job" button from A3 — make
+                    it ask "are you sure?" (like the existing `deleteJob()`
+                    confirm() call in company/dashboard.html) before
+                    actually deleting, since deleting can't be undone.
+                ASSIGNED TASK: Robins (A3, shared form UI) + Simrika (D2,
+                shared form logic for both create and edit).
+                ============================================================
+                -->
                 <form id="post-job-form">
                     <!-- Error Box -->
                     <div id="post-job-error" style="display:none;color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px;font-size:13px;margin-bottom:16px;"></div>
@@ -295,6 +368,37 @@
                         </div>
                     </div>
 
+                    <!--
+                    ============================================================
+                    TASK-021 — Add the Skills & Keywords tag input
+                    ============================================================
+                    PROBLEM: The new job-post form (per Figma) has a spot
+                    where you type a skill (like "React") and press Enter or
+                    comma to turn it into a small removable tag/pill, so a
+                    company can list several required skills. This doesn't
+                    exist on this page at all yet.
+                    WHAT YOU NEED TO DO:
+                      - Robins (A4): Build this tag-input box visually here
+                        — it can start simple: a text input where typing a
+                        word and pressing Enter/comma creates a small
+                        removable pill (with an X to remove it), and all the
+                        current tags get combined into one comma-separated
+                        string when the form is submitted (e.g. matching
+                        what the backend expects — see TASK-008 in
+                        app/models/job.py, which stores skills as one
+                        comma-separated string like "React, Figma, SQL").
+                      - Simrika (D3): Once the visual tag box exists, make
+                        sure the submit handler further down in this file
+                        (search for `apiCreateJob`) reads the current list
+                        of skills and includes it in the request body as
+                        `skills: "React, Figma, SQL"`, and make sure it also
+                        gets displayed correctly on the job detail page
+                        (jobs/detail.html) afterwards.
+                    ASSIGNED TASK: Robins (A4, visual tag input) + Simrika
+                    (D3, saving/loading the skills data).
+                    ============================================================
+                    -->
+
                     <!-- Step 3 -->
                     <div class="section-header-step">
                         <span class="step-num">3</span>
@@ -342,6 +446,12 @@
                 const salary      = document.getElementById('job-salary').value.trim();
                 const description = document.getElementById('job-description').value.trim();
                 const closing_date = (document.getElementById('job-closing-date').value || '').trim() || null;
+                // TODO — TASK-021 continued (Simrika/D3): once Robins (A4)
+                // has built the skills tag input, read its current tags
+                // here (e.g. joining them into "React, Figma, SQL") and add
+                // a `skills` line to the apiCreateJob(...) call below —
+                // also see TASK-020 above about turning this whole form
+                // into a shared Create/Edit form (Robins/A3, Simrika/D2).
 
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Publishing…';

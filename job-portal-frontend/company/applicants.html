@@ -9,7 +9,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-    <style>
+        <!--
+    ============================================================
+    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
+    ============================================================
+    PROBLEM: This page's <title> above (and possibly other text further
+    down, like the navbar brand or footer) still uses an old site name
+    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
+    the <title> and any other leftover old-name text on this page.
+    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
+    ============================================================
+
+    ============================================================
+    TASK-003 — Move this page's CSS into shared .css files
+    ============================================================
+    PROBLEM: This page has its own <style> block written directly inside
+    the HTML file below, on top of the separate CSS files already linked
+    above. Styling ends up scattered in two places, which makes it easy
+    for the same kind of element (e.g. a button) to look different from
+    page to page.
+    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
+      1. Never write a <style> block directly inside an HTML page again.
+      2. Put anything used on almost every page (colors, fonts, buttons,
+         spacing, navbar, the new profile popover) into ONE shared global
+         CSS file that every page links to.
+      3. Put styling specific to just this page/section into its own CSS
+         file (e.g. one for dashboards, one for job pages, one for auth
+         pages) — check the css/ folder for files that may already fit.
+      4. Remove the <style>...</style> block below once its rules have
+         been moved into the right .css file(s).
+    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
+    and still looks correct because it links to CSS files instead.
+    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
+    ============================================================
+    -->
+<style>
         /* Applicant-specific styles that don't conflict with shared CSS */
         .applicant-hero {
             background: linear-gradient(180deg, #FFF5F7 0%, #F8F9FB 100%);
@@ -168,6 +202,19 @@
                     <td style="padding:16px 24px;font-size:13px;">${escapeHtml(app.job_title)}</td>
                     <td style="padding:16px 24px;font-size:13px;color:#6B7280;">${(app.applied_at || app.created_at || '').split('T')[0] || 'Recently'}</td>
                     <td style="padding:16px 24px;">
+                        <!-- TODO — TASK-024 (Simrika/D7) — VERIFY ONLY: The
+                             team agreed on exactly 4 application statuses:
+                             Applied, Under Review, Shortlisted, Rejected.
+                             This dropdown already only shows those 4 (good!)
+                             — just double-check the wording/casing here
+                             matches exactly what's saved to the database
+                             (see the `status` Enum in
+                             app/models/application.py on the backend, which
+                             uses lowercase values like 'under_review') and
+                             that no 5th option (like "Interview Scheduled"
+                             or "Offered", used elsewhere in the old user
+                             dashboard — see TASK-012/017 in
+                             user/dashboard.html) ever gets added here. -->
                         <select onchange="handleStatusChange(${app.id}, this.value)" style="padding:4px 8px;border-radius:8px;border:1px solid #D1D5DB;font-size:12px;font-weight:600;">
                             <option value="applied" ${app.status === 'applied' ? 'selected' : ''}>Applied</option>
                             <option value="under_review" ${app.status === 'under_review' ? 'selected' : ''}>Under Review</option>
@@ -176,6 +223,12 @@
                         </select>
                     </td>
                     <td style="padding:16px 24px;">
+                        <!-- TODO — TASK-006 continued (Simrika/D6): this
+                             resume_url link is what needs the ownership/
+                             security check on the backend — see TASK-006
+                             in app/routes/application_routes.py
+                             (download_resume). No change needed here on
+                             the frontend; this note is just for context. -->
                         ${app.resume_url ? `<a href="${API_BASE_URL.replace('/api', '')}${app.resume_url}" target="_blank" class="action-icon-btn" title="Download Resume" style="text-decoration:none;display:inline-block;">📥 Resume</a>` : '<span style="font-size:12px;color:#9CA3AF;">No file</span>'}
                     </td>
                 </tr>

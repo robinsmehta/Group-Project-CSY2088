@@ -9,7 +9,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-    <style>
+        <!--
+    ============================================================
+    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
+    ============================================================
+    PROBLEM: This page's <title> above (and possibly other text further
+    down, like the navbar brand or footer) still uses an old site name
+    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
+    the <title> and any other leftover old-name text on this page.
+    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
+    ============================================================
+
+    ============================================================
+    TASK-003 — Move this page's CSS into shared .css files
+    ============================================================
+    PROBLEM: This page has its own <style> block written directly inside
+    the HTML file below, on top of the separate CSS files already linked
+    above. Styling ends up scattered in two places, which makes it easy
+    for the same kind of element (e.g. a button) to look different from
+    page to page.
+    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
+      1. Never write a <style> block directly inside an HTML page again.
+      2. Put anything used on almost every page (colors, fonts, buttons,
+         spacing, navbar, the new profile popover) into ONE shared global
+         CSS file that every page links to.
+      3. Put styling specific to just this page/section into its own CSS
+         file (e.g. one for dashboards, one for job pages, one for auth
+         pages) — check the css/ folder for files that may already fit.
+      4. Remove the <style>...</style> block below once its rules have
+         been moved into the right .css file(s).
+    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
+    and still looks correct because it links to CSS files instead.
+    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
+    ============================================================
+    -->
+<style>
         /* User dashboard specific styles */
         .user-dashboard-body {
             padding: 40px 0;
@@ -177,6 +211,41 @@
                 </div>
             </div>
 
+            <!--
+            ============================================================
+            TASK-012 — Rebuild the stats + application list for the new design
+            ============================================================
+            PROBLEM: The new Figma design for this dashboard is DIFFERENT
+            from what's below in two ways:
+              1. Stats: the new design shows exactly 4 numbers — Total
+                 Applied, In Review, Shortlisted, Rejected — matching the
+                 4 official application statuses. The 4 stat cards below
+                 currently show "Interviews" and "Offered" instead, which
+                 are NOT among the 4 agreed statuses (see
+                 app/models/application.py on the backend — the status
+                 column only allows: applied, under_review, shortlisted,
+                 rejected). These 4 cards need to be relabelled to match.
+              2. Application list: the new design replaces this whole
+                 6-column Kanban board below with a simple "Recent
+                 Applications" LIST instead. As you (Robins/A) rebuild
+                 this section from Figma, replace the kanban-board
+                 structure with a list-style layout instead.
+            WHAT YOU NEED TO DO:
+              - Robins (A1): rebuild this section to match the new Figma
+                design — 4 stat cards (Total Applied / In Review /
+                Shortlisted / Rejected) + a "Recent Applications" list.
+              - Reeju (E3): once the new list-style HTML exists, connect
+                it to the real application data so it only ever shows the
+                4 agreed statuses (see the matching TODO further down in
+                the <script> section of this page, near
+                renderKanbanCards()).
+              - Reeju (E4): wire the 4 stat numbers to the new
+                "my application stats" backend endpoint (see TASK-007 in
+                app/services/application_service.py and TASK-011 in
+                js/api.js).
+            ASSIGNED TASK: Robins (A1, layout) + Reeju (E3 list, E4 stats).
+            ============================================================
+            -->
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -209,7 +278,11 @@
                 </div>
             </div>
 
-            <!-- Kanban Board Section -->
+            <!-- Kanban Board Section — see TASK-012 above: this whole board
+                 is being replaced by a "Recent Applications" list per the
+                 new Figma design. Also see TASK-017 in the <script> section
+                 below (near the very bottom of this file) for the "View CV"
+                 button that needs to be added to each application row/card. -->
             <div class="kanban-section" id="applications">
                 <div class="kanban-header">
                     <div>
@@ -280,6 +353,22 @@
     <!-- Footer -->
     <footer class="footer" id="footer"></footer>
 
+    <!--
+    ============================================================
+    TASK-014 — Move this page's JavaScript into its own file
+    ============================================================
+    PROBLEM: All of this page's "smart" logic (loading applications,
+    building the board, calculating stats) is written directly inside this
+    HTML file in the <script> block below, instead of in its own separate
+    .js file. This makes the HTML file long and messy, and makes the logic
+    harder for a teammate to find later.
+    WHAT YOU NEED TO DO: As you wire up this page, move the JavaScript
+    below out of this <script>...</script> block and into its own file
+    (e.g. js/user-dashboard.js), then link to it the same way this page
+    already links to js/config.js, js/shared.js, and js/api.js just above.
+    ASSIGNED TASK: Reeju (E8) — Move JavaScript out of the HTML pages.
+    ============================================================
+    -->
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
@@ -294,8 +383,37 @@
 
             // Load & render the candidate application board in read-only mode
             await initKanbanBoard();
+
+            // TODO — TASK-011 (Reeju / E4): once the backend stats endpoint
+            // exists (see TASK-007 in application_service.py and TASK-011
+            // in js/api.js), call it here (e.g. `await loadApplicationStats()`)
+            // and fill in the 4 stat numbers at the top of the page (see
+            // TASK-012 higher up in this file for which 4 labels the new
+            // design needs: Total Applied / In Review / Shortlisted /
+            // Rejected).
         });
 
+        // ============================================================
+        // TODO — TASK-015 — Remove the fake "sample applications" data
+        // ============================================================
+        // PROBLEM: `fallbackApps` below is completely made-up demo data.
+        // Right now, if a job seeker hasn't applied to any real jobs yet,
+        // this fake data is shown instead of a real "you haven't applied
+        // yet" message — which looks like a real bug (or even a data
+        // leak) to anyone testing the site, including a marker.
+        // WHAT YOU NEED TO DO:
+        //   1. Delete the `fallbackApps` array below completely, and
+        //      remove the `apps = fallbackApps;` fallback line further
+        //      down inside `initKanbanBoard()` (search this file for
+        //      "fallbackApps" to find it).
+        //   2. In its place, when the real API call returns zero
+        //      applications, show a friendly empty-state message instead,
+        //      e.g. "You haven't applied to any jobs yet — browse jobs to
+        //      get started," with a button/link to jobs/listing.html.
+        //      (There's a `showEmpty()` helper already available from
+        //      shared.js you can reuse for this.)
+        // ASSIGNED TASK: Reeju (E5) — Remove the fake sample applications.
+        // ============================================================
         const fallbackApps = [
             { id: 1, position: 'Senior Product Designer', company: 'TechPulse Labs', applied_date: '2026-07-28', status: 'applied' },
             { id: 2, position: 'Frontend Engineer', company: 'BrightWave Tech', applied_date: '2026-07-25', status: 'under_review' },
@@ -303,6 +421,28 @@
             { id: 4, position: 'Financial Analyst', company: 'Prime Bank', applied_date: '2026-07-10', status: 'rejected' }
         ];
 
+        // ============================================================
+        // TODO — TASK-016 — Fix the "old data stuck on screen" bug
+        // ============================================================
+        // PROBLEM: `getApplicationsState()` below checks sessionStorage
+        // FIRST and reuses whatever was saved there from the first time
+        // the page was visited, instead of always asking the server for
+        // the current list. This means if a job seeker applies to a new
+        // job and comes straight back to this dashboard, the new
+        // application might not show up until they log out and back in
+        // (because sessionStorage still has the OLD saved list).
+        // WHAT YOU NEED TO DO:
+        //   1. Remove (or stop using) `getApplicationsState()` and
+        //      `saveApplicationsState()` below as a caching layer for the
+        //      application list.
+        //   2. Change `initKanbanBoard()` (a few lines further down) so it
+        //      ALWAYS calls `apiGetMyApplications()` fresh every time this
+        //      page loads, instead of checking sessionStorage first.
+        // WHAT "DONE" LOOKS LIKE: Apply to a job, go straight to this
+        // dashboard, and see it appear immediately — no logging out
+        // required.
+        // ASSIGNED TASK: Reeju (E6) — Fix the "old data stuck on screen" bug.
+        // ============================================================
         function getApplicationsState() {
             const saved = sessionStorage.getItem('user_kanban_applications');
             if (saved) {
@@ -356,6 +496,39 @@
             renderKanbanCards(apps);
         }
 
+        // ============================================================
+        // TODO — TASK-017 — Rebuild this as a "Recent Applications" list
+        // (4 statuses only) + add a "View CV" link to each row
+        // ============================================================
+        // PROBLEM 1 (Reeju / E3): This function currently builds SIX
+        // columns (applied, under_review, interview_scheduled,
+        // shortlisted, offered, rejected). The new Figma design does NOT
+        // use a Kanban board at all — it shows a simple "Recent
+        // Applications" LIST — and there are only 4 official statuses:
+        // applied, under_review, shortlisted, rejected (interview_scheduled
+        // and offered are not real statuses — check
+        // app/models/application.py on the backend to confirm). Once
+        // Robins (A1) has rebuilt the HTML for the new list layout (see
+        // TASK-012 near the top of this file), rewrite this function to
+        // loop through `apps` and build one row per application in the
+        // new list container instead of six kanban columns, making sure
+        // only the 4 real statuses are ever shown/used.
+        //
+        // PROBLEM 2 (Reeju / E9): Once a job seeker applies to a job and
+        // uploads a résumé, they currently have no way to look at it
+        // again. On each application row (in the new list from Problem 1
+        // above), add a small "View CV" link/button, placed just above
+        // the "Applied"/status text. It should open that application's
+        // résumé using the SAME download link/route that Simrika is
+        // securing in D6 (see TASK-006 in
+        // app/routes/application_routes.py) — e.g.
+        // `${API_BASE_URL.replace('/api','')}${app.resume_url}` the same
+        // way company/applicants.html already links to a résumé download.
+        // This only works correctly once D6's security fix allows the
+        // job-seeker-who-owns-it case, so this is easiest to finish after
+        // D6 is done.
+        // ASSIGNED TASK: Reeju — E3 (list rebuild) and E9 (View CV link).
+        // ============================================================
         function renderKanbanCards(apps) {
             const statuses = ['applied', 'under_review', 'interview_scheduled', 'shortlisted', 'offered', 'rejected'];
             

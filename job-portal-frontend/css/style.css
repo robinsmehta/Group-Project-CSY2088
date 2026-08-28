@@ -1,5 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* ================================================================
+   TODO — TASK-025 (Robins / A5, A6) — Keep this the ONE shared/global
+   stylesheet, and keep everything consistent
+   ================================================================
+   PROBLEM: In the old site, buttons, spacing, and even small helper text
+   looked slightly different from page to page because different pages
+   defined their own versions of the same kind of element (partly because
+   of the inline <style> blocks — see TASK-003 on each HTML page).
+   WHAT YOU NEED TO DO, as you rebuild pages from Figma:
+     1. Treat this file (style.css) as the ONE "global" stylesheet — the
+        :root design tokens below (colors, spacing) and shared component
+        styles (buttons, navbar, the profile popover) should live here,
+        and EVERY page should link to it.
+     2. For things that are specific to one section of the site (e.g. auth
+        pages, job pages, dashboards), use/extend the separate CSS files
+        that already exist alongside this one (auth.css, jobs.css,
+        dashboard.css) instead of repeating similar rules in multiple
+        places or inside a page's own <style> block.
+     3. Reuse the SAME button style, SAME colors, and SAME spacing values
+        (the --color-* / --space-* tokens below) across every page you
+        build — don't recreate a slightly different button style on each
+        page.
+   WHAT "DONE" LOOKS LIKE: If you want to change the shade of the main
+   button color everywhere, you change it in ONE place (the :root tokens
+   below) instead of hunting through 10 different files.
+   ASSIGNED TASK: Robins (A5 — design consistency, A6 — CSS organization).
+   ================================================================ */
+
 /* DESIGN TOKENS */
 :root {
     --color-primary:    #1E3A5F;

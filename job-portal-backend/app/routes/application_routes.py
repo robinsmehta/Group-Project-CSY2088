@@ -142,6 +142,55 @@ def update_application_status(application_id):
 # ============================================================
 # 5. GET /api/applications/resumes/<filename> — Secure Resume File Serving
 # ============================================================
+#
+# ============================================================
+# TASK-006 — Resume download has NO login/ownership check (most serious bug)
+# ============================================================
+#
+# PROBLEM:
+# This route serves a résumé file to literally anyone who has the URL —
+# there is no @role_required(...) decorator here and no code that checks
+# WHO is asking for the file. Résumés contain private personal information
+# (name, address, phone number, etc.), so right now anyone on the internet
+# who guesses or is given a link can download someone else's private résumé,
+# even if they are not logged in at all.
+#
+# WHAT YOU NEED TO DO:
+# 1. Require the requester to be logged in (check Flask's `session`,
+#    similar to how other routes in this file use `session.get('user_id')`
+#    and `session.get('role')`). If nobody is logged in, return 401.
+# 2. Look up which Application record this résumé file belongs to (you can
+#    search Application.query.filter_by(resume_path=...) using the filename,
+#    or adjust however makes sense with the Application model).
+# 3. Only allow the download to continue if EITHER of these is true:
+#      a) The logged-in user is the job seeker (role == 'user') who
+#         originally uploaded this résumé (application.user_id matches
+#         the logged-in user's id) — this is what lets a job seeker view
+#         their OWN résumé again (see E9 in the frontend, User Dashboard).
+#      b) The logged-in user is the company (role == 'company') that
+#         posted the job this application was submitted to
+#         (application.job.company_id matches the logged-in company's id).
+# 4. If neither condition is true, return a 403 "not allowed" response
+#    instead of the file.
+# 5. If the résumé/application can't be found at all, keep returning 404
+#    like the existing code already does.
+#
+# HOW THIS PART CONNECTS:
+# - Companies use this link on the "Applicants" page (company/applicants.html)
+#   to download a candidate's résumé.
+# - After this fix, job seekers will also use this SAME link/route to view
+#   their own résumé from their dashboard (a new "View CV" button/link —
+#   see the frontend TODO in job-portal-frontend/user/dashboard.html).
+# - Both of those cases must be allowed by your ownership check above.
+#
+# DO NOT:
+# Change how the file itself is found/served (the send_from_directory logic
+# below is fine and already protects against path traversal attacks) —
+# only ADD the login + ownership check before that part runs.
+#
+# ASSIGNED TASK:
+# Simrika (D6) — Fix the résumé download security problem.
+# ============================================================
 @application_bp.route('/resumes/<filename>', methods=['GET'])
 
 def download_resume(filename):

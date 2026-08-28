@@ -7,7 +7,41 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+        <!--
+    ============================================================
+    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
+    ============================================================
+    PROBLEM: This page's <title> above (and possibly other text further
+    down, like the navbar brand or footer) still uses an old site name
+    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
+    the <title> and any other leftover old-name text on this page.
+    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
+    ============================================================
+
+    ============================================================
+    TASK-003 — Move this page's CSS into shared .css files
+    ============================================================
+    PROBLEM: This page has its own <style> block written directly inside
+    the HTML file below, on top of the separate CSS files already linked
+    above. Styling ends up scattered in two places, which makes it easy
+    for the same kind of element (e.g. a button) to look different from
+    page to page.
+    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
+      1. Never write a <style> block directly inside an HTML page again.
+      2. Put anything used on almost every page (colors, fonts, buttons,
+         spacing, navbar, the new profile popover) into ONE shared global
+         CSS file that every page links to.
+      3. Put styling specific to just this page/section into its own CSS
+         file (e.g. one for dashboards, one for job pages, one for auth
+         pages) — check the css/ folder for files that may already fit.
+      4. Remove the <style>...</style> block below once its rules have
+         been moved into the right .css file(s).
+    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
+    and still looks correct because it links to CSS files instead.
+    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
+    ============================================================
+    -->
+<style>
         * {
             margin: 0;
             padding: 0;

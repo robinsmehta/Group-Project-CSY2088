@@ -7,7 +7,41 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+        <!--
+    ============================================================
+    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
+    ============================================================
+    PROBLEM: This page's <title> above (and possibly other text further
+    down, like the navbar brand or footer) still uses an old site name
+    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
+    the <title> and any other leftover old-name text on this page.
+    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
+    ============================================================
+
+    ============================================================
+    TASK-003 — Move this page's CSS into shared .css files
+    ============================================================
+    PROBLEM: This page has its own <style> block written directly inside
+    the HTML file below, on top of the separate CSS files already linked
+    above. Styling ends up scattered in two places, which makes it easy
+    for the same kind of element (e.g. a button) to look different from
+    page to page.
+    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
+      1. Never write a <style> block directly inside an HTML page again.
+      2. Put anything used on almost every page (colors, fonts, buttons,
+         spacing, navbar, the new profile popover) into ONE shared global
+         CSS file that every page links to.
+      3. Put styling specific to just this page/section into its own CSS
+         file (e.g. one for dashboards, one for job pages, one for auth
+         pages) — check the css/ folder for files that may already fit.
+      4. Remove the <style>...</style> block below once its rules have
+         been moved into the right .css file(s).
+    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
+    and still looks correct because it links to CSS files instead.
+    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
+    ============================================================
+    -->
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -348,6 +382,15 @@
     <footer class="footer" id="footer"></footer>
 
     <!-- Apply Modal -->
+    <!-- TODO — TASK-022 — Restyle this popup to match the new "Apply CV"
+         design (Robins/A1, wiring already mostly works — Reeju/E2)
+         PROBLEM: The apply logic below already works (uploads a résumé and
+         creates the application), but the new Figma design shows a
+         specific "Apply CV" popup style with a "Choose File" button and a
+         "Submit Application" button. As Robins rebuilds this page, restyle
+         this modal to match, and Reeju should double check the existing
+         upload/submit logic further down in this file (search for
+         `apiApplyToJob`) still works correctly once the HTML changes. -->
     <div id="apply-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;">
         <div style="background:#fff;border-radius:20px;padding:36px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.2);position:relative;" id="apply-modal-inner">
             <button id="close-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:18px;color:#6B7280;">✕</button>
@@ -482,6 +525,17 @@
                     ${descHtml || '<p>No description provided.</p>'}
                 </div>
             `;
+            // TODO — TASK-008 continued (Simrika/D3): once the backend
+            // sends a `job.skills` field (see TASK-008 in
+            // app/models/job.py — a comma-separated string like
+            // "React, Figma, SQL"), display it here as a row of small
+            // tag/pill elements, similar to how the tag input on the Post
+            // Job form (A4) shows tags. Something like:
+            //   const skillsHtml = (job.skills || '').split(',')
+            //     .map(s => s.trim()).filter(Boolean)
+            //     .map(s => `<span class="tag-item">${esc(s)}</span>`).join('');
+            // and add a new section-block for "Skills" near the "About the
+            // Role" section above, only if there are skills to show.
 
             // Sidebar
             document.getElementById('apply-sidebar').innerHTML = `

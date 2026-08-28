@@ -9,7 +9,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-    <style>
+        <!--
+    ============================================================
+    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
+    ============================================================
+    PROBLEM: This page's <title> above (and possibly other text further
+    down, like the navbar brand or footer) still uses an old site name
+    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
+    the <title> and any other leftover old-name text on this page.
+    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
+    ============================================================
+
+    ============================================================
+    TASK-003 — Move this page's CSS into shared .css files
+    ============================================================
+    PROBLEM: This page has its own <style> block written directly inside
+    the HTML file below, on top of the separate CSS files already linked
+    above. Styling ends up scattered in two places, which makes it easy
+    for the same kind of element (e.g. a button) to look different from
+    page to page.
+    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
+      1. Never write a <style> block directly inside an HTML page again.
+      2. Put anything used on almost every page (colors, fonts, buttons,
+         spacing, navbar, the new profile popover) into ONE shared global
+         CSS file that every page links to.
+      3. Put styling specific to just this page/section into its own CSS
+         file (e.g. one for dashboards, one for job pages, one for auth
+         pages) — check the css/ folder for files that may already fit.
+      4. Remove the <style>...</style> block below once its rules have
+         been moved into the right .css file(s).
+    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
+    and still looks correct because it links to CSS files instead.
+    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
+    ============================================================
+    -->
+<style>
         /* Company dashboard specific styles */
         .dashboard-banner {
             background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
@@ -234,7 +268,31 @@
         </div>
     </div>
 
-    <!-- Edit Job Modal -->
+    <!--
+    ============================================================
+    TASK-019 — This whole modal is being replaced by Robins' shared
+    Post Job / Edit Job page (A3), which Simrika (D2) will wire up
+    ============================================================
+    PROBLEM: This "Edit Job" popup below is the OLD way of editing a job.
+    Per the new Figma design, "Post a New Opportunity" and "Edit Post" are
+    now ONE shared page/form (built once by Robins, see A3 in
+    company/post-job.html), instead of a separate small popup like this.
+    WHAT YOU NEED TO DO:
+      - Robins (A3): build the shared Post Job / Edit Job page (see the
+        TODO in company/post-job.html for details) — this modal below can
+        eventually be removed once that shared page exists and this
+        dashboard links "Edit" buttons to it instead.
+      - Simrika (D2): once the shared form exists, make sure editing a job
+        loads the existing job's data into it first (title, category,
+        location, salary, closing date, description, AND the new
+        `skills` field — see TASK-008 in app/models/job.py) and saves
+        changes back to that same job when submitted.
+    Until the shared page is ready, this modal still works for basic
+    fields — just note it does NOT have a skills field yet (see the
+    TODO next to the description textarea below).
+    ASSIGNED TASK: Robins (A3, shared form) + Simrika (D2, wiring).
+    ============================================================
+    -->
     <div id="edit-job-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:2000;">
         <div style="background:#fff;border-radius:12px;max-width:780px;width:94%;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.2);position:relative;">
             <button onclick="closeEditModal()" style="position:absolute;right:14px;top:12px;background:none;border:none;font-size:18px;cursor:pointer;color:#374151;">✕</button>
@@ -251,6 +309,13 @@
                 <div style="margin-top:12px;">
                     <textarea id="edit-job-description" placeholder="Description" rows="6" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:8px;"></textarea>
                 </div>
+                <!-- TODO — TASK-008 continued (Simrika/D3 + Robins/A4): once
+                     the backend `skills` field exists (TASK-008 in
+                     app/models/job.py) and Robins has built the tag-input
+                     box (A4) on the new shared Post/Edit Job form (A3), add
+                     a way to edit skills here too (or, once the shared form
+                     from A3 replaces this modal entirely, do it there
+                     instead — see the TASK-019 note above this modal). -->
                 <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
                     <button type="button" onclick="closeEditModal()" style="background:#F3F4F6;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;color:#374151;">Cancel</button>
                     <button type="submit" style="background:#1E3A5F;color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;">Save changes</button>
@@ -265,6 +330,10 @@
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
+    <!-- TODO — TASK-014 (Reeju's E8 pattern, applies here too — Simrika/D-side
+         code): consider moving the <script> logic below into its own .js
+         file instead of leaving it inline, matching what E8 asks for on
+         the job-seeker pages. Not the top priority, but keeps things tidy. -->
     <script>
         let allJobs = [];
 
@@ -281,6 +350,33 @@
             if (user) {
                 document.getElementById('company-name-display').textContent = user.company_name || user.name || 'Employer';
             }
+
+            // ============================================================
+            // TODO — TASK-018 — Show a clear "pending approval" message
+            // ============================================================
+            // PROBLEM: When a company signs up, they can't post jobs until
+            // an admin approves them — but right now, nothing on this
+            // dashboard tells them that. They only find out by trying to
+            // post a job and getting a confusing error from the backend
+            // (see job_service.create_job(), which already returns an
+            // error like "Your company account is pending admin approval
+            // and cannot post jobs yet." — that error message already
+            // exists on the backend, it's just not shown proactively here).
+            // WHAT YOU NEED TO DO:
+            //   1. `user` above (from getLoggedInUser()) already includes
+            //      a `status` field (see auth_routes.py's /auth/me route
+            //      and login.html, which both already read/store status).
+            //   2. If `user.status === 'pending'` or `user.status ===
+            //      'rejected'`, show a clear banner/message on this page
+            //      right away — e.g. "Your account is waiting for
+            //      approval" — instead of letting them hit a surprise
+            //      error later when they try to post a job.
+            // WHAT "DONE" LOOKS LIKE: A brand-new, not-yet-approved
+            // company sees this message the moment they log in and view
+            // this dashboard — no guessing required.
+            // ASSIGNED TASK: Simrika (D5) — Show companies their approval
+            // status clearly.
+            // ============================================================
 
             await loadCompanyJobs();
 
@@ -402,6 +498,11 @@
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const jobId = document.getElementById('edit-job-id').value;
+                    // TODO — TASK-008 continued (Simrika/D3): once a skills
+                    // input exists on this form (or on the new shared A3
+                    // form), add a `skills:` line here too, e.g.
+                    //   skills: document.getElementById('edit-job-skills').value.trim(),
+                    // so edited skills actually get sent to the backend.
                     const payload = {
                         title: document.getElementById('edit-job-title').value.trim(),
                         category: document.getElementById('edit-job-category').value.trim(),
