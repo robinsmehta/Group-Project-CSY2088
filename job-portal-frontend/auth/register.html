@@ -3,531 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HireMe — Register</title>
+    <title>Job Portal — Register</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <!--
-    ============================================================
-    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
-    ============================================================
-    PROBLEM: This page's <title> above (and possibly other text further
-    down, like the navbar brand or footer) still uses an old site name
-    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
-    the <title> and any other leftover old-name text on this page.
-    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
-    ============================================================
-
-    ============================================================
-    TASK-003 — Move this page's CSS into shared .css files
-    ============================================================
-    PROBLEM: This page has its own <style> block written directly inside
-    the HTML file below, on top of the separate CSS files already linked
-    above. Styling ends up scattered in two places, which makes it easy
-    for the same kind of element (e.g. a button) to look different from
-    page to page.
-    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
-      1. Never write a <style> block directly inside an HTML page again.
-      2. Put anything used on almost every page (colors, fonts, buttons,
-         spacing, navbar, the new profile popover) into ONE shared global
-         CSS file that every page links to.
-      3. Put styling specific to just this page/section into its own CSS
-         file (e.g. one for dashboards, one for job pages, one for auth
-         pages) — check the css/ folder for files that may already fit.
-      4. Remove the <style>...</style> block below once its rules have
-         been moved into the right .css file(s).
-    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
-    and still looks correct because it links to CSS files instead.
-    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
-    ============================================================
-    -->
-<style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background-color: #F8F9FB;
-            color: #111827;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navbar */
-        .navbar {
-            height: 72px;
-            background: #ffffff;
-            border-bottom: 1px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            width: 100%;
-        }
-
-        .nav-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 20px;
-            color: #000;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #111827;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            list-style: none;
-            font-size: 13px;
-            font-weight: 500;
-            color: #4B5563;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .nav-action-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #374151;
-            text-decoration: none;
-        }
-
-        .btn-register {
-            background: #111827;
-            color: #ffffff;
-            padding: 9px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Register Main Layout */
-        .register-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            padding: 60px 0;
-        }
-
-        .register-grid {
-            display: grid;
-            grid-template-columns: 1fr 480px;
-            gap: 80px;
-            align-items: center;
-        }
-
-        /* Left Side */
-        .left-content h1 {
-            font-size: 42px;
-            font-weight: 700;
-            line-height: 1.15;
-            letter-spacing: -0.02em;
-            margin-bottom: 16px;
-        }
-
-        .left-content h1 span {
-            font-style: italic;
-            font-weight: 700;
-        }
-
-        .left-subtitle {
-            font-size: 14px;
-            color: #6B7280;
-            margin-bottom: 32px;
-            max-width: 440px;
-            line-height: 1.6;
-        }
-
-        .hero-illustration {
-            width: 100%;
-            max-width: 400px;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            display: block;
-        }
-
-        .feature-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .feature-icon {
-            width: 24px;
-            height: 24px;
-            color: #111827;
-            flex-shrink: 0;
-        }
-
-        .feature-text h4 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .feature-text p {
-            font-size: 12px;
-            color: #6B7280;
-        }
-
-        /* Right Side Form Card */
-        .form-card {
-            background: #ffffff;
-            border-radius: 28px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
-            border: 1px solid #F3F4F6;
-        }
-
-        .form-card h2 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .form-card .login-prompt {
-            font-size: 13px;
-            color: #6B7280;
-            margin-bottom: 24px;
-        }
-
-        .form-card .login-prompt a {
-            color: #111827;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Role Switcher Toggle */
-        .role-toggle {
-            background: #F3F4F6;
-            padding: 4px;
-            border-radius: 12px;
-            display: flex;
-            margin-bottom: 24px;
-        }
-
-        .role-option {
-            flex: 1;
-            padding: 10px 0;
-            border: none;
-            background: transparent;
-            font-size: 13px;
-            font-weight: 600;
-            color: #6B7280;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .role-option.active {
-            background: #ffffff;
-            color: #111827;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-        }
-
-        /* Form Inputs */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-wrapper svg {
-            position: absolute;
-            left: 14px;
-            color: #9CA3AF;
-        }
-
-        .input-wrapper input {
-            width: 100%;
-            padding: 12px 14px 12px 40px;
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #111827;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-wrapper input:focus {
-            border-color: #111827;
-            background: #ffffff;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: #111827;
-            color: #ffffff;
-            padding: 14px;
-            border: none;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .btn-submit:hover {
-            background: #1f2937;
-        }
-
-        @media (max-width: 992px) {
-            .register-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            .form-card {
-                max-width: 480px;
-                margin: 0 auto;
-            }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/auth.css">
 </head>
-<body>
 
-    <!-- Navbar -->
-    <nav class="navbar" id="navbar"></nav>
+<body class="auth-page-body">
 
-    <!-- Main Register Content -->
-    <div class="register-container">
-        <div class="container">
-            <div class="register-grid">
-                <!-- Left Info Section -->
-                <div class="left-content">
-                    <h1>Start your <span>career journey</span> with HireMe.</h1>
-                    <p class="left-subtitle">Join thousands of professionals and companies finding their perfect match every day.</p>
-                    
-                    <img src="../image/placeholder-team.png" alt="Team Illustration" class="hero-illustration" />
 
-                    <div class="feature-list">
-                        <div class="feature-item">
-                            <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                            <div class="feature-text">
-                                <h4>Smart Matching</h4>
-                                <p>Our AI connects you with the most relevant opportunities.</p>
-                            </div>
-                        </div>
-                        <div class="feature-item">
-                            <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                            <div class="feature-text">
-                                <h4>Verified Profiles</h4>
-                                <p>Vetted profiles ensure trust for talent and recruiters.</p>
-                            </div>
-                        </div>
-                        <div class="feature-item">
-                            <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                            <div class="feature-text">
-                                <h4>Direct Connections</h4>
-                                <p>Talk directly to hiring managers with no middleman.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Register Container -->
+    <div class="register-wrapper">
+        <!-- Left Side: Brand & Title -->
+        <div class="register-page-left">
+            <div class="register-brand">Job Portal</div>
+            <h1 class="register-title">Start your <span class="fw-bold">career</span><br><span class="fw-bold-italic">journey</span> with<br>Job Portal.</h1>
+            <a href="../index.html" class="register-back-link">
+                <span class="back-circle">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </span>
+                Back
+            </a>
+        </div>
 
-                <!-- Right Form Card -->
-                <div class="form-card">
-                    <h2>Create an account</h2>
-                    <p class="login-prompt">Already have an account? <a href="login.html">Log in</a></p>
+        <!-- Right Side: Form Card -->
+        <div class="register-page-right">
+            <div class="register-card">
+                <h2>Create an account</h2>
+                <p class="subtitle">Already have an account? <a href="login.html" class="text-black fw-bold">Log in</a></p>
 
-                    <!-- Toggle Role -->
-                    <div class="role-toggle">
-                        <button type="button" class="role-option active" onclick="setRole('seeker')">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                            Job Seeker
-                        </button>
-                        <button type="button" class="role-option" onclick="setRole('employer')">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-                            Employer
-                        </button>
+                <form id="register-form">
+                    <div id="register-error" class="auth-error-box"></div>
+
+                    <!-- Role Pill Toggle -->
+                    <div class="role-pill-toggle">
+                        <input type="hidden" id="register-role" value="user">
+                        <button type="button" class="role-pill active" data-role="user">Job Seeker</button>
+                        <button type="button" class="role-pill" data-role="company">Employer</button>
                     </div>
 
-                    <form action="#">
-                        <div class="form-group">
-                            <label id="name-label">Name</label>
-                            <div class="input-wrapper">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                <input type="text" id="name-input" placeholder="Jane" required>
-                            </div>
-                        </div>
+                    <!-- Company notice shown dynamically -->
+                    <div id="company-notice" class="info-notice auth-style-93b8ea">
+                        Company accounts require admin approval before you can post jobs.
+                    </div>
 
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <div class="input-wrapper">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                <input type="email" id="reg-email" placeholder="jane.doe@example.com" required>
-                            </div>
+                    <div class="form-group">
+                        <label id="name-label">Name</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="register-name" placeholder="Jane" required>
                         </div>
+                    </div>
 
-                        <div class="form-group">
-                            <label>Password</label>
-                            <div class="input-wrapper">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                <input type="password" id="reg-password" placeholder="••••••••••••" required>
-                            </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="register-email" placeholder="jane.doe@example.com" required>
                         </div>
+                    </div>
 
-                        <button type="submit" class="btn-submit" id="btn-submit">
-                            <span>Create Seeker Account</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                        </button>
-                    </form>
-                </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="register-password" placeholder="••••••••••••" required>
+                            <svg class="password-toggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <span id="submit-btn-text">Create Seeker Account</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer" id="footer"></footer>
+
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
     <script>
-        let currentRole = 'seeker';
-
         document.addEventListener('DOMContentLoaded', () => {
-            renderNavbar('register');
-            renderFooter();
 
-            const form = document.querySelector('form');
-            const submitBtn = document.getElementById('btn-submit');
-            const errorBox = document.createElement('div');
-            errorBox.style.cssText = 'display:none;color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:12px;';
-            form.prepend(errorBox);
+            // Handle Pill Toggle
+            const roleInput = document.getElementById('register-role');
+            const companyNotice = document.getElementById('company-notice');
+            const nameLabel = document.getElementById('name-label');
+            const nameInput = document.getElementById('register-name');
+            const submitBtnText = document.getElementById('submit-btn-text');
+            const rolePills = document.querySelectorAll('.role-pill');
 
-            const params = new URLSearchParams(window.location.search);
-            const roleParam = params.get('role');
-            if (roleParam === 'employer' || roleParam === 'seeker') {
-                setRole(roleParam);
-            }
+            rolePills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    rolePills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    const role = pill.getAttribute('data-role');
+                    roleInput.value = role;
+
+                    if (role === 'company') {
+                        companyNotice.style.display = 'block';
+                        nameLabel.textContent = 'Company Name';
+                        nameInput.placeholder = 'Me';
+                        submitBtnText.textContent = 'Create Employer Account';
+                    } else {
+                        companyNotice.style.display = 'none';
+                        nameLabel.textContent = 'Name';
+                        nameInput.placeholder = 'Jane';
+                        submitBtnText.textContent = 'Create Seeker Account';
+                    }
+                });
+            });
+
+            const form = document.getElementById('register-form');
+            const submitBtn = form.querySelector('.btn-submit');
+            const errorBox = document.getElementById('register-error');
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 errorBox.style.display = 'none';
-
-                const nameVal     = document.getElementById('name-input').value.trim();
-                const emailVal    = document.getElementById('reg-email').value.trim();
-                const passwordVal = document.getElementById('reg-password').value;
-
-                if (!nameVal || !emailVal || !passwordVal) {
-                    errorBox.textContent = 'Please fill in all fields.';
-                    errorBox.style.display = 'block';
-                    return;
-                }
+                const name     = document.getElementById('register-name').value.trim();
+                const email    = document.getElementById('register-email').value.trim();
+                const password = document.getElementById('register-password').value;
+                const role     = document.getElementById('register-role').value;
 
                 submitBtn.disabled = true;
                 submitBtn.querySelector('span').textContent = 'Creating account…';
 
-                let result;
-                if (currentRole === 'employer') {
-                    result = await apiRegisterCompany(nameVal, emailVal, passwordVal, '');
-                } else {
-                    result = await apiRegisterUser(nameVal, emailVal, passwordVal);
-                }
+                const { ok, data } = await apiRegister(role, { 
+                    email, 
+                    password, 
+                    name: role === 'user' ? name : email.split('@')[0], 
+                    company_name: role === 'company' ? name : null 
+                });
 
-                if (result.ok) {
-                    showToast('Account created! Please log in.', 'success');
-                    setTimeout(() => { window.location.href = resolveSitePath('auth/login.html'); }, 1200);
+                if (ok) {
+                    const user = data.user || {};
+                    const userObj = {
+                        id:           user.id || null,
+                        email:        user.email || email,
+                        role:         user.role || role,
+                        name:         user.name || user.company_name || email.split('@')[0],
+                        company_name: user.company_name || null,
+                        status:       user.status || null
+                    };
+                    setLoggedInUser(userObj);
+                    showToast('Account created successfully!', 'success');
+                    setTimeout(() => {
+                        if (role === 'company') window.location.href = resolveSitePath('company/dashboard.html');
+                        else if (role === 'admin') window.location.href = resolveSitePath('admin/dashboard.html');
+                        else window.location.href = resolveSitePath('user/dashboard.html');
+                    }, 600);
                 } else {
-                    const msg = result.data.error || result.data.message || 'Registration failed. Please try again.';
+                    const msg = data.error || data.message || 'Registration failed. Please try again.';
                     errorBox.textContent = msg;
                     errorBox.style.display = 'block';
                     submitBtn.disabled = false;
-                    submitBtn.querySelector('span').textContent =
-                        currentRole === 'employer' ? 'Create Employer Account' : 'Create Seeker Account';
+                    submitBtn.querySelector('span').textContent = 'Create Account';
                 }
             });
         });
-
-        function setRole(role) {
-            currentRole = role;
-            const options = document.querySelectorAll('.role-option');
-            const nameLabel = document.getElementById('name-label');
-            const nameInput = document.getElementById('name-input');
-            const btnSpan   = document.getElementById('btn-submit').querySelector('span');
-
-            options.forEach(opt => opt.classList.remove('active'));
-            if (role === 'seeker') {
-                options[0].classList.add('active');
-                nameLabel.innerText   = 'Name';
-                nameInput.placeholder = 'Jane Doe';
-                btnSpan.innerText     = 'Create Seeker Account';
-            } else {
-                options[1].classList.add('active');
-                nameLabel.innerText   = 'Company Name';
-                nameInput.placeholder = 'TechNova Inc.';
-                btnSpan.innerText     = 'Create Employer Account';
-            }
-        }
     </script>
+
 </body>
+
 </html>

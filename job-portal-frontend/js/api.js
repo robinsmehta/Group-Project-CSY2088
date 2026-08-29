@@ -42,9 +42,7 @@ async function apiFetch(path, options = {}) {
     return { ok: res.ok, status: res.status, data };
 }
 
-// ===========================================================================
 // AUTH
-// ===========================================================================
 
 async function apiLogin(email, password, role) {
     return apiFetch('/auth/login', { method: 'POST', body: { email, password, role } });
@@ -62,9 +60,7 @@ async function apiRegisterCompany(company_name, email, password, description) {
     return apiFetch('/auth/register/company', { method: 'POST', body: { company_name, email, password, description } });
 }
 
-// ===========================================================================
 // JOBS
-// ===========================================================================
 
 async function apiGetJobs(params = {}) {
     const qs = new URLSearchParams();
@@ -91,9 +87,7 @@ async function apiUpdateJob(jobId, jobData) {
     return apiFetch(`/jobs/${jobId}`, { method: 'PUT', body: jobData });
 }
 
-// ===========================================================================
 // APPLICATIONS
-// ===========================================================================
 
 async function apiGetMyApplications() {
     return apiFetch('/applications/mine');
@@ -117,47 +111,11 @@ async function apiUpdateApplicationStatus(applicationId, status) {
     });
 }
 
-// ===========================================================================
-// TODO — TASK-010 (Sagar / B1): Add API helper functions for the shared
-// Profile Edit popover.
-//
-// PROBLEM:
-// The Profile Edit popover (built visually by Robins/A, wired up by you)
-// needs to call the backend to save name/email/password changes. There are
-// no functions in this file yet for that — only register/login exist above.
-//
-// WHAT YOU NEED TO DO:
-// Add functions here, following the exact same pattern as apiLogin /
-// apiRegisterUser above, one for each account type (they call the three
-// backend routes Ugeesha/Simrika/Reeju are each adding — see the
-// TASK-009 TODOs in app/routes/auth_routes.py on the backend):
-//
-//   async function apiUpdateMyProfile(role, payload) {
-//       // role is 'user' | 'company' | 'admin' — pick the right endpoint,
-//       // e.g. `/auth/me/${role}`, and PUT the payload (name/email/password,
-//       // + description for company).
-//       return apiFetch(`/auth/me/${role}`, { method: 'PUT', body: payload });
-//   }
-//
-// HOW THIS PART CONNECTS:
-// Your popover code in shared.js will call this function when the user
-// clicks "Update" inside the Profile Edit popover.
-//
-// ASSIGNED TASK:
-// Sagar (B1) — Build the Profile Edit popover's actual behavior.
-// ===========================================================================
 
-// TODO — TASK-011 (Reeju / E4): add a helper function here for the new
-// "my application stats" endpoint once it exists on the backend (see the
-// TASK-007 TODO in app/services/application_service.py), e.g.:
-//   async function apiGetMyApplicationStats() {
-//       return apiFetch('/applications/mine/stats');
-//   }
-// The User Dashboard's 4 stat numbers will call this.
 
-// ===========================================================================
+
+
 // ADMIN
-// ===========================================================================
 
 async function apiGetPendingCompanies(search) {
     const qs = new URLSearchParams();
