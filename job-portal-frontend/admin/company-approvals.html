@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Portal — Company Approvals</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-page-body">
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar"></nav>
+
+    <div class="admin-style-f7982d">
+        <div class="admin-style-da363f">
+
+            <!-- Page Header -->
+            <div class="admin-style-096de2">
+                <h1 class="admin-style-bc9ea5">Company Approvals</h1>
+            </div>
+
+            <!-- Approvals Table -->
+            <div class="admin-style-decd1b">
+                <div class="admin-style-87f73a">
+                    <h2 class="admin-style-012496">Awaiting Verification</h2>
+                    <div class="admin-style-d85c4e">
+                        <svg class="admin-style-1c9fdb" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input id="company-search-input" type="text" placeholder="Search companies..." class="admin-style-ae0604">
+                    </div>
+                </div>
+
+                <table class="admin-style-fe41d0">
+                    <thead>
+                        <tr class="admin-style-093d93">
+                            <th class="admin-style-812502">Company Name</th>
+                            <th class="admin-style-812502">Industry</th>
+                            <th class="admin-style-812502">Submission Date</th>
+                            <th class="admin-style-812502">Status</th>
+                            <th class="admin-style-812502">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="companies-tbody">
+                        <tr><td colspan="5" class="admin-style-d7eb25">Loading pending company registrations…</td></tr>
+                    </tbody>
+                </table>
+                
+                <div class="admin-style-40cf99">
+                    <a href="#" class="admin-style-f9cf17">
+                        View all pending requests
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="footer"></footer>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = getLoggedInUser();
+            if (!user || user.role !== 'admin') {
+                window.location.href = resolveSitePath('auth/login.html');
+                return;
+            }
+            renderNavbar('approvals');
+            renderFooter();
+
+            const searchInput = document.getElementById('company-search-input');
+            function debounce(fn, delay) {
+                let timer = null;
+                return function(...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), delay); };
+            }
+            if (searchInput) searchInput.addEventListener('input', debounce(() => loadPendingCompanies(), 300));
+
+            await loadPendingCompanies();
+        });
+
+        async function loadPendingCompanies() {
+            const tbody = document.getElementById('companies-tbody');
+            if (!tbody) return;
+
+            tbody.innerHTML = `<tr><td colspan="5" class="admin-style-d7eb25">Loading...</td></tr>`;
+
+            const searchTerm = (document.getElementById('company-search-input')?.value || '').trim();
+            const { ok, data } = await apiGetPendingCompanies(searchTerm);
+
+            if (!ok) {
+                tbody.innerHTML = `<tr><td colspan="5" class="admin-style-ff776f">Failed to load.</td></tr>`;
+                return;
+            }
+
+            const companies = data.companies || (Array.isArray(data) ? data : []);
+
+            if (companies.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="admin-style-d7eb25">No pending requests.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = companies.map(c => `
+                <tr class="admin-style-093d93">
+                    <td class="admin-style-32e12a">${escHtml(c.company_name)}</td>
+                    <td class="admin-style-ea4b92">${escHtml(c.industry || 'Software')}</td>
+                    <td class="admin-style-ea4b92">${(c.created_at || '').split('T')[0] || '—'}</td>
+                    <td class="admin-style-79d501">
+                        <span class="admin-style-5217df">
+                            <span class="admin-style-9c18fb"></span>
+                            Pending
+                        </span>
+                    </td>
+                    <td class="admin-style-79d501">
+                        <div class="admin-style-13262f">
+                            <button onclick="handleApprove(${c.id})" class="admin-style-b207cb">Approve</button>
+                            <button onclick="handleReject(${c.id})" class="admin-style-4ca86d">Reject</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function handleApprove(companyId) {
+            const { ok, data } = await apiApproveCompany(companyId);
+            if (ok) { showToast('Company approved!', 'success'); await loadPendingCompanies(); }
+            else showToast(data.error || 'Failed to approve company.', 'error');
+        }
+
+        async function handleReject(companyId) {
+            if (!confirm('Reject this company?')) return;
+            const { ok, data } = await apiRejectCompany(companyId);
+            if (ok) { showToast('Company rejected.', 'success'); await loadPendingCompanies(); }
+            else showToast(data.error || 'Failed to reject company.', 'error');
+        }
+
+        function escHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str || '';
+            return d.innerHTML;
+        }
+    </script>
+</body>
+</html>
