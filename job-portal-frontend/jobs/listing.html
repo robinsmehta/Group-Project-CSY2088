@@ -3,532 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HireMe — Job Listings</title>
+    <title>Job Portal — Job Listings</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <!--
-    ============================================================
-    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
-    ============================================================
-    PROBLEM: This page's <title> above (and possibly other text further
-    down, like the navbar brand or footer) still uses an old site name
-    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
-    the <title> and any other leftover old-name text on this page.
-    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
-    ============================================================
-
-    ============================================================
-    TASK-003 — Move this page's CSS into shared .css files
-    ============================================================
-    PROBLEM: This page has its own <style> block written directly inside
-    the HTML file below, on top of the separate CSS files already linked
-    above. Styling ends up scattered in two places, which makes it easy
-    for the same kind of element (e.g. a button) to look different from
-    page to page.
-    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
-      1. Never write a <style> block directly inside an HTML page again.
-      2. Put anything used on almost every page (colors, fonts, buttons,
-         spacing, navbar, the new profile popover) into ONE shared global
-         CSS file that every page links to.
-      3. Put styling specific to just this page/section into its own CSS
-         file (e.g. one for dashboards, one for job pages, one for auth
-         pages) — check the css/ folder for files that may already fit.
-      4. Remove the <style>...</style> block below once its rules have
-         been moved into the right .css file(s).
-    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
-    and still looks correct because it links to CSS files instead.
-    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
-    ============================================================
-    -->
-<style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background-color: #F8F9FB;
-            color: #111827;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navbar */
-        .navbar {
-            height: 72px;
-            background: #ffffff;
-            border-bottom: 1px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            width: 100%;
-        }
-
-        .nav-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 20px;
-            color: #000;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #111827;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            list-style: none;
-            font-size: 13px;
-            font-weight: 500;
-            color: #4B5563;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .nav-action-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #374151;
-            text-decoration: none;
-        }
-
-        .btn-register {
-            background: #111827;
-            color: #ffffff;
-            padding: 9px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Hero Header */
-        .listing-hero {
-            padding: 60px 0 40px;
-            text-align: center;
-            background: linear-gradient(180deg, #FFFFFF 0%, #F8F9FB 100%);
-        }
-
-        .badge-pill {
-            display: inline-block;
-            background: #111827;
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-        }
-
-        .listing-title {
-            font-size: 38px;
-            font-weight: 700;
-            line-height: 1.2;
-            color: #111827;
-            margin-bottom: 14px;
-        }
-
-        .listing-title span {
-            color: #DB2777;
-        }
-
-        .listing-subtitle {
-            font-size: 14px;
-            color: #6B7280;
-            max-width: 580px;
-            margin: 0 auto 32px;
-            line-height: 1.6;
-        }
-
-        /* Search Bar */
-        .search-box {
-            background: #ffffff;
-            border: 1px solid #E5E7EB;
-            border-radius: 40px;
-            padding: 6px 8px 6px 20px;
-            display: flex;
-            align-items: center;
-            max-width: 720px;
-            margin: 0 auto 24px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-        }
-
-        .search-input-group {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-input-group svg {
-            color: #9CA3AF;
-        }
-
-        .search-input-group input {
-            border: none;
-            outline: none;
-            font-size: 13px;
-            width: 100%;
-            background: transparent;
-        }
-
-        .divider {
-            width: 1px;
-            height: 24px;
-            background: #E5E7EB;
-            margin: 0 16px;
-        }
-
-        .btn-search {
-            background: #111827;
-            color: #ffffff;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-        }
-
-        .tags-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 12px;
-            color: #6B7280;
-        }
-
-        .tag-pill {
-            background: #ffffff;
-            border: 1px solid #E5E7EB;
-            padding: 4px 12px;
-            border-radius: 14px;
-            color: #374151;
-            font-weight: 500;
-            text-decoration: none;
-        }
-
-        /* Listing Grid Layout */
-        .listing-layout {
-            padding: 40px 0 80px;
-        }
-
-        .layout-grid {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 32px;
-            align-items: start;
-        }
-
-        /* Sidebar Filters */
-        .filters-sidebar {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid #F3F4F6;
-        }
-
-        .filter-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .filter-section {
-            margin-bottom: 24px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .filter-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #9CA3AF;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 14px;
-        }
-
-        .filter-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #374151;
-            cursor: pointer;
-        }
-
-        .checkbox-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .count {
-            font-size: 11px;
-            color: #9CA3AF;
-        }
-
-        .range-slider {
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .range-values {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-
-        /* Main Content Area */
-        .results-header {
-            margin-bottom: 20px;
-        }
-
-        .results-header h3 {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .results-header p {
-            font-size: 12px;
-            color: #6B7280;
-        }
-
-        .jobs-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .job-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #F3F4F6;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .job-card-top {
-            margin-bottom: 16px;
-        }
-
-        .job-card-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 4px;
-        }
-
-        .job-card-company {
-            font-size: 12px;
-            color: #6B7280;
-            margin-bottom: 14px;
-        }
-
-        .job-details-meta {
-            display: flex;
-            gap: 12px;
-            font-size: 11px;
-            color: #9CA3AF;
-        }
-
-        .meta-tag {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .job-card-bottom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid #F9FAFB;
-        }
-
-        .salary-amount {
-            font-size: 13px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .btn-apply {
-            background: #111827;
-            color: #ffffff;
-            padding: 8px 16px;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 12px;
-            color: #6B7280;
-        }
-
-        .page-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            border: 1px solid #E5E7EB;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: #374151;
-            text-decoration: none;
-        }
-
-        .page-btn.active {
-            background: #111827;
-            color: #ffffff;
-            border-color: #111827;
-        }
-
-        @media (max-width: 992px) {
-            .layout-grid {
-                grid-template-columns: 1fr;
-            }
-            .jobs-cards-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/jobs.css">
 </head>
-<body>
+<body class="jobs-style-46372d">
 
     <!-- Navbar -->
     <nav class="navbar" id="navbar"></nav>
 
     <!-- Listing Hero -->
-    <section class="listing-hero">
-        <div class="container">
-            <span class="badge-pill">Browse 1,200+ Open Positions</span>
-            <h1 class="listing-title">Find the perfect job that <span>elevates your career</span></h1>
-            <p class="listing-subtitle">Browse through thousands of job opportunities from top companies around the world. Filter by role, location, and salary to find your match.</p>
+    <section class="listing-hero jobs-style-828709">
+        <div class="container jobs-style-eb46d9">
+            <h1 class="listing-title jobs-style-fd950e">
+                Find the perfect job that <span class="jobs-style-3aa024">elevates</span> your career
+            </h1>
 
-            <div class="search-box">
-                <div class="search-input-group">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" id="keyword-input" placeholder="Job title, keywords, or company...">
+            <div class="search-box jobs-style-e28164">
+                <div class="search-input-group jobs-style-269122">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="keyword-input" placeholder="Job title, keywords, or company..." class="jobs-style-0c46f1">
                 </div>
-                <div class="divider"></div>
-                <div class="search-input-group">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                    <input type="text" id="location-input" placeholder="Location (e.g. London, Remote)">
+                <div class="divider jobs-style-545c64"></div>
+                <div class="search-input-group jobs-style-269122">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <input type="text" id="location-input" placeholder="Location (e.g., San Francisco)" class="jobs-style-0c46f1">
                 </div>
-                <button class="btn-search" id="search-btn">Search Jobs</button>
+                <button class="btn-search jobs-style-47ef00" id="search-btn">Search Jobs</button>
             </div>
 
-            <div class="tags-row">
-                <span>Popular:</span>
-                <a href="#" class="tag-pill">UX Design</a>
-                <a href="#" class="tag-pill">React Dev</a>
-                <a href="#" class="tag-pill">Marketing</a>
-                <a href="#" class="tag-pill">Product Manager</a>
-                <a href="#" class="tag-pill">Remote</a>
+            <div class="tags-row jobs-style-66a039">
+                <span class="jobs-style-3dad24">Popular:</span>
+                <a href="#" class="tag-pill jobs-style-f3516d">UI/UX Design</a>
+                <a href="#" class="tag-pill jobs-style-f3516d">Full Stack</a>
+                <a href="#" class="tag-pill jobs-style-f3516d">Marketing</a>
+                <a href="#" class="tag-pill jobs-style-f3516d">Product Manager</a>
+                <a href="#" class="tag-pill jobs-style-f3516d">Remote</a>
             </div>
         </div>
     </section>
 
     <!-- Listing Content -->
-    <section class="listing-layout">
-        <div class="container">
-            <div class="layout-grid">
+    <section class="listing-section jobs-style-4cec9a">
+        <div class="container jobs-style-6c25a6">
+            <div class="layout-grid jobs-style-2e750b">
                 <!-- Sidebar Filters -->
-                <aside class="filters-sidebar">
-                    <div class="filter-header">
+                <aside class="filters-sidebar jobs-style-db8312">
+                    <div class="filter-header jobs-style-e7511b">
                         <span>Filters</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                     </div>
 
-                    <div class="filter-section" data-filter="category">
-                        <div class="filter-title">Job Category</div>
-                        <div class="filter-options">
-                            <label class="checkbox-label">
+                    <div class="filter-section jobs-style-1e0990" data-filter="category">
+                        <div class="filter-title jobs-style-4310cd">Job Category</div>
+                        <div class="filter-options jobs-style-578b24">
+                            <label class="checkbox-label jobs-style-19419c">
                                 <div class="checkbox-left"><input type="checkbox"> Loading…</div>
                             </label>
                         </div>
                     </div>
 
-                    <div class="filter-section" data-filter="type">
-                        <div class="filter-title">Job Type</div>
-                        <div class="filter-options">
-                            <label class="checkbox-label">
+                    <div class="filter-section jobs-style-1e0990" data-filter="type">
+                        <div class="filter-title jobs-style-4310cd">Job Type</div>
+                        <div class="filter-options jobs-style-578b24">
+                            <label class="checkbox-label jobs-style-19419c">
                                 <div class="checkbox-left"><input type="checkbox"> Loading…</div>
                             </label>
                         </div>
                     </div>
 
-                    <div class="filter-section" style="border: none;">
-                        <div class="filter-title">Salary Range</div>
-                        <input type="range" class="range-slider" min="0" max="200000" value="200000">
-                        <div class="range-values">
+                    <div class="filter-section jobs-style-3e0512">
+                        <div class="filter-title jobs-style-4310cd">Salary Range</div>
+                        <input type="range" class="range-slider jobs-style-adae45" min="0" max="200000" value="200000">
+                        <div class="range-values jobs-style-a26180">
                             <span>$0k</span>
                             <span>$100k</span>
                             <span>$200k+</span>
@@ -536,29 +86,29 @@
                     </div>
                 </aside>
 
-                <!-- Cards Grid (populated by JS from API) -->
+                <!-- Cards Grid -->
                 <div>
-                    <div class="results-header">
-                        <h3 id="results-count">Loading jobs…</h3>
-                        <p>Jobs from our database in real-time</p>
+                    <div class="results-header jobs-style-91e2ae">
+                        <h3 id="results-count" class="jobs-style-c75c0b">Loading jobs…</h3>
+                        <p class="jobs-style-c2a341">Jobs from our database in real-time</p>
                     </div>
 
-                    <div class="jobs-cards-grid" id="jobs-grid">
-                        <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 12px;display:block;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div class="jobs-cards-grid jobs-style-764000" id="jobs-grid">
+                        <div class="jobs-style-4991c0">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="jobs-style-79db27"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                             Loading jobs from database…
                         </div>
                     </div>
 
                     <!-- Pagination -->
-                    <div class="pagination">
-                        <span>Page 1 of 63</span>
-                        <a href="#" class="page-btn">&lt;</a>
-                        <a href="#" class="page-btn active">1</a>
-                        <a href="#" class="page-btn">2</a>
-                        <a href="#" class="page-btn">3</a>
-                        <span>...</span>
-                        <a href="#" class="page-btn">&gt;</a>
+                    <div class="pagination jobs-style-83b129">
+                        <span class="jobs-style-ed61ef">Page 1 of 63</span>
+                        <a href="#" class="page-btn jobs-style-9c5bd6">&lt;</a>
+                        <a href="#" class="page-btn active jobs-style-a5b781">1</a>
+                        <a href="#" class="page-btn jobs-style-9c5bd6">2</a>
+                        <a href="#" class="page-btn jobs-style-9c5bd6">3</a>
+                        <span class="jobs-style-fc346c">...</span>
+                        <a href="#" class="page-btn jobs-style-9c5bd6">&gt;</a>
                     </div>
                 </div>
             </div>
@@ -576,14 +126,12 @@
             renderNavbar('jobs');
             renderFooter();
 
-            // Load full job set to build filters, then render initial results
             loadInitialJobsAndFilters();
 
             document.getElementById('search-btn').addEventListener('click', fetchAndRenderJobs);
             document.getElementById('keyword-input').addEventListener('keydown', e => { if (e.key === 'Enter') fetchAndRenderJobs(); });
             document.getElementById('location-input').addEventListener('keydown', e => { if (e.key === 'Enter') fetchAndRenderJobs(); });
 
-            // Tag pill quick-search
             document.querySelectorAll('.tag-pill').forEach(pill => {
                 pill.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -601,7 +149,6 @@
         }
 
         function buildFiltersFromJobs(jobs) {
-            // Build categories with counts
             const catMap = new Map();
             const typeMap = new Map();
             let highestSalary = 0;
@@ -626,27 +173,23 @@
             if (catContainer) {
                 catContainer.innerHTML = Array.from(catMap.entries()).map(([c, count]) => {
                     const id = `cat-${cssSafe(c)}`;
-                    return `<label class="checkbox-label"><div class="checkbox-left"><input type="checkbox" data-value="${escapeHtmlAttr(c)}" id="${id}"> ${escapeHtml(c)}</div><span class="count">${count}</span></label>`;
+                    return `<label class="checkbox-label jobs-style-20e5a0"><div class="checkbox-left jobs-style-877e9a"><input type="checkbox" data-value="${escapeHtmlAttr(c)}" id="${id}" class="jobs-style-150e43"> ${escapeHtml(c)}</div><span class="count jobs-style-a837ea">${count}</span></label>`;
                 }).join('');
             }
             if (typeContainer) {
                 typeContainer.innerHTML = Array.from(typeMap.entries()).map(([t, count]) => {
                     const id = `type-${cssSafe(t)}`;
-                    return `<label class="checkbox-label"><div class="checkbox-left"><input type="checkbox" data-value="${escapeHtmlAttr(t)}" id="${id}"> ${escapeHtml(t)}</div><span class="count">${count}</span></label>`;
+                    return `<label class="checkbox-label jobs-style-20e5a0"><div class="checkbox-left jobs-style-877e9a"><input type="checkbox" data-value="${escapeHtmlAttr(t)}" id="${id}" class="jobs-style-150e43"> ${escapeHtml(t)}</div><span class="count jobs-style-a837ea">${count}</span></label>`;
                 }).join('');
             }
 
-            // Wire events for newly created checkboxes
             document.querySelectorAll('.filter-options input[type="checkbox"]').forEach(cb => cb.addEventListener('change', fetchAndRenderJobs));
 
-            // Salary slider: set range to highest found (or default)
             const slider = document.querySelector('.range-slider');
             const rangeValues = slider ? slider.nextElementSibling : null;
             if (slider) {
                 const maxVal = highestSalary ? Math.ceil(highestSalary / 1000) * 1000 : 200000;
                 slider.max = maxVal;
-                // Default to the top of the range so no jobs are hidden until the
-                // user deliberately drags the slider down.
                 slider.value = maxVal;
                 if (rangeValues) {
                     const mid = Math.round(Number(slider.value) / 1000);
@@ -673,9 +216,8 @@
             const grid     = document.getElementById('jobs-grid');
             const count    = document.getElementById('results-count');
 
-            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;">Loading…</div>`;
+            grid.innerHTML = `<div class="jobs-style-4991c0">Loading…</div>`;
 
-            // Collect filter selections (use data-value on inputs)
             const selectedCategories = Array.from(document.querySelectorAll('.filter-section[data-filter="category"] .filter-options input[type="checkbox"]'))
                 .filter(i => i.checked)
                 .map(i => i.dataset.value);
@@ -690,7 +232,6 @@
             const { ok, data } = await apiGetJobs({ keyword, location });
             const jobs = ok ? (data.jobs || (Array.isArray(data) ? data : [])) : null;
 
-            // Client-side filtering for category/job type/salary (server supports basic keyword/location/category only)
             function parseSalaryNumber(s) {
                 if (!s) return null;
                 const m = String(s).replace(/[,$\s]/g, '').match(/(\d+)/);
@@ -698,38 +239,32 @@
             }
 
             const filtered = (jobs || []).filter(job => {
-                // category filter
                 if (selectedCategories.length) {
                     const jobCat = (job.category || 'Unspecified').trim();
                     const matchCat = selectedCategories.some(c => jobCat.toLowerCase().includes((c||'').toLowerCase()));
                     if (!matchCat) return false;
                 }
-
-                // job type filter
                 if (selectedJobTypes.length) {
                     const jt = (job.job_type || 'Other').trim();
                     const matchType = selectedJobTypes.some(t => jt.toLowerCase().includes((t||'').toLowerCase()));
                     if (!matchType) return false;
                 }
-
-                // salary filter (max)
                 if (maxSalary) {
                     const sVal = parseSalaryNumber(job.salary);
-                    if (sVal === null) return true; // keep negotiable/unspecified
+                    if (sVal === null) return true;
                     if (sVal > maxSalary) return false;
                 }
-
                 return true;
             });
 
             if (!ok || !jobs) {
-                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;">Could not load jobs. Make sure the backend is running.</div>`;
+                grid.innerHTML = `<div class="jobs-style-4991c0">Could not load jobs. Make sure the backend is running.</div>`;
                 count.textContent = 'No jobs found';
                 return;
             }
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;">No jobs match your search criteria.</div>`;
+                grid.innerHTML = `<div class="jobs-style-4991c0">No jobs match your search criteria.</div>`;
                 count.textContent = '0 Jobs Found';
                 return;
             }
@@ -741,24 +276,37 @@
         function buildListingCard(job) {
             const company  = escapeHtml(job.company_name || 'Unknown Company');
             const location = escapeHtml(job.location    || 'Not specified');
-            const salary   = job.salary ? `<span class="salary-amount">${escapeHtml(job.salary)}</span>` : '';
             const posted   = timeAgo(job.created_at);
-            const category = job.category ? `<span class="meta-tag">🏷 ${escapeHtml(job.category)}</span>` : '';
-            const jobType  = job.job_type ? `<span class="meta-tag">💼 ${escapeHtml(job.job_type)}</span>` : '';
+            
+            // Format salary or fallback
+            const salaryText = job.salary ? escapeHtml(job.salary) : 'Salary undisclosed';
+
             return `
-                <div class="job-card">
-                    <div class="job-card-top">
-                        <h4 class="job-card-title">${escapeHtml(job.title)}</h4>
-                        <div class="job-card-company">${company} • ${location}</div>
-                        <div class="job-details-meta">
-                            ${category}
-                            ${jobType}
-                            <span class="meta-tag">🕒 ${posted}</span>
+                <div class="job-card jobs-style-f6e458">
+                    <div>
+                        <!-- Title & Time -->
+                        <div class="jobs-style-77472d">
+                            <h4 class="jobs-style-598323">${escapeHtml(job.title)}</h4>
+                            <div class="jobs-style-fc029c">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                ${posted}
+                            </div>
+                        </div>
+                        
+                        <!-- Company & Location -->
+                        <div class="jobs-style-cbc0b4">${company}</div>
+                        <div class="jobs-style-9d8feb">${location}</div>
+                        
+                        <!-- Job Type Badge -->
+                        <div class="jobs-style-1265ee">
+                            ${job.job_type ? `<span class="jobs-style-668e21">${escapeHtml(job.job_type)}</span>` : ''}
                         </div>
                     </div>
-                    <div class="job-card-bottom">
-                        ${salary}
-                        <a href="detail.html?id=${job.id}" class="btn-apply">View &amp; Apply</a>
+                    
+                    <!-- Footer: Salary & Apply -->
+                    <div class="jobs-style-668074">
+                        <span class="jobs-style-f777da">${salaryText}</span>
+                        <a href="detail.html?id=${job.id}" class="jobs-style-872ee8" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Apply Now</a>
                     </div>
                 </div>`;
         }

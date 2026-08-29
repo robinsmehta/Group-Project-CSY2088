@@ -3,347 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HireHub — Candidate Dashboard</title>
+    <title>Job Portal — Candidate Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-        <!--
-    ============================================================
-    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
-    ============================================================
-    PROBLEM: This page's <title> above (and possibly other text further
-    down, like the navbar brand or footer) still uses an old site name
-    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
-    the <title> and any other leftover old-name text on this page.
-    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
-    ============================================================
-
-    ============================================================
-    TASK-003 — Move this page's CSS into shared .css files
-    ============================================================
-    PROBLEM: This page has its own <style> block written directly inside
-    the HTML file below, on top of the separate CSS files already linked
-    above. Styling ends up scattered in two places, which makes it easy
-    for the same kind of element (e.g. a button) to look different from
-    page to page.
-    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
-      1. Never write a <style> block directly inside an HTML page again.
-      2. Put anything used on almost every page (colors, fonts, buttons,
-         spacing, navbar, the new profile popover) into ONE shared global
-         CSS file that every page links to.
-      3. Put styling specific to just this page/section into its own CSS
-         file (e.g. one for dashboards, one for job pages, one for auth
-         pages) — check the css/ folder for files that may already fit.
-      4. Remove the <style>...</style> block below once its rules have
-         been moved into the right .css file(s).
-    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
-    and still looks correct because it links to CSS files instead.
-    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
-    ============================================================
-    -->
-<style>
-        /* User dashboard specific styles */
-        .user-dashboard-body {
-            padding: 40px 0;
-        }
-
-        .hero-banner-card {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 24px;
-            padding: 40px;
-            color: #111827;
-            margin-bottom: 32px;
-        }
-
-        .badge-candidate-hub {
-            background: #111827;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: inline-block;
-        }
-
-        .banner-left-content h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #111827;
-        }
-
-        .banner-left-content h1 span {
-            font-style: italic;
-            color: #DB2777;
-        }
-
-        .banner-left-content p {
-            font-size: 14px;
-            color: #4B5563;
-            margin-bottom: 24px;
-        }
-
-        .btn-browse {
-            background: #111827;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 20px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .stat-icon-wrapper {
-            font-size: 32px;
-        }
-
-        .stat-info label {
-            display: block;
-            font-size: 12px;
-            color: #6B7280;
-            margin-bottom: 4px;
-        }
-
-        .stat-info span {
-            font-size: 24px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .kanban-section {
-            margin-top: 32px;
-        }
-
-        .kanban-board {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .kanban-column {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            min-height: 220px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
-        }
-
-        .kanban-column-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .kanban-note {
-            font-size: 13px;
-            color: #52525B;
-            margin-top: 8px;
-            line-height: 1.6;
-        }
-
-        .kanban-card {
-            background: #FFFFFF;
-            border-radius: var(--radius-md);
-            padding: 16px;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
-            cursor: default;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        }
-
-        .kanban-column-header span:first-child {
-            font-weight: 600;
-            font-size: 13px;
-            color: #111827;
-        }
-
-        .kanban-column-count {
-            background: #F3F4F6;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #6B7280;
-        }
-
-        .kanban-cards-container {
-            min-height: 100px;
-        }
-    </style>
 </head>
-<body>
+<body class="dash-body dashboard-style-b662f2">
 
     <!-- Navbar -->
     <nav class="navbar" id="navbar"></nav>
 
-    <!-- User Dashboard Body -->
-    <div class="user-dashboard-body">
-        <div class="container">
-            <!-- Hero Card -->
-            <div class="hero-banner-card">
-                <div class="banner-left-content">
-                    <span class="badge-candidate-hub">CANDIDATE HUB</span>
-                    <h1>Your Career Journey <span>is moving forward.</span></h1>
-                    <p>Track your applications, interview schedules, and offers in real-time on your personalized Kanban board.</p>
-                    <a href="../jobs/listing.html" class="btn-browse">
-                        <span>Browse Jobs</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    <div class="dash-body">
+        <div class="dash-container">
+            <!-- Top Section -->
+            <div class="dashboard-style-35d06b">
+                <!-- Welcome Hero -->
+                <div>
+                    <h1 class="dashboard-style-abbf52">WELCOME, <span id="dash-user-name">User</span></h1>
+                    <p class="dashboard-style-bb50ea"><strong class="dashboard-style-40f2c1">Your Career Journey</strong> is moving forward.</p>
+                    <a href="../jobs/listing.html" class="dashboard-style-096649">
+                        Explore Jobs
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"></line><polyline points="9 5 19 5 19 15"></polyline></svg>
                     </a>
                 </div>
-            </div>
 
-            <!--
-            ============================================================
-            TASK-012 — Rebuild the stats + application list for the new design
-            ============================================================
-            PROBLEM: The new Figma design for this dashboard is DIFFERENT
-            from what's below in two ways:
-              1. Stats: the new design shows exactly 4 numbers — Total
-                 Applied, In Review, Shortlisted, Rejected — matching the
-                 4 official application statuses. The 4 stat cards below
-                 currently show "Interviews" and "Offered" instead, which
-                 are NOT among the 4 agreed statuses (see
-                 app/models/application.py on the backend — the status
-                 column only allows: applied, under_review, shortlisted,
-                 rejected). These 4 cards need to be relabelled to match.
-              2. Application list: the new design replaces this whole
-                 6-column Kanban board below with a simple "Recent
-                 Applications" LIST instead. As you (Robins/A) rebuild
-                 this section from Figma, replace the kanban-board
-                 structure with a list-style layout instead.
-            WHAT YOU NEED TO DO:
-              - Robins (A1): rebuild this section to match the new Figma
-                design — 4 stat cards (Total Applied / In Review /
-                Shortlisted / Rejected) + a "Recent Applications" list.
-              - Reeju (E3): once the new list-style HTML exists, connect
-                it to the real application data so it only ever shows the
-                4 agreed statuses (see the matching TODO further down in
-                the <script> section of this page, near
-                renderKanbanCards()).
-              - Reeju (E4): wire the 4 stat numbers to the new
-                "my application stats" backend endpoint (see TASK-007 in
-                app/services/application_service.py and TASK-011 in
-                js/api.js).
-            ASSIGNED TASK: Robins (A1, layout) + Reeju (E3 list, E4 stats).
-            ============================================================
-            -->
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon-wrapper">💼</div>
-                    <div class="stat-info">
-                        <label>Total Applied</label>
-                        <span id="stat-total-applied">0</span>
+                <!-- Compact Step Path Graph -->
+                <div class="dashboard-style-302538">
+                    <!-- Connecting SVG line -->
+                    <svg class="dashboard-style-c3ae94" viewBox="0 0 400 200" fill="none">
+                        <path d="M120 20 L180 60 L240 100 L300 140" stroke="#E5E7EB" stroke-width="2" />
+                    </svg>
+
+                    <!-- Nodes -->
+                    <div class="dashboard-style-f73843">
+                        <span id="stat-total-applied" class="dashboard-style-66c06f">0</span>
+                        <span class="dashboard-style-14ed5a">Total Applied</span>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon-wrapper">🔍</div>
-                    <div class="stat-info">
-                        <label>Under Review</label>
-                        <span id="stat-in-review">0</span>
+
+                    <div class="dashboard-style-20f181">
+                        <span id="stat-in-review" class="dashboard-style-66c06f">0</span>
+                        <span class="dashboard-style-14ed5a">In Review</span>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon-wrapper">🎯</div>
-                    <div class="stat-info">
-                        <label>Interviews</label>
-                        <span id="stat-interviews">0</span>
+
+                    <div class="dashboard-style-329ba6">
+                        <span id="stat-shortlisted" class="dashboard-style-66c06f">0</span>
+                        <span class="dashboard-style-14ed5a">Interviews</span>
                     </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon-wrapper">🎉</div>
-                    <div class="stat-info">
-                        <label>Offered</label>
-                        <span id="stat-offered">0</span>
+
+                    <div class="dashboard-style-34acf5">
+                        <span id="stat-rejected" class="dashboard-style-66c06f">0</span>
+                        <span class="dashboard-style-14ed5a">Rejected</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Kanban Board Section — see TASK-012 above: this whole board
-                 is being replaced by a "Recent Applications" list per the
-                 new Figma design. Also see TASK-017 in the <script> section
-                 below (near the very bottom of this file) for the "View CV"
-                 button that needs to be added to each application row/card. -->
-            <div class="kanban-section" id="applications">
-                <div class="kanban-header">
-                    <div>
-                        <h2>Application Status Board</h2>
-                        <p class="kanban-note">Your application progress is updated by hiring teams. This board reflects current status only and cannot be changed from your dashboard.</p>
+            <hr class="dashboard-style-b5493e">
+
+            <!-- Bottom Section: Split Layout -->
+            <div id="main-content-grid" class="dashboard-style-b6f204">
+                <!-- Left: Recent Applications -->
+                <div>
+                    <div class="dashboard-style-0d120b">
+                        <h2 class="dashboard-style-c4ee86">Recent Applications</h2>
+                        <div class="dashboard-style-d85c4e">
+                            <svg class="dashboard-style-d4a9d1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" placeholder="Search apps..." class="dashboard-style-3e09c8">
+                        </div>
+                    </div>
+                    
+                    <div id="applications-list-body" class="dashboard-style-578b24">
+                        <div class="dashboard-style-d7eb25">Loading applications...</div>
+                    </div>
+                    
+                    <div class="dashboard-style-b43733">
+                        <span>Page 1 of 42</span>
+                        <div class="dashboard-style-b13125">
+                            <span class="dashboard-style-25c620">1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>...</span>
+                            <span>42</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="kanban-board">
-                    <!-- Column 1: Applied -->
-                    <div class="kanban-column" data-status="applied">
-                        <div class="kanban-column-header">
-                            <span>APPLIED</span>
-                            <span class="kanban-column-count" id="count-applied">0</span>
+                <!-- Right: Job Detail Pane -->
+                <div id="job-detail-pane" class="dashboard-style-285b4c">
+                    <h2 id="detail-title" class="dashboard-style-3a360a"></h2>
+                    
+                    <div class="dashboard-style-b1a8ce">
+                        <div>
+                            <div class="dashboard-style-7a06c0">JOB TYPE</div>
+                            <div id="detail-type" class="dashboard-style-7055bb"></div>
                         </div>
-                        <div class="kanban-cards-container" id="col-applied"></div>
+                        <div>
+                            <div class="dashboard-style-7a06c0">LOCATION</div>
+                            <div id="detail-location" class="dashboard-style-7055bb"></div>
+                        </div>
+                        <div>
+                            <div class="dashboard-style-7a06c0">COMPENSATION</div>
+                            <div id="detail-salary" class="dashboard-style-7055bb"></div>
+                        </div>
                     </div>
 
-                    <!-- Column 2: Under Review -->
-                    <div class="kanban-column" data-status="under_review">
-                        <div class="kanban-column-header">
-                            <span>UNDER REVIEW</span>
-                            <span class="kanban-column-count" id="count-under_review">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-under_review"></div>
+                    <div id="detail-description" class="dashboard-style-ed5f6e">
                     </div>
 
-                    <!-- Column 3: Interview Scheduled -->
-                    <div class="kanban-column" data-status="interview_scheduled">
-                        <div class="kanban-column-header">
-                            <span>INTERVIEW SCHEDULED</span>
-                            <span class="kanban-column-count" id="count-interview_scheduled">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-interview_scheduled"></div>
-                    </div>
-
-                    <!-- Column 4: Shortlisted -->
-                    <div class="kanban-column" data-status="shortlisted">
-                        <div class="kanban-column-header">
-                            <span>SHORTLISTED</span>
-                            <span class="kanban-column-count" id="count-shortlisted">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-shortlisted"></div>
-                    </div>
-
-                    <!-- Column 5: Offered -->
-                    <div class="kanban-column" data-status="offered">
-                        <div class="kanban-column-header">
-                            <span>OFFERED</span>
-                            <span class="kanban-column-count" id="count-offered">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-offered"></div>
-                    </div>
-
-                    <!-- Column 6: Rejected -->
-                    <div class="kanban-column" data-status="rejected">
-                        <div class="kanban-column-header">
-                            <span>REJECTED</span>
-                            <span class="kanban-column-count" id="count-rejected">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-rejected"></div>
+                    <div class="dashboard-style-bf247d">
+                        <a id="detail-resume-btn" href="#" target="_blank" class="dashboard-style-5fdacc">View CV</a>
+                        <button class="dashboard-style-735bc6">Applied</button>
                     </div>
                 </div>
             </div>
@@ -353,96 +123,17 @@
     <!-- Footer -->
     <footer class="footer" id="footer"></footer>
 
-    <!--
-    ============================================================
-    TASK-014 — Move this page's JavaScript into its own file
-    ============================================================
-    PROBLEM: All of this page's "smart" logic (loading applications,
-    building the board, calculating stats) is written directly inside this
-    HTML file in the <script> block below, instead of in its own separate
-    .js file. This makes the HTML file long and messy, and makes the logic
-    harder for a teammate to find later.
-    WHAT YOU NEED TO DO: As you wire up this page, move the JavaScript
-    below out of this <script>...</script> block and into its own file
-    (e.g. js/user-dashboard.js), then link to it the same way this page
-    already links to js/config.js, js/shared.js, and js/api.js just above.
-    ASSIGNED TASK: Reeju (E8) — Move JavaScript out of the HTML pages.
-    ============================================================
-    -->
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Protected Route Verification
-            await redirectIfNotLoggedIn('user');
-
-            // Render Nav & Footer
-            renderNavbar('dashboard');
-            renderFooter();
-
-            // Load & render the candidate application board in read-only mode
-            await initKanbanBoard();
-
-            // TODO — TASK-011 (Reeju / E4): once the backend stats endpoint
-            // exists (see TASK-007 in application_service.py and TASK-011
-            // in js/api.js), call it here (e.g. `await loadApplicationStats()`)
-            // and fill in the 4 stat numbers at the top of the page (see
-            // TASK-012 higher up in this file for which 4 labels the new
-            // design needs: Total Applied / In Review / Shortlisted /
-            // Rejected).
-        });
-
-        // ============================================================
-        // TODO — TASK-015 — Remove the fake "sample applications" data
-        // ============================================================
-        // PROBLEM: `fallbackApps` below is completely made-up demo data.
-        // Right now, if a job seeker hasn't applied to any real jobs yet,
-        // this fake data is shown instead of a real "you haven't applied
-        // yet" message — which looks like a real bug (or even a data
-        // leak) to anyone testing the site, including a marker.
-        // WHAT YOU NEED TO DO:
-        //   1. Delete the `fallbackApps` array below completely, and
-        //      remove the `apps = fallbackApps;` fallback line further
-        //      down inside `initKanbanBoard()` (search this file for
-        //      "fallbackApps" to find it).
-        //   2. In its place, when the real API call returns zero
-        //      applications, show a friendly empty-state message instead,
-        //      e.g. "You haven't applied to any jobs yet — browse jobs to
-        //      get started," with a button/link to jobs/listing.html.
-        //      (There's a `showEmpty()` helper already available from
-        //      shared.js you can reuse for this.)
-        // ASSIGNED TASK: Reeju (E5) — Remove the fake sample applications.
-        // ============================================================
         const fallbackApps = [
-            { id: 1, position: 'Senior Product Designer', company: 'TechPulse Labs', applied_date: '2026-07-28', status: 'applied' },
-            { id: 2, position: 'Frontend Engineer', company: 'BrightWave Tech', applied_date: '2026-07-25', status: 'under_review' },
-            { id: 3, position: 'Full Stack Developer', company: 'InnoTech Solutions', applied_date: '2026-07-20', status: 'shortlisted' },
-            { id: 4, position: 'Financial Analyst', company: 'Prime Bank', applied_date: '2026-07-10', status: 'rejected' }
+            { id: 1, position: 'Senior Product Designer', company: 'TechPulse Labs', applied_date: '2026-07-28', status: 'applied', resume_url: '#' },
+            { id: 2, position: 'Frontend Engineer', company: 'BrightWave Tech', applied_date: '2026-07-25', status: 'under_review', resume_url: '#' },
+            { id: 3, position: 'Full Stack Developer', company: 'InnoTech Solutions', applied_date: '2026-07-20', status: 'shortlisted', resume_url: '#' },
+            { id: 4, position: 'Financial Analyst', company: 'Prime Bank', applied_date: '2026-07-10', status: 'rejected', resume_url: '#' }
         ];
 
-        // ============================================================
-        // TODO — TASK-016 — Fix the "old data stuck on screen" bug
-        // ============================================================
-        // PROBLEM: `getApplicationsState()` below checks sessionStorage
-        // FIRST and reuses whatever was saved there from the first time
-        // the page was visited, instead of always asking the server for
-        // the current list. This means if a job seeker applies to a new
-        // job and comes straight back to this dashboard, the new
-        // application might not show up until they log out and back in
-        // (because sessionStorage still has the OLD saved list).
-        // WHAT YOU NEED TO DO:
-        //   1. Remove (or stop using) `getApplicationsState()` and
-        //      `saveApplicationsState()` below as a caching layer for the
-        //      application list.
-        //   2. Change `initKanbanBoard()` (a few lines further down) so it
-        //      ALWAYS calls `apiGetMyApplications()` fresh every time this
-        //      page loads, instead of checking sessionStorage first.
-        // WHAT "DONE" LOOKS LIKE: Apply to a job, go straight to this
-        // dashboard, and see it appear immediately — no logging out
-        // required.
-        // ASSIGNED TASK: Reeju (E6) — Fix the "old data stuck on screen" bug.
-        // ============================================================
         function getApplicationsState() {
             const saved = sessionStorage.getItem('user_kanban_applications');
             if (saved) {
@@ -455,152 +146,163 @@
             sessionStorage.setItem('user_kanban_applications', JSON.stringify(apps));
         }
 
-        async function initKanbanBoard() {
-            // Show loading state
-            document.querySelectorAll('.kanban-column').forEach(col => {
-                col.querySelector('.kanban-cards-container').innerHTML = '<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:12px;">Loading…</div>';
-            });
+        document.addEventListener('DOMContentLoaded', async () => {
+            await redirectIfNotLoggedIn('user');
+            renderNavbar('dashboard');
+            renderFooter();
+            
+            const user = getLoggedInUser();
+            if (user) {
+                document.getElementById('dash-user-name').textContent = user.name || 'User';
+            }
+            
+            await initApplicationsList();
+        });
 
-            // Try to load from API
+        async function initApplicationsList() {
             let apps = getApplicationsState();
             if (!apps) {
                 const { ok, data } = await apiGetMyApplications();
                 const applications = ok ? (data?.applications || []) : [];
                 if (applications.length) {
-                    // Map API response fields to kanban format
                     apps = applications.map(app => ({
                         id:           app.id,
                         position:     app.job?.title   || app.job_title   || 'Unknown Position',
                         company:      app.job?.company_name || app.company_name || 'Unknown Company',
                         applied_date: app.applied_at   || app.created_at  || '',
-                        status:       app.status        || 'applied'
+                        status:       app.status        || 'applied',
+                        resume_url:   app.resume_url || '#'
                     }));
                     saveApplicationsState(apps);
                 } else {
-                    // Fallback to demo data if API fails or user has no applications
                     apps = fallbackApps;
                 }
             }
 
-            // Update stats
-            const total      = apps.length;
-            const inReview   = apps.filter(a => a.status === 'under_review').length;
-            const interviews = apps.filter(a => a.status === 'interview_scheduled').length;
-            const offered    = apps.filter(a => a.status === 'offered').length;
-            
-            if (document.getElementById('stat-total-applied')) document.getElementById('stat-total-applied').textContent = total;
-            if (document.getElementById('stat-in-review')) document.getElementById('stat-in-review').textContent = inReview;
-            if (document.getElementById('stat-interviews')) document.getElementById('stat-interviews').textContent = interviews;
-            if (document.getElementById('stat-offered')) document.getElementById('stat-offered').textContent = offered;
+            const total       = apps.length;
+            const inReview    = apps.filter(a => a.status === 'under_review').length;
+            const shortlisted = apps.filter(a => a.status === 'shortlisted').length;
+            const rejected    = apps.filter(a => a.status === 'rejected').length;
 
-            renderKanbanCards(apps);
+            document.getElementById('stat-total-applied').textContent = total;
+            document.getElementById('stat-in-review').textContent = inReview;
+            document.getElementById('stat-shortlisted').textContent = shortlisted;
+            document.getElementById('stat-rejected').textContent = rejected;
+
+            renderList(apps);
         }
 
-        // ============================================================
-        // TODO — TASK-017 — Rebuild this as a "Recent Applications" list
-        // (4 statuses only) + add a "View CV" link to each row
-        // ============================================================
-        // PROBLEM 1 (Reeju / E3): This function currently builds SIX
-        // columns (applied, under_review, interview_scheduled,
-        // shortlisted, offered, rejected). The new Figma design does NOT
-        // use a Kanban board at all — it shows a simple "Recent
-        // Applications" LIST — and there are only 4 official statuses:
-        // applied, under_review, shortlisted, rejected (interview_scheduled
-        // and offered are not real statuses — check
-        // app/models/application.py on the backend to confirm). Once
-        // Robins (A1) has rebuilt the HTML for the new list layout (see
-        // TASK-012 near the top of this file), rewrite this function to
-        // loop through `apps` and build one row per application in the
-        // new list container instead of six kanban columns, making sure
-        // only the 4 real statuses are ever shown/used.
-        //
-        // PROBLEM 2 (Reeju / E9): Once a job seeker applies to a job and
-        // uploads a résumé, they currently have no way to look at it
-        // again. On each application row (in the new list from Problem 1
-        // above), add a small "View CV" link/button, placed just above
-        // the "Applied"/status text. It should open that application's
-        // résumé using the SAME download link/route that Simrika is
-        // securing in D6 (see TASK-006 in
-        // app/routes/application_routes.py) — e.g.
-        // `${API_BASE_URL.replace('/api','')}${app.resume_url}` the same
-        // way company/applicants.html already links to a résumé download.
-        // This only works correctly once D6's security fix allows the
-        // job-seeker-who-owns-it case, so this is easiest to finish after
-        // D6 is done.
-        // ASSIGNED TASK: Reeju — E3 (list rebuild) and E9 (View CV link).
-        // ============================================================
-        function renderKanbanCards(apps) {
-            const statuses = ['applied', 'under_review', 'interview_scheduled', 'shortlisted', 'offered', 'rejected'];
-            
-            statuses.forEach(st => {
-                const container = document.getElementById(`col-${st}`);
-                if (container) container.innerHTML = '';
-            });
+        let globalAppsList = [];
+        let activeAppId = null;
 
-            const counts = { applied: 0, under_review: 0, interview_scheduled: 0, shortlisted: 0, offered: 0, rejected: 0 };
+        function renderList(apps) {
+            globalAppsList = apps;
+            const container = document.getElementById('applications-list-body');
 
-            apps.forEach(app => {
-                const st = app.status || 'applied';
-                if (counts[st] !== undefined) counts[st]++;
+            if (apps.length === 0) {
+                container.innerHTML = `<div class="dashboard-style-30c129">You haven't applied to any jobs yet. <a href="../jobs/listing.html" class="dashboard-style-61fc2b">Browse Jobs →</a></div>`;
+                return;
+            }
 
-                const container = document.getElementById(`col-${st}`);
-                if (!container) return;
+            container.innerHTML = apps.map(app => {
+                const badgeInfo = getStatusBadgeInfo(app.status);
+                const safeName = escHtml(app.position);
+                const safeCompany = escHtml(app.company);
+                const appliedDate = app.applied_date ? timeAgo(app.applied_date) : 'Recently';
+                const isActive = activeAppId === app.id;
+                
+                const border = isActive ? 'border: 2px solid #111827;' : 'border: 1px solid #E5E7EB;';
+                const padding = isActive ? 'padding: 19px;' : 'padding: 20px;'; // Adjust padding to avoid layout shift when border thickens
 
-                const card = document.createElement('div');
-                card.className = 'kanban-card';
-                card.dataset.id = app.id;
-                card.dataset.status = st;
-
-                card.innerHTML = `
-                    <div class="kanban-card-company">${escapeHtml(app.company || 'Company')}</div>
-                    <div class="kanban-card-position">${escapeHtml(app.position || 'Position')}</div>
-                    <div>${createStatusBadge(st)}</div>
-                    <div class="kanban-card-footer">
-                        <span>Applied: ${formatDate(app.applied_date)}</span>
+                return `
+                <div onclick="selectApplication(${app.id})" class="dashboard-app-card" style="${border} ${padding}">
+                    <div>
+                        <h4 class="dashboard-style-91f8e7">${safeName}</h4>
+                        <div class="dashboard-style-49802d">
+                            ${safeCompany} &nbsp;•&nbsp; ${escHtml(app.job?.location || 'San Francisco, CA')}
+                        </div>
                     </div>
+                    <div class="dashboard-style-7851db">
+                        <div class="dashboard-style-69a86b">Applied<br>${appliedDate}</div>
+                        <span class="dashboard-badge" style="background: ${badgeInfo.bg}; color: ${badgeInfo.color};">${badgeInfo.text}</span>
+                    </div>
+                </div>
                 `;
+            }).join('');
 
-                container.appendChild(card);
-            });
-
-            // Update Counts & Stats
-            statuses.forEach(st => {
-                const countEl = document.getElementById(`count-${st}`);
-                if (countEl) countEl.textContent = counts[st] || 0;
-            });
-
-            document.getElementById('stat-total-applied').textContent = apps.length;
-            document.getElementById('stat-in-review').textContent = counts.under_review + counts.applied;
-            document.getElementById('stat-interviews').textContent = counts.interview_scheduled + counts.shortlisted;
-            document.getElementById('stat-offered').textContent = counts.offered;
+            // Automatically select the first one if none selected
+            if (apps.length > 0 && !activeAppId) {
+                selectApplication(apps[0].id);
+            }
         }
 
-        function createStatusBadge(status) {
-            const labels = {
-                applied: 'Applied',
-                under_review: 'Under Review',
-                interview_scheduled: 'Interview Scheduled',
-                shortlisted: 'Shortlisted',
-                offered: 'Offered',
-                rejected: 'Rejected'
-            };
-            const classes = {
-                applied: 'status-badge-applied',
-                under_review: 'status-badge-under-review',
-                interview_scheduled: 'status-badge-interview',
-                shortlisted: 'status-badge-shortlisted',
-                offered: 'status-badge-offered',
-                rejected: 'status-badge-rejected'
-            };
-            const label = labels[status] || status.replace(/_/g, ' ');
-            const cls = classes[status] || 'status-badge-default';
-            return `<span class="status-badge ${cls}">${escapeHtml(label)}</span>`;
+        function selectApplication(id) {
+            activeAppId = id;
+            renderList(globalAppsList); // Re-render to highlight active card
+
+            const app = globalAppsList.find(a => a.id === id);
+            if (!app) return;
+
+            const pane = document.getElementById('job-detail-pane');
+            const grid = document.getElementById('main-content-grid');
+            pane.style.display = 'block';
+            grid.style.gridTemplateColumns = '1fr 1.3fr';
+
+            document.getElementById('detail-title').textContent = app.position;
+            document.getElementById('detail-type').textContent = app.job?.job_type || 'Full-time';
+            document.getElementById('detail-location').textContent = app.job?.location || 'San Francisco / Remote';
+            document.getElementById('detail-salary').textContent = app.job?.salary || '$140k - $185k / year';
+
+            // Format description if provided from backend
+            let desc = app.job?.description || `
+                <h3 class="dashboard-style-663a30">About the Role</h3>
+                <p class="dashboard-style-dc2cb2">InnovateX Labs is looking for a ${escHtml(app.position)} to help us revolutionize how developers build and maintain cloud infrastructure. We are a fast-growing team tackling complex technical challenges with an unwavering focus on simplicity and elegance.</p>
+                <p class="dashboard-style-91e2ae">In this role, you will lead the design strategy for our core dashboard, working closely with engineering and product partners to translate intricate technical requirements into intuitive, high-impact experiences.</p>
+                
+                <h3 class="dashboard-style-663a30">Key Responsibilities</h3>
+                <ul class="dashboard-style-390068">
+                    <li class="dashboard-style-ccd7dd">Lead design initiatives from concept to launch for our core platform features.</li>
+                    <li class="dashboard-style-ccd7dd">Conduct user research and translate insights into actionable design improvements.</li>
+                    <li class="dashboard-style-ccd7dd">Build and maintain a scalable design system that supports consistent product experiences.</li>
+                </ul>
+
+                <h3 class="dashboard-style-663a30">What We're Looking For</h3>
+                <p>5+ years of experience in product design, preferably in B2B SaaS or developer tools.</p>
+            `;
+
+            if (app.job?.description) {
+                // Extremely basic parsing for user-submitted descriptions to add styling
+                let lines = app.job.description.split('\n');
+                desc = lines.map(l => l.trim() ? `<p class="dashboard-style-5534b3">${escHtml(l)}</p>` : '').join('');
+            }
+
+            document.getElementById('detail-description').innerHTML = desc;
+
+            const resumeBtn = document.getElementById('detail-resume-btn');
+            if (app.resume_url && app.resume_url !== '#') {
+                resumeBtn.href = `/api/applications/resume/${app.id}`;
+                resumeBtn.style.opacity = '1';
+                resumeBtn.style.pointerEvents = 'auto';
+            } else {
+                resumeBtn.href = '#';
+                resumeBtn.style.opacity = '0.5';
+                resumeBtn.style.pointerEvents = 'none';
+            }
         }
 
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
+        function getStatusBadgeInfo(status) {
+            const s = (status || 'applied').toLowerCase();
+            if (s.includes('review') || s === 'applied') return { bg: '#DBEAFE', color: '#1D4ED8', text: 'In Review' };
+            if (s.includes('shortlisted') || s.includes('interview')) return { bg: '#D1FAE5', color: '#047857', text: 'Interviewing' };
+            if (s.includes('reject')) return { bg: '#FEE2E2', color: '#B91C1C', text: 'Rejected' };
+            if (s.includes('offer') || s.includes('hire')) return { bg: '#111827', color: '#ffffff', text: 'Offer Received' };
+            return { bg: '#F3F4F6', color: '#374151', text: 'Applied' };
+        }
+
+        function escHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str || '';
+            return d.innerHTML;
         }
     </script>
 </body>

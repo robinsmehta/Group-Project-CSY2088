@@ -3,377 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HireMe — Senior Product Designer</title>
+    <title>Job Portal — Job Details</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-        <!--
-    ============================================================
-    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
-    ============================================================
-    PROBLEM: This page's <title> above (and possibly other text further
-    down, like the navbar brand or footer) still uses an old site name
-    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
-    the <title> and any other leftover old-name text on this page.
-    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
-    ============================================================
-
-    ============================================================
-    TASK-003 — Move this page's CSS into shared .css files
-    ============================================================
-    PROBLEM: This page has its own <style> block written directly inside
-    the HTML file below, on top of the separate CSS files already linked
-    above. Styling ends up scattered in two places, which makes it easy
-    for the same kind of element (e.g. a button) to look different from
-    page to page.
-    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
-      1. Never write a <style> block directly inside an HTML page again.
-      2. Put anything used on almost every page (colors, fonts, buttons,
-         spacing, navbar, the new profile popover) into ONE shared global
-         CSS file that every page links to.
-      3. Put styling specific to just this page/section into its own CSS
-         file (e.g. one for dashboards, one for job pages, one for auth
-         pages) — check the css/ folder for files that may already fit.
-      4. Remove the <style>...</style> block below once its rules have
-         been moved into the right .css file(s).
-    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
-    and still looks correct because it links to CSS files instead.
-    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
-    ============================================================
-    -->
-<style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            background-color: #F8F9FB;
-            color: #111827;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navbar */
-        .navbar {
-            height: 72px;
-            background: #ffffff;
-            border-bottom: 1px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            width: 100%;
-        }
-
-        .nav-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 20px;
-            color: #000;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #111827;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            list-style: none;
-            font-size: 13px;
-            font-weight: 500;
-            color: #4B5563;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .nav-action-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #374151;
-            text-decoration: none;
-        }
-
-        .btn-register {
-            background: #111827;
-            color: #ffffff;
-            padding: 9px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Detail Header */
-        .detail-header {
-            padding: 40px 0 30px;
-            background: #ffffff;
-            border-bottom: 1px solid #E5E7EB;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #6B7280;
-            text-decoration: none;
-            margin-bottom: 32px;
-        }
-
-        .header-content {
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .company-badge-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            background: #F3F4F6;
-            margin: 0 auto 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #111827;
-            border: 1px solid #E5E7EB;
-        }
-
-        .job-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #111827;
-        }
-
-        .company-tags {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-size: 13px;
-            color: #6B7280;
-            margin-bottom: 24px;
-        }
-
-        .tag-item {
-            background: #F9FAFB;
-            padding: 4px 12px;
-            border-radius: 12px;
-            border: 1px solid #F3F4F6;
-        }
-
-        .header-pills {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-        }
-
-        .pill-card {
-            background: #ffffff;
-            border: 1px solid #E5E7EB;
-            padding: 12px 24px;
-            border-radius: 16px;
-            text-align: center;
-            min-width: 120px;
-        }
-
-        .pill-card label {
-            display: block;
-            font-size: 11px;
-            color: #9CA3AF;
-            margin-bottom: 2px;
-        }
-
-        .pill-card span {
-            font-size: 13px;
-            font-weight: 600;
-            color: #111827;
-        }
-
-        /* Detail Layout */
-        .detail-body {
-            padding: 40px 0 80px;
-        }
-
-        .detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 40px;
-            align-items: start;
-        }
-
-        /* Main Content */
-        .content-box {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 36px;
-            border: 1px solid #F3F4F6;
-        }
-
-        .section-block {
-            margin-bottom: 32px;
-        }
-
-        .section-block h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #111827;
-        }
-
-        .section-block p {
-            font-size: 14px;
-            color: #4B5563;
-            line-height: 1.7;
-            margin-bottom: 12px;
-        }
-
-        .section-block ul {
-            list-style-type: disc;
-            padding-left: 20px;
-            font-size: 14px;
-            color: #4B5563;
-            line-height: 1.7;
-        }
-
-        .section-block li {
-            margin-bottom: 8px;
-        }
-
-        /* Sidebar Apply Card */
-        .apply-card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid #F3F4F6;
-            position: sticky;
-            top: 92px;
-        }
-
-        .btn-apply-now {
-            width: 100%;
-            background: #111827;
-            color: #ffffff;
-            padding: 14px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            text-align: center;
-            display: block;
-            text-decoration: none;
-            margin-bottom: 24px;
-        }
-
-        .btn-already-applied {
-            background: #E5E7EB;
-            color: #4B5563;
-            cursor: not-allowed;
-        }
-
-        .sidebar-meta-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .sidebar-meta-item label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            color: #9CA3AF;
-            margin-bottom: 2px;
-            text-transform: uppercase;
-        }
-
-        .sidebar-meta-item span {
-            font-size: 13px;
-            font-weight: 600;
-            color: #111827;
-        }
-
-        @media (max-width: 868px) {
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/jobs.css">
 </head>
-<body>
+<body class="jobs-style-46372d">
 
     <!-- Navbar -->
     <nav class="navbar" id="navbar"></nav>
 
     <!-- Header -->
-    <header class="detail-header" id="detail-header">
-        <div class="container">
-            <a href="listing.html" class="back-link">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                Back to all jobs
-            </a>
-            <div class="header-content" id="header-content">
-                <div style="text-align:center;padding:40px 0;color:#6B7280;">Loading job details…</div>
+    <header class="detail-header">
+        <div class="container jobs-style-8c7df6">
+            <div class="jobs-style-37755b">
+                <a href="listing.html" class="back-link jobs-style-e14f95">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    Back to all jobs
+                </a>
+                <span id="header-posted-date" class="jobs-style-649dc2"></span>
+            </div>
+
+            <div id="header-content" class="jobs-style-cdd8ca">
+                <div class="jobs-style-c4460b">Loading job details…</div>
             </div>
         </div>
     </header>
 
     <!-- Body Layout -->
-    <div class="detail-body">
-        <div class="container">
-            <div class="detail-grid">
-                <!-- Main Job Info -->
-                <div class="content-box" id="job-content">
-                    <div style="text-align:center;padding:60px 0;color:#6B7280;">Loading…</div>
-                </div>
-
-                <!-- Sidebar Apply Card -->
-                <aside class="apply-card" id="apply-sidebar">
-                    <div style="text-align:center;padding:20px;color:#6B7280;">Loading…</div>
-                </aside>
+    <div class="detail-body jobs-style-ebb476">
+        <div class="container jobs-style-eb46d9">
+            <div id="job-content-card" class="jobs-style-a3b2b9">
+                <div id="job-description-content"></div>
+                <button id="open-apply-btn" class="jobs-style-9661fd">Apply Now</button>
             </div>
         </div>
     </div>
@@ -382,27 +46,25 @@
     <footer class="footer" id="footer"></footer>
 
     <!-- Apply Modal -->
-    <!-- TODO — TASK-022 — Restyle this popup to match the new "Apply CV"
-         design (Robins/A1, wiring already mostly works — Reeju/E2)
-         PROBLEM: The apply logic below already works (uploads a résumé and
-         creates the application), but the new Figma design shows a
-         specific "Apply CV" popup style with a "Choose File" button and a
-         "Submit Application" button. As Robins rebuilds this page, restyle
-         this modal to match, and Reeju should double check the existing
-         upload/submit logic further down in this file (search for
-         `apiApplyToJob`) still works correctly once the HTML changes. -->
-    <div id="apply-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;">
-        <div style="background:#fff;border-radius:20px;padding:36px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.2);position:relative;" id="apply-modal-inner">
-            <button id="close-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:18px;color:#6B7280;">✕</button>
-            <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;">Apply for this Job</h2>
-            <p id="apply-job-title" style="font-size:13px;color:#6B7280;margin-bottom:24px;"></p>
-            <div id="apply-error" style="display:none;color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px;font-size:13px;margin-bottom:16px;"></div>
+    <div id="apply-modal" class="jobs-style-daeb8e">
+        <div class="jobs-style-dac028" id="apply-modal-inner">
+            <button id="close-modal" class="jobs-style-476170">✕</button>
+            <h2 class="jobs-style-5efbe4">Apply CV</h2>
+            
+            <div id="apply-error" class="jobs-style-a76376"></div>
+            
             <form id="apply-form">
-                <div style="margin-bottom:20px;">
-                    <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;">Upload Resume (PDF, DOC, DOCX)</label>
-                    <input type="file" id="resume-file" accept=".pdf,.doc,.docx" required style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:10px;font-size:13px;">
+                <div class="jobs-style-1265ee">
+                    <label class="jobs-style-bd6f8c">Upload Resume (PDF, DOC, DOCX)</label>
+                    
+                    <div class="jobs-style-408342">
+                        <input type="file" id="resume-file" accept=".pdf,.doc,.docx" required class="jobs-style-93b8ea" onchange="document.getElementById('file-name-display').textContent = this.files[0] ? this.files[0].name : 'No file chosen'">
+                        <label for="resume-file" class="jobs-style-cd2bad">Choose File</label>
+                        <span id="file-name-display" class="jobs-style-1aca73">No file chosen</span>
+                    </div>
                 </div>
-                <button type="submit" id="apply-submit" style="width:100%;background:#111827;color:#fff;padding:14px;border:none;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;">
+                
+                <button type="submit" id="apply-submit" class="jobs-style-59bb4f">
                     Submit Application
                 </button>
             </form>
@@ -420,14 +82,13 @@
             renderNavbar('jobs');
             renderFooter();
 
-            // Hide modal initially (fix inline style conflict)
             modal.style.display = 'none';
 
             const params = new URLSearchParams(window.location.search);
             currentJobId = params.get('id');
 
             if (!currentJobId) {
-                document.getElementById('header-content').innerHTML = '<p style="color:#DC2626;">No job ID specified.</p>';
+                document.getElementById('header-content').innerHTML = '<p class="jobs-style-fe25f4">No job ID specified.</p>';
                 document.getElementById('job-content').innerHTML = '';
                 document.getElementById('apply-sidebar').innerHTML = '';
                 return;
@@ -437,7 +98,7 @@
             const job = data?.job || null;
 
             if (!ok || !job || !job.id) {
-                document.getElementById('header-content').innerHTML = '<p style="color:#DC2626;">Job not found or has been removed.</p>';
+                document.getElementById('header-content').innerHTML = '<p class="jobs-style-fe25f4">Job not found or has been removed.</p>';
                 document.getElementById('job-content').innerHTML = '';
                 document.getElementById('apply-sidebar').innerHTML = '';
                 return;
@@ -445,8 +106,6 @@
 
             renderJobDetail(job);
 
-            // If a logged-in job seeker has already applied to this job, reflect
-            // that in the Apply button instead of letting them submit a duplicate.
             const currentUser = getLoggedInUser();
             if (currentUser && currentUser.role === 'user') {
                 const { ok: mok, data: mdata } = await apiGetMyApplications();
@@ -457,12 +116,12 @@
                     if (btn) {
                         btn.textContent = '✓ Already Applied';
                         btn.disabled = true;
-                        btn.classList.add('btn-already-applied');
+                        btn.style.background = '#F3F4F6';
+                        btn.style.color = '#111827';
                     }
                 }
             }
 
-            // Modal controls
             document.getElementById('close-modal').addEventListener('click', () => modal.style.display = 'none');
             modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
@@ -487,6 +146,14 @@
                 if (aok) {
                     modal.style.display = 'none';
                     showToast('Application submitted successfully!', 'success');
+                    // Update button on page
+                    const mainBtn = document.getElementById('open-apply-btn');
+                    if (mainBtn) {
+                        mainBtn.textContent = '✓ Already Applied';
+                        mainBtn.disabled = true;
+                        mainBtn.style.background = '#F3F4F6';
+                        mainBtn.style.color = '#111827';
+                    }
                 } else {
                     const msg = adata.error || adata.message || 'Failed to submit application.';
                     errDiv.textContent = msg;
@@ -499,57 +166,53 @@
 
         function renderJobDetail(job) {
             const esc = (s) => { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; };
-            const initials = (job.company_name || 'C').substring(0, 2).toUpperCase();
             const postedAgo = timeAgo(job.created_at);
+
+            document.title = `Job Portal — ${job.title || 'Job Details'}`;
+            document.getElementById('header-posted-date').textContent = `POSTED ${postedAgo}`;
 
             // Header
             document.getElementById('header-content').innerHTML = `
-                <div class="company-badge-icon">${initials}</div>
-                <h1 class="job-title">${esc(job.title)}</h1>
-                <div class="company-tags">
-                    <span class="tag-item">${esc(job.company_name || 'Unknown Company')}</span>
-                    <span class="tag-item">${esc(job.location || 'Not specified')}</span>
-                    ${job.category ? `<span class="tag-item">${esc(job.category)}</span>` : ''}
-                </div>
-                <div class="header-pills">
-                    <div class="pill-card"><label>POSTED</label><span>${postedAgo}</span></div>
-                    ${job.salary ? `<div class="pill-card"><label>SALARY</label><span>${esc(job.salary)}</span></div>` : ''}
+                <div class="jobs-style-f4b389">${esc(job.company_name || 'Unknown Company')}</div>
+                <h1 class="jobs-style-2e5e62">${esc(job.title)}</h1>
+                
+                <div class="jobs-style-c4d0e1">
+                    <div class="jobs-style-e4b265">
+                        <span class="jobs-style-2567d8">JOB TYPE</span>
+                        <span class="jobs-style-3d896a">${esc(job.job_type || 'Full-time')}</span>
+                    </div>
+                    <div class="jobs-style-e4b265">
+                        <span class="jobs-style-2567d8">LOCATION</span>
+                        <span class="jobs-style-3d896a">${esc(job.location || 'Not specified')}</span>
+                    </div>
+                    <div class="jobs-style-e4b265">
+                        <span class="jobs-style-2567d8">COMPENSATION</span>
+                        <span class="jobs-style-3d896a">${esc(job.salary || 'Competitive')}</span>
+                    </div>
                 </div>
             `;
 
             // Description body
-            const descHtml = (job.description || '').split('\n').filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join('');
-            document.getElementById('job-content').innerHTML = `
-                <div class="section-block">
-                    <h3>About the Role</h3>
-                    ${descHtml || '<p>No description provided.</p>'}
-                </div>
-            `;
-            // TODO — TASK-008 continued (Simrika/D3): once the backend
-            // sends a `job.skills` field (see TASK-008 in
-            // app/models/job.py — a comma-separated string like
-            // "React, Figma, SQL"), display it here as a row of small
-            // tag/pill elements, similar to how the tag input on the Post
-            // Job form (A4) shows tags. Something like:
-            //   const skillsHtml = (job.skills || '').split(',')
-            //     .map(s => s.trim()).filter(Boolean)
-            //     .map(s => `<span class="tag-item">${esc(s)}</span>`).join('');
-            // and add a new section-block for "Skills" near the "About the
-            // Role" section above, only if there are skills to show.
+            let descHtml = (job.description || '').split('\n').filter(l => l.trim()).map(l => {
+                const line = esc(l.trim());
+                if (line.startsWith('- ') || line.startsWith('• ')) {
+                    return `<li class="jobs-style-b187d3">${line.substring(2)}</li>`;
+                }
+                return `<p class="jobs-style-da8c98">${line}</p>`;
+            }).join('');
+            
+            // Extremely basic heuristic to format lists if there are any
+            descHtml = descHtml.replace(/<\/li><li/g, '</li><li');
+            if (descHtml.includes('<li')) {
+                descHtml = descHtml.replace(/(<li.*<\/li>)/s, '<ul class="jobs-style-1d78b2">$1</ul>');
+            }
 
-            // Sidebar
-            document.getElementById('apply-sidebar').innerHTML = `
-                <button class="btn-apply-now" id="open-apply-btn">Apply Now</button>
-                <div class="sidebar-meta-list">
-                    <div class="sidebar-meta-item"><label>LOCATION</label><span>${esc(job.location || 'Not specified')}</span></div>
-                    ${job.salary ? `<div class="sidebar-meta-item"><label>SALARY</label><span>${esc(job.salary)}</span></div>` : ''}
-                    ${job.category ? `<div class="sidebar-meta-item"><label>CATEGORY</label><span>${esc(job.category)}</span></div>` : ''}
-                    <div class="sidebar-meta-item"><label>COMPANY</label><span>${esc(job.company_name || 'Unknown')}</span></div>
-                    <div class="sidebar-meta-item"><label>POSTED</label><span>${postedAgo}</span></div>
-                </div>
+            document.getElementById('job-content-card').style.display = 'block';
+            document.getElementById('job-description-content').innerHTML = `
+                <h3 class="jobs-style-ce9cb6">About the Role</h3>
+                ${descHtml || '<p class="jobs-style-5cfcf4">No description provided.</p>'}
             `;
 
-            document.getElementById('apply-job-title').textContent = job.title;
             document.getElementById('open-apply-btn').addEventListener('click', () => {
                 const user = getLoggedInUser();
                 if (!user || user.role !== 'user') {
@@ -573,4 +236,3 @@
     </script>
 </body>
 </html>
-

@@ -945,3 +945,335 @@
            grid-template-columns: 1fr;
        }
    }
+/* Extracted Styles */
+.jobs-style-46372d {
+    background-color: #F8F9FB; color: #111827;
+}
+
+.jobs-style-828709 {
+    background: #ffffff; padding: 100px 20px 60px; text-align: center; border-bottom: 1px solid #E5E7EB;
+}
+
+.jobs-style-eb46d9 {
+    max-width: 800px; margin: 0 auto;
+}
+
+.jobs-style-fd950e {
+    font-size: 48px; font-weight: 800; margin-bottom: 40px; line-height: 1.2; letter-spacing: -1px; color: #111827;
+}
+
+.jobs-style-3aa024 {
+    color: #EC4899;
+}
+
+.jobs-style-e28164 {
+    background: #ffffff; padding: 8px; border-radius: 40px; display: flex; align-items: center; max-width: 800px; margin: 0 auto; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #F3F4F6;
+}
+
+.jobs-style-269122 {
+    flex: 1; display: flex; align-items: center; gap: 12px; padding: 0 20px;
+}
+
+.jobs-style-0c46f1 {
+    width: 100%; border: none; outline: none; font-size: 15px; color: #111827; background: transparent;
+}
+
+.jobs-style-545c64 {
+    width: 1px; height: 30px; background: #E5E7EB;
+}
+
+.jobs-style-47ef00 {
+    background: #000000; color: #ffffff; padding: 14px 32px; border-radius: 30px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s;
+}
+
+.jobs-style-66a039 {
+    display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 32px; font-size: 13px;
+}
+
+.jobs-style-3dad24 {
+    color: #9CA3AF; font-weight: 600;
+}
+
+.jobs-style-f3516d {
+    color: #4B5563; text-decoration: none; padding: 8px 16px; border: 1px solid #E5E7EB; border-radius: 20px; font-weight: 600; background: #ffffff;
+}
+
+.jobs-style-4cec9a {
+    padding: 60px 20px;
+}
+
+.jobs-style-6c25a6 {
+    max-width: 1200px; margin: 0 auto;
+}
+
+.jobs-style-2e750b {
+    display: grid; grid-template-columns: 280px 1fr; gap: 40px;
+}
+
+.jobs-style-db8312 {
+    background: #ffffff; border-radius: 24px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); align-self: start;
+}
+
+.jobs-style-e7511b {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-weight: 700; font-size: 18px;
+}
+
+.jobs-style-1e0990 {
+    margin-bottom: 32px; border-bottom: 1px solid #F3F4F6; padding-bottom: 24px;
+}
+
+.jobs-style-4310cd {
+    font-weight: 600; font-size: 15px; margin-bottom: 16px;
+}
+
+.jobs-style-578b24 {
+    display: flex; flex-direction: column; gap: 12px;
+}
+
+.jobs-style-19419c {
+    display:flex; justify-content:space-between; align-items:center; font-size:14px; color:#4B5563;
+}
+
+.jobs-style-3e0512 {
+    border: none;
+}
+
+.jobs-style-adae45 {
+    width:100%; margin-bottom:12px;
+}
+
+.jobs-style-a26180 {
+    display:flex; justify-content:space-between; font-size:13px; color:#6B7280;
+}
+
+.jobs-style-91e2ae {
+    margin-bottom: 32px;
+}
+
+.jobs-style-c75c0b {
+    font-size: 24px; font-weight: 700; margin-bottom: 8px;
+}
+
+.jobs-style-c2a341 {
+    color: #6B7280; font-size: 15px;
+}
+
+.jobs-style-764000 {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%;
+}
+
+.jobs-style-4991c0 {
+    grid-column:1/-1;text-align:center;padding:60px 0;color:#6B7280;
+}
+
+.jobs-style-79db27 {
+    margin:0 auto 12px;display:block;
+}
+
+.jobs-style-83b129 {
+    display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 48px; font-size: 14px; font-weight: 500;
+}
+
+.jobs-style-ed61ef {
+    color:#6B7280; margin-right:16px;
+}
+
+.jobs-style-9c5bd6 {
+    width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:50%; border:1px solid #E5E7EB; color:#374151; text-decoration:none;
+}
+
+.jobs-style-a5b781 {
+    width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:#111827; color:#ffffff; text-decoration:none;
+}
+
+.jobs-style-fc346c {
+    padding:0 8px;
+}
+
+.jobs-style-20e5a0 {
+    display:flex; justify-content:space-between; align-items:center; font-size:14px; color:#4B5563; cursor:pointer;
+}
+
+.jobs-style-877e9a {
+    display:flex; gap:8px; align-items:center;
+}
+
+.jobs-style-150e43 {
+    width:16px;height:16px;accent-color:#111827;
+}
+
+.jobs-style-a837ea {
+    background:#F3F4F6; padding:2px 8px; border-radius:12px; font-size:12px; font-weight:600;
+}
+
+.jobs-style-f6e458 {
+    width: 100%; box-sizing: border-box; background:#ffffff; border: 1px solid #E5E7EB; border-radius:16px; padding:24px; box-shadow:0 4px 15px rgba(0,0,0,0.02); display:flex; flex-direction:column; justify-content:space-between; transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.jobs-style-77472d {
+    display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;
+}
+
+.jobs-style-598323 {
+    font-size:18px; font-weight:700; margin:0; color:#111827; letter-spacing:-0.3px;
+}
+
+.jobs-style-fc029c {
+    font-size:12px; color:#9CA3AF; display:flex; align-items:center; gap:4px; font-weight:500;
+}
+
+.jobs-style-cbc0b4 {
+    font-size:14px; color:#9CA3AF; margin-bottom:4px;
+}
+
+.jobs-style-9d8feb {
+    font-size:14px; color:#9CA3AF; margin-bottom:20px;
+}
+
+.jobs-style-1265ee {
+    margin-bottom:32px;
+}
+
+.jobs-style-668e21 {
+    background:#FDF2F8; color:#EC4899; padding:4px 10px; border-radius:4px; font-size:12px; font-weight:600;
+}
+
+.jobs-style-668074 {
+    display:flex; justify-content:space-between; align-items:center;
+}
+
+.jobs-style-f777da {
+    font-size:15px; font-weight:700; color:#111827;
+}
+
+.jobs-style-872ee8 {
+    background:#000000; color:#ffffff; padding:10px 24px; border-radius:30px; font-size:13px; font-weight:700; text-decoration:none; transition: opacity 0.2s;
+}
+
+.jobs-style-8c7df6 {
+    max-width: 800px; margin: 0 auto; position: relative;
+}
+
+.jobs-style-37755b {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px;
+}
+
+.jobs-style-e14f95 {
+    display:inline-flex; align-items:center; gap:8px; color:#6B7280; text-decoration:none; font-size:13px; font-weight:600;
+}
+
+.jobs-style-649dc2 {
+    font-size: 11px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.jobs-style-cdd8ca {
+    text-align: center;
+}
+
+.jobs-style-c4460b {
+    padding:40px 0;color:#6B7280;
+}
+
+.jobs-style-ebb476 {
+    padding: 0 20px 80px;
+}
+
+.jobs-style-a3b2b9 {
+    background:#ffffff; border-radius:24px; padding:64px; box-shadow:0 10px 40px rgba(0,0,0,0.03); display:none;
+}
+
+.jobs-style-9661fd {
+    width:100%; background:#000000; color:#ffffff; padding:18px; border:none; border-radius:30px; font-size:15px; font-weight:600; cursor:pointer; margin-top:48px; transition: transform 0.1s;
+}
+
+.jobs-style-daeb8e {
+    display:none;position:fixed;inset:0;background:rgba(17, 24, 39, 0.8);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;
+}
+
+.jobs-style-dac028 {
+    background:#ffffff;border-radius:24px;padding:40px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.1);position:relative;
+}
+
+.jobs-style-476170 {
+    position:absolute;top:24px;right:24px;background:none;border:none;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#111827;
+}
+
+.jobs-style-5efbe4 {
+    font-size:24px;font-weight:700;margin:0 0 24px;letter-spacing:-0.5px;color:#111827;
+}
+
+.jobs-style-a76376 {
+    display:none;color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:12px;font-size:13px;margin-bottom:20px;font-weight:500;
+}
+
+.jobs-style-bd6f8c {
+    display:block;font-size:12px;font-weight:700;color:#111827;margin-bottom:12px;
+}
+
+.jobs-style-408342 {
+    display:flex; align-items:center; border: 1px solid #E5E7EB; border-radius: 12px; background: #F9FAFB; padding: 4px; overflow: hidden;
+}
+
+.jobs-style-93b8ea {
+    display:none;
+}
+
+.jobs-style-cd2bad {
+    background:#ffffff; border:1px solid #E5E7EB; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; color:#111827; margin: 4px;
+}
+
+.jobs-style-1aca73 {
+    font-size:13px; color:#6B7280; margin-left: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.jobs-style-59bb4f {
+    width:100%;background:#000000;color:#fff;padding:16px;border:none;border-radius:30px;font-size:15px;font-weight:700;cursor:pointer;transition:transform 0.1s;
+}
+
+.jobs-style-fe25f4 {
+    color:#DC2626;
+}
+
+.jobs-style-f4b389 {
+    font-size: 14px; font-weight: 700; color: #4B5563; margin-bottom: 12px;
+}
+
+.jobs-style-2e5e62 {
+    font-size: 48px; font-weight: 800; margin: 0 0 48px; letter-spacing: -1.5px; color: #111827;
+}
+
+.jobs-style-c4d0e1 {
+    display: flex; justify-content: center; gap: 64px; margin-bottom: 40px;
+}
+
+.jobs-style-e4b265 {
+    display: flex; flex-direction: column; gap: 4px; text-align: left;
+}
+
+.jobs-style-2567d8 {
+    font-size: 11px; font-weight: 700; color: #9CA3AF; letter-spacing: 0.5px;
+}
+
+.jobs-style-3d896a {
+    font-size: 14px; font-weight: 700; color: #111827;
+}
+
+.jobs-style-b187d3 {
+    margin-bottom:12px; color:#4B5563;
+}
+
+.jobs-style-da8c98 {
+    margin-bottom:20px; line-height:1.7; color:#4B5563; font-size:15px;
+}
+
+.jobs-style-1d78b2 {
+    margin-bottom:24px; padding-left:20px; font-size:15px; line-height:1.6;
+}
+
+.jobs-style-ce9cb6 {
+    font-size:20px; font-weight:700; margin:0 0 24px; color:#111827;
+}
+
+.jobs-style-5cfcf4 {
+    color:#6B7280;
+}
