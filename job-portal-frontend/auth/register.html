@@ -135,12 +135,16 @@
                 submitBtn.disabled = true;
                 submitBtn.querySelector('span').textContent = 'Creating account…';
 
-                const { ok, data } = await apiRegister(role, { 
-                    email, 
-                    password, 
-                    name: role === 'user' ? name : email.split('@')[0], 
-                    company_name: role === 'company' ? name : null 
-                });
+                let ok, data;
+                if (role === 'company') {
+                    const res = await apiRegisterCompany(name, email, password, '');
+                    ok = res.ok;
+                    data = res.data;
+                } else {
+                    const res = await apiRegisterUser(name, email, password);
+                    ok = res.ok;
+                    data = res.data;
+                }
 
                 if (ok) {
                     const user = data.user || {};
