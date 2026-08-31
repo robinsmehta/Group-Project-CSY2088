@@ -85,6 +85,25 @@ def get_my_applications():
 
 
 # ============================================================
+# 2b. GET /api/applications/company
+# ============================================================
+@application_bp.route('/company', methods=['GET'])
+@role_required('company')
+def get_company_applications():
+    """
+    Retrieve all applications across all job listings owned by the logged-in company.
+
+    Returns:
+        200 OK — List of applications with user details and resume links
+        401 Unauthorized — Company not logged in
+        403 Forbidden — Requires 'company' role
+    """
+    company_id = session.get('company_id') or session.get('user_id')
+    result, status_code = application_service.get_applications_for_company(company_id)
+    return jsonify(result), status_code
+
+
+# ============================================================
 # 3. GET /api/applications/job/<job_id>
 # ============================================================
 @application_bp.route('/job/<int:job_id>', methods=['GET'])

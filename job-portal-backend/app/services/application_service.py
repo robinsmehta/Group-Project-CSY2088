@@ -170,6 +170,58 @@ def get_applicants_for_job(job_id: int, company_id: int):
     }, 200
 
 
+def get_applications_for_company(company_id: int):
+    """
+    Retrieve all job application submissions across all job listings owned by a company.
+
+    Args:
+        company_id (int): ID of the authenticated company.
+
+    Returns:
+        tuple: (response_dict, http_status_code)
+    """
+    company_jobs = Job.query.filter_by(company_id=company_id).all()
+    job_ids = [j.id for j in company_jobs]
+
+    if not job_ids:
+        return {
+            'total_applications': 0,
+            'applications': []
+        }, 200
+
+    applications = Application.query.filter(Application.job_id.in_(job_ids)).order_by(Application.applied_at.desc()).all()
+
+    result = []
+    for app in applications:
+        app_data = app.to_dict()
+        app_data['created_at'] = app.applied_at.isoformat() if app.applied_at else None
+
+        if app.user:
+            app_data['applicant_name']  = app.user.name
+            app_data['applicant_email'] = app.user.email
+
+        if app.job:
+            app_data['job_title'] = app.job.title
+
+        if app.resume_path:
+            filename = app.resume_path.rsplit('/', 1)[-1]
+            app_data['resume_url'] = f"/api/applications/resumes/{filename}"
+
+        result.append(app_data)
+
+    return {
+        'total_applications': len(result),
+        'applications': result
+    }, 200
+
+
+STATUS_SYNONYMS = {
+    'reviewing': 'under_review',
+    'interview': 'shortlisted',
+    'pending': 'applied'
+}
+
+
 def update_application_status(application_id: int, company_id: int, new_status: str):
     """
     Update the review status of an application.
@@ -182,6 +234,9 @@ def update_application_status(application_id: int, company_id: int, new_status: 
     Returns:
         tuple: (response_dict, http_status_code)
     """
+    if new_status and new_status in STATUS_SYNONYMS:
+        new_status = STATUS_SYNONYMS[new_status]
+
     # 1. Validate new_status input against allowed values
     if not new_status or new_status not in ALLOWED_STATUSES:
         return {
@@ -265,4 +320,6 @@ def update_application_status(application_id: int, company_id: int, new_status: 
 submit_application = apply_to_job
 get_applications_by_user = get_my_applications
 get_applications_for_job = get_applicants_for_job
+get_company_applications = get_applications_for_company
 update_status = update_application_status
+

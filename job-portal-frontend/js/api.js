@@ -104,6 +104,10 @@ async function apiGetJobApplicants(jobId) {
     return apiFetch(`/applications/job/${jobId}`);
 }
 
+async function apiGetCompanyApplicants() {
+    return apiFetch('/applications/company');
+}
+
 async function apiUpdateApplicationStatus(applicationId, status) {
     return apiFetch(`/applications/${applicationId}/status`, {
         method: 'PUT',

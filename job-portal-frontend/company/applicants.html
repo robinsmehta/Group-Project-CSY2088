@@ -67,8 +67,8 @@
 
             <label class="dashboard-style-3e68c4">Update Status</label>
             <div class="dashboard-style-fede4b">
-                <button onclick="updateStatus('reviewing')" class="btn-table-action dashboard-style-d5e8c5">Reviewing</button>
-                <button onclick="updateStatus('interview')" class="btn-table-action approve dashboard-style-d5e8c5">Interview</button>
+                <button onclick="updateStatus('under_review')" class="btn-table-action dashboard-style-d5e8c5">Reviewing</button>
+                <button onclick="updateStatus('shortlisted')" class="btn-table-action approve dashboard-style-d5e8c5">Shortlist</button>
                 <button onclick="updateStatus('rejected')" class="btn-table-action danger dashboard-style-d5e8c5">Reject</button>
             </div>
 
@@ -147,14 +147,16 @@
 
         function getStatusBadge(status) {
             const map = {
-                pending:    ['#F3F4F6', '#6B7280', 'Pending'],
-                reviewing:  ['#FCE7F3', '#BE185D', 'Reviewing'],
-                interview:  ['#FEF3C7', '#B45309', 'Interview'],
-                shortlisted:['#F3E8FF', '#7E22CE', 'Shortlisted'],
-                rejected:   ['#F3F4F6', '#9CA3AF', 'Rejected'],
+                pending:      ['#F3F4F6', '#6B7280', 'Pending'],
+                applied:      ['#DBEAFE', '#1D4ED8', 'Applied'],
+                under_review: ['#FCE7F3', '#BE185D', 'Under Review'],
+                reviewing:    ['#FCE7F3', '#BE185D', 'Reviewing'],
+                interview:    ['#FEF3C7', '#B45309', 'Interview'],
+                shortlisted:  ['#F3E8FF', '#7E22CE', 'Shortlisted'],
+                rejected:     ['#F3F4F6', '#9CA3AF', 'Rejected'],
             };
-            const s = (status || 'pending').toLowerCase();
-            const [bg, color, text] = map[s] || map.pending;
+            const s = (status || 'applied').toLowerCase();
+            const [bg, color, text] = map[s] || map.applied;
             return `<span class="applicant-badge" style="background: ${bg}; color: ${color};">${text}</span>`;
         }
 

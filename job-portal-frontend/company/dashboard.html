@@ -87,12 +87,15 @@
 
             const user = getLoggedInUser();
             if (user) {
-                document.getElementById('company-name-display').textContent = user.company_name || user.name || 'Employer';
-                if (user.description) {
-                    document.getElementById('company-desc-display').textContent = user.description;
-                }
-                if (user.status === 'pending' || user.status === 'rejected') {
-                    document.getElementById('pending-approval-banner').style.display = 'inline-flex';
+                const nameEl = document.getElementById('company-name-display');
+                if (nameEl) nameEl.textContent = user.company_name || user.name || 'Employer';
+
+                const descEl = document.getElementById('company-desc-display');
+                if (descEl && user.description) descEl.textContent = user.description;
+
+                const bannerEl = document.getElementById('pending-approval-banner');
+                if (bannerEl && (user.status === 'pending' || user.status === 'rejected')) {
+                    bannerEl.style.display = 'inline-flex';
                 }
             }
 
@@ -104,23 +107,31 @@
 
         async function loadCompanyJobs() {
             const tbody = document.getElementById('jobs-table-body');
-            tbody.innerHTML = `<tr><td colspan="5" class="dashboard-style-d7eb25">Loading...</td></tr>`;
+            if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="dashboard-style-d7eb25">Loading...</td></tr>`;
 
             const user = getLoggedInUser();
             const { ok, data } = await apiGetJobs();
             const jobs = ok ? (data.jobs || (Array.isArray(data) ? data : [])) : null;
 
             if (!ok || !jobs) {
-                tbody.innerHTML = `<tr><td colspan="5" class="dashboard-style-ff776f">Failed to load jobs. Make sure the backend is running.</td></tr>`;
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="dashboard-style-ff776f">Failed to load jobs. Make sure the backend is running.</td></tr>`;
                 return;
             }
 
-            allJobs = jobs.filter(job => job.company_id === user.id || job.company_id === user.company_id);
+            if (user) {
+                const compId = user.id || user.company_id;
+                allJobs = jobs.filter(job => job.company_id == user.id || job.company_id == user.company_id || String(job.company_id) === String(compId));
+            } else {
+                allJobs = jobs;
+            }
 
             const activeCount = allJobs.filter(j => j.status !== 'closed').length;
             const appCount = allJobs.reduce((acc, curr) => acc + (curr.application_count || 0), 0);
-            document.getElementById('stat-active-listings').textContent = activeCount;
-            document.getElementById('stat-total-applicants').textContent = appCount;
+
+            const activeEl = document.getElementById('stat-active-listings');
+            if (activeEl) activeEl.textContent = activeCount;
+            const appEl = document.getElementById('stat-total-applicants');
+            if (appEl) appEl.textContent = appCount;
 
             renderFilteredJobs();
         }
