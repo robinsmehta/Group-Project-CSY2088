@@ -94,7 +94,8 @@ def create_app(config_name: str = None) -> Flask:
             full_path = os.path.join(full_path, 'index.html')
 
         if os.path.exists(full_path):
-            return send_from_directory(frontend_root, os.path.relpath(full_path, frontend_root))
+            relative_path = os.path.relpath(full_path, frontend_root).replace(os.sep, '/')
+            return send_from_directory(frontend_root, relative_path)
 
         return send_from_directory(frontend_root, 'index.html')
 
