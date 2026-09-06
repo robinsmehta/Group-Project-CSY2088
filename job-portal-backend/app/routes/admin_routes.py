@@ -14,9 +14,10 @@
 #   DELETE /api/admin/jobs/<id>              → remove any job listing
 #   DELETE /api/admin/users/<id>             → remove a user account
 #   DELETE /api/admin/companies/<id>         → remove a company account
+#   PUT    /api/admin/profile                → update logged-in admin's profile
 # ============================================================
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, session
 from app.services import admin_service
 from app.utils.decorators import role_required
 
@@ -196,6 +197,55 @@ def get_stats():
         403 — Not an admin
     """
     result, status_code = admin_service.get_admin_stats()
+    return jsonify(result), status_code
+
+
+# ============================================================
+# PUT /api/admin/profile
+# ============================================================
+@admin_bp.route('/profile', methods=['PUT'])
+@role_required('admin')
+def update_profile():
+    """
+    Allow a logged-in admin to update their own profile.
+    Admins can change their name, email, and/or password.
+
+    Request body (JSON):
+        {
+            "name": "New Name",                    (optional)
+            "email": "new@example.com",            (optional)
+            "password": "newpassword123"           (optional - leave blank to keep current)
+        }
+
+    Success response (200 OK):
+        {
+            "message": "Admin profile updated successfully",
+            "admin": { id, name, email, ... }
+        }
+
+    Error responses:
+        400 — No fields to update, or validation error
+        401 — Not logged in
+        403 — Not an admin
+        404 — Admin not found
+        409 — Email already in use
+    """
+    admin_id = session.get('user_id')
+    if not admin_id:
+        return jsonify({'error': 'Admin not found in session'}), 401
+
+    data = request.get_json() or {}
+
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+
+    result, status_code = admin_service.update_admin_profile(
+        admin_id=admin_id,
+        name=name,
+        email=email,
+        password=password
+    )
     return jsonify(result), status_code
 
 
