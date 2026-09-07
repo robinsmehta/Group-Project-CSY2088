@@ -18,6 +18,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 
 # --- SQLAlchemy (ORM) ---
 # db is the main object we use to define models and query the database.
@@ -46,3 +47,6 @@ migrate = Migrate()
 # to make API requests to this Flask server.
 # Without this, the browser will block the requests for security reasons.
 cors = CORS()
+
+# --- JWT Authentication ---
+jwt = JWTManager()
