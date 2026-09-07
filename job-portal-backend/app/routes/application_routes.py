@@ -15,6 +15,7 @@
 
 import os
 from flask import Blueprint, request, jsonify, session, send_from_directory, current_app
+from app.models.application import Application
 from app.services import application_service
 from app.utils.decorators import role_required
 
@@ -211,7 +212,6 @@ def update_application_status(application_id):
 # Simrika (D6) — Fix the résumé download security problem.
 # ============================================================
 @application_bp.route('/resumes/<filename>', methods=['GET'])
-
 def download_resume(filename):
     """
     Securely serve/download an uploaded resume file.
@@ -225,7 +225,34 @@ def download_resume(filename):
     Path parameter:
         filename (str): Sanitized unique filename stored in DB.
     """
+    user_id = session.get('user_id')
+    user_role = session.get('role')
+    if not user_id or not user_role:
+        return jsonify({
+            'error': 'Authentication required. Please log in to access this resource.'
+        }), 401
+
     upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads')
+    stored_paths = {
+        filename,
+        os.path.join(upload_folder, filename).replace(os.sep, '/'),
+    }
+    application = Application.query.filter(
+        Application.resume_path.in_(stored_paths)
+    ).first()
+
+    if not application:
+        return jsonify({'error': 'Resume file not found'}), 404
+
+    is_applicant = user_role == 'user' and application.user_id == user_id
+    company_id = session.get('company_id') or user_id
+    is_job_company = (
+        user_role == 'company'
+        and application.job is not None
+        and application.job.company_id == company_id
+    )
+    if not (is_applicant or is_job_company):
+        return jsonify({'error': 'Not allowed to access this resume'}), 403
 
     # Convert relative path to absolute directory for send_from_directory
     abs_upload_folder = os.path.abspath(upload_folder)
