@@ -186,18 +186,31 @@ def login(email, password=None, role=None):
     password = password or ''
     role = (role or '').strip().lower()
 
-    if not email or not password or not role:
-        return {'error': 'Email, password, and role are required fields'}, 400
+    if not email or not password:
+        return {'error': 'Email and password are required fields'}, 400
 
-    # 1. Query the corresponding database model based on the requested role
-    if role == 'user':
-        account = User.query.filter_by(email=email).first()
-    elif role == 'company':
-        account = Company.query.filter_by(email=email).first()
-    elif role == 'admin':
+    # 1. Query the corresponding database model based on the requested role, or auto-detect
+    if not role:
         account = Admin.query.filter_by(email=email).first()
+        if account:
+            role = 'admin'
+        if not account:
+            account = Company.query.filter_by(email=email).first()
+            if account:
+                role = 'company'
+        if not account:
+            account = User.query.filter_by(email=email).first()
+            if account:
+                role = 'user'
     else:
-        return {'error': 'Invalid role. Role must be user, company, or admin.'}, 400
+        if role == 'user':
+            account = User.query.filter_by(email=email).first()
+        elif role == 'company':
+            account = Company.query.filter_by(email=email).first()
+        elif role == 'admin':
+            account = Admin.query.filter_by(email=email).first()
+        else:
+            return {'error': 'Invalid role. Role must be user, company, or admin.'}, 400
 
     # 2. Check if account exists
     # SECURITY: Return generic error message ("Invalid email or password") to prevent email enumeration

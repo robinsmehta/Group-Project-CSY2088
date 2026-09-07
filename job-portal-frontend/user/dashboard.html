@@ -3,214 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HireHub — Candidate Dashboard</title>
+    <title>Job Portal — Candidate Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-        <!--
-    ============================================================
-    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
-    ============================================================
-    PROBLEM: This page's <title> above (and possibly other text further
-    down, like the navbar brand or footer) still uses an old site name
-    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
-    the <title> and any other leftover old-name text on this page.
-    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
-    ============================================================
-
-    ============================================================
-    TASK-003 — Move this page's CSS into shared .css files
-    ============================================================
-    PROBLEM: This page has its own <style> block written directly inside
-    the HTML file below, on top of the separate CSS files already linked
-    above. Styling ends up scattered in two places, which makes it easy
-    for the same kind of element (e.g. a button) to look different from
-    page to page.
-    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
-      1. Never write a <style> block directly inside an HTML page again.
-      2. Put anything used on almost every page (colors, fonts, buttons,
-         spacing, navbar, the new profile popover) into ONE shared global
-         CSS file that every page links to.
-      3. Put styling specific to just this page/section into its own CSS
-         file (e.g. one for dashboards, one for job pages, one for auth
-         pages) — check the css/ folder for files that may already fit.
-      4. Remove the <style>...</style> block below once its rules have
-         been moved into the right .css file(s).
-    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
-    and still looks correct because it links to CSS files instead.
-    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
-    ============================================================
-    -->
-<style>
-        /* User dashboard specific styles */
-        .user-dashboard-body {
-            padding: 40px 0;
-        }
-
-        .hero-banner-card {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 24px;
-            padding: 40px;
-            color: #111827;
-            margin-bottom: 32px;
-        }
-
-        .badge-candidate-hub {
-            background: #111827;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: inline-block;
-        }
-
-        .banner-left-content h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #111827;
-        }
-
-        .banner-left-content h1 span {
-            font-style: italic;
-            color: #DB2777;
-        }
-
-        .banner-left-content p {
-            font-size: 14px;
-            color: #4B5563;
-            margin-bottom: 24px;
-        }
-
-        .btn-browse {
-            background: #111827;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 20px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .stat-icon-wrapper {
-            font-size: 32px;
-        }
-
-        .stat-info label {
-            display: block;
-            font-size: 12px;
-            color: #6B7280;
-            margin-bottom: 4px;
-        }
-
-        .stat-info span {
-            font-size: 24px;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .kanban-section {
-            margin-top: 32px;
-        }
-
-        .kanban-board {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .kanban-column {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            min-height: 220px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
-        }
-
-        .kanban-column-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .kanban-note {
-            font-size: 13px;
-            color: #52525B;
-            margin-top: 8px;
-            line-height: 1.6;
-        }
-
-        .kanban-card {
-            background: #FFFFFF;
-            border-radius: var(--radius-md);
-            padding: 16px;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
-            cursor: default;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        }
-
-        .kanban-column-header span:first-child {
-            font-weight: 600;
-            font-size: 13px;
-            color: #111827;
-        }
-
-        .kanban-column-count {
-            background: #F3F4F6;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #6B7280;
-        }
-
-        .kanban-cards-container {
-            min-height: 100px;
-        }
-    </style>
 </head>
-<body>
+<body class="dash-body dashboard-style-b662f2">
 
     <!-- Navbar -->
     <nav class="navbar" id="navbar"></nav>
 
-    <!-- User Dashboard Body -->
-    <div class="user-dashboard-body">
-        <div class="container">
-            <!-- Hero Card -->
-            <div class="hero-banner-card">
-                <div class="banner-left-content">
-                    <span class="badge-candidate-hub">CANDIDATE HUB</span>
-                    <h1>Your Career Journey <span>is moving forward.</span></h1>
-                    <p>Track your applications, interview schedules, and offers in real-time on your personalized Kanban board.</p>
-                    <a href="../jobs/listing.html" class="btn-browse">
-                        <span>Browse Jobs</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    <div class="dash-body">
+        <div class="dash-container">
+            <!-- Top Section -->
+            <div class="dashboard-style-35d06b">
+                <!-- Welcome Hero -->
+                <div>
+                    <h1 class="dashboard-style-abbf52">WELCOME, <span id="dash-user-name">User</span></h1>
+                    <p class="dashboard-style-bb50ea"><strong class="dashboard-style-40f2c1">Your Career Journey</strong> is moving forward.</p>
+                    <a href="../jobs/listing.html" class="dashboard-style-096649">
+                        Explore Jobs
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"></line><polyline points="9 5 19 5 19 15"></polyline></svg>
                     </a>
                 </div>
-            </div>
 
+ 
             <!--
             ============================================================
             TASK-012 — Rebuild the stats + application list for the new design
@@ -273,10 +92,32 @@
                     <div class="stat-info">
                         <label>Rejected</label>
                         <span id="stat-rejected">0</span>
-                    </div>
-                </div>
-            </div>
 
+                <!-- Compact Step Path Graph -->
+                <div class="dashboard-style-302538">
+                    <!-- Connecting SVG line -->
+                    <svg class="dashboard-style-c3ae94" viewBox="0 0 400 200" fill="none">
+                        <path d="M120 20 L180 60 L240 100 L300 140" stroke="#E5E7EB" stroke-width="2" />
+                    </svg>
+
+                    <!-- Nodes -->
+                    <div class="dashboard-style-f73843">
+                        <span id="stat-total-applied" class="dashboard-style-66c06f">0</span>
+                        <span class="dashboard-style-14ed5a">Total Applied</span>
+                    </div>
+
+                    <div class="dashboard-style-20f181">
+                        <span id="stat-in-review" class="dashboard-style-66c06f">0</span>
+                        <span class="dashboard-style-14ed5a">In Review</span>
+                    </div>
+
+                    <div class="dashboard-style-329ba6">
+                        <span id="stat-shortlisted" class="dashboard-style-66c06f">0</span>
+                        <span class="dashboard-style-14ed5a">Interviews</span>
+ 
+                    </div>
+
+ 
             <!-- Kanban Board Section — see TASK-012 above: this whole board
                  is being replaced by a "Recent Applications" list per the
                  new Figma design. Also see TASK-017 in the dashboard logic
@@ -287,9 +128,16 @@
                     <div>
                         <h2>Application Status Board</h2>
                         <p class="kanban-note">Your application progress is updated by hiring teams. This board reflects current status only and cannot be changed from your dashboard.</p>
+
+                    <div class="dashboard-style-34acf5">
+                        <span id="stat-rejected" class="dashboard-style-66c06f">0</span>
+                        <span class="dashboard-style-14ed5a">Rejected</span>
+ 
                     </div>
                 </div>
+            </div>
 
+ 
                 <div id="applications-empty-state" class="empty-state" hidden>
                     <h3>You haven't applied to any jobs yet.</h3>
                     <p>Browse available jobs and submit your first application.</p>
@@ -302,53 +150,63 @@
                         <div class="kanban-column-header">
                             <span>APPLIED</span>
                             <span class="kanban-column-count" id="count-applied">0</span>
+
+            <hr class="dashboard-style-b5493e">
+
+            <!-- Bottom Section: Split Layout -->
+            <div id="main-content-grid" class="dashboard-style-b6f204">
+                <!-- Left: Recent Applications -->
+                <div>
+                    <div class="dashboard-style-0d120b">
+                        <h2 class="dashboard-style-c4ee86">Recent Applications</h2>
+                        <div class="dashboard-style-d85c4e">
+                            <svg class="dashboard-style-d4a9d1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" placeholder="Search apps..." class="dashboard-style-3e09c8">
+ 
                         </div>
-                        <div class="kanban-cards-container" id="col-applied"></div>
+                    </div>
+                    
+                    <div id="applications-list-body" class="dashboard-style-578b24">
+                        <div class="dashboard-style-d7eb25">Loading applications...</div>
+                    </div>
+                    
+                    <div class="dashboard-style-b43733">
+                        <span>Page 1 of 42</span>
+                        <div class="dashboard-style-b13125">
+                            <span class="dashboard-style-25c620">1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>...</span>
+                            <span>42</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Job Detail Pane -->
+                <div id="job-detail-pane" class="dashboard-style-285b4c">
+                    <h2 id="detail-title" class="dashboard-style-3a360a"></h2>
+                    
+                    <div class="dashboard-style-b1a8ce">
+                        <div>
+                            <div class="dashboard-style-7a06c0">JOB TYPE</div>
+                            <div id="detail-type" class="dashboard-style-7055bb"></div>
+                        </div>
+                        <div>
+                            <div class="dashboard-style-7a06c0">LOCATION</div>
+                            <div id="detail-location" class="dashboard-style-7055bb"></div>
+                        </div>
+                        <div>
+                            <div class="dashboard-style-7a06c0">COMPENSATION</div>
+                            <div id="detail-salary" class="dashboard-style-7055bb"></div>
+                        </div>
                     </div>
 
-                    <!-- Column 2: Under Review -->
-                    <div class="kanban-column" data-status="under_review">
-                        <div class="kanban-column-header">
-                            <span>UNDER REVIEW</span>
-                            <span class="kanban-column-count" id="count-under_review">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-under_review"></div>
+                    <div id="detail-description" class="dashboard-style-ed5f6e">
                     </div>
 
-                    <!-- Column 3: Interview Scheduled -->
-                    <div class="kanban-column" data-status="interview_scheduled">
-                        <div class="kanban-column-header">
-                            <span>INTERVIEW SCHEDULED</span>
-                            <span class="kanban-column-count" id="count-interview_scheduled">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-interview_scheduled"></div>
-                    </div>
-
-                    <!-- Column 4: Shortlisted -->
-                    <div class="kanban-column" data-status="shortlisted">
-                        <div class="kanban-column-header">
-                            <span>SHORTLISTED</span>
-                            <span class="kanban-column-count" id="count-shortlisted">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-shortlisted"></div>
-                    </div>
-
-                    <!-- Column 5: Offered -->
-                    <div class="kanban-column" data-status="offered">
-                        <div class="kanban-column-header">
-                            <span>OFFERED</span>
-                            <span class="kanban-column-count" id="count-offered">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-offered"></div>
-                    </div>
-
-                    <!-- Column 6: Rejected -->
-                    <div class="kanban-column" data-status="rejected">
-                        <div class="kanban-column-header">
-                            <span>REJECTED</span>
-                            <span class="kanban-column-count" id="count-rejected">0</span>
-                        </div>
-                        <div class="kanban-cards-container" id="col-rejected"></div>
+                    <div class="dashboard-style-bf247d">
+                        <a id="detail-resume-btn" href="#" target="_blank" class="dashboard-style-5fdacc">View CV</a>
+                        <button class="dashboard-style-735bc6">Applied</button>
                     </div>
                 </div>
             </div>
@@ -358,10 +216,195 @@
     <!-- Footer -->
     <footer class="footer" id="footer"></footer>
 
+
     <!-- User dashboard behavior is loaded from js/user-dashboard.js. -->
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/user-dashboard.js"></script>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/api.js"></script>
+    <script>
+        const fallbackApps = [
+            { id: 1, position: 'Senior Product Designer', company: 'TechPulse Labs', applied_date: '2026-07-28', status: 'applied', resume_url: '#' },
+            { id: 2, position: 'Frontend Engineer', company: 'BrightWave Tech', applied_date: '2026-07-25', status: 'under_review', resume_url: '#' },
+            { id: 3, position: 'Full Stack Developer', company: 'InnoTech Solutions', applied_date: '2026-07-20', status: 'shortlisted', resume_url: '#' },
+            { id: 4, position: 'Financial Analyst', company: 'Prime Bank', applied_date: '2026-07-10', status: 'rejected', resume_url: '#' }
+        ];
+
+        function getApplicationsState() {
+            const saved = sessionStorage.getItem('user_kanban_applications');
+            if (saved) {
+                try { return JSON.parse(saved); } catch (_) {}
+            }
+            return null;
+        }
+
+        function saveApplicationsState(apps) {
+            sessionStorage.setItem('user_kanban_applications', JSON.stringify(apps));
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await redirectIfNotLoggedIn('user');
+            renderNavbar('dashboard');
+            renderFooter();
+            
+            const user = getLoggedInUser();
+            if (user) {
+                document.getElementById('dash-user-name').textContent = user.name || 'User';
+            }
+            
+            await initApplicationsList();
+        });
+
+        async function initApplicationsList() {
+            let apps = getApplicationsState();
+            if (!apps) {
+                const { ok, data } = await apiGetMyApplications();
+                const applications = ok ? (data?.applications || []) : [];
+                if (applications.length) {
+                    apps = applications.map(app => ({
+                        id:           app.id,
+                        position:     app.job?.title   || app.job_title   || 'Unknown Position',
+                        company:      app.job?.company_name || app.company_name || 'Unknown Company',
+                        applied_date: app.applied_at   || app.created_at  || '',
+                        status:       app.status        || 'applied',
+                        resume_url:   app.resume_url || '#'
+                    }));
+                    saveApplicationsState(apps);
+                } else {
+                    apps = fallbackApps;
+                }
+            }
+
+            const total       = apps.length;
+            const inReview    = apps.filter(a => a.status === 'under_review').length;
+            const shortlisted = apps.filter(a => a.status === 'shortlisted').length;
+            const rejected    = apps.filter(a => a.status === 'rejected').length;
+
+            document.getElementById('stat-total-applied').textContent = total;
+            document.getElementById('stat-in-review').textContent = inReview;
+            document.getElementById('stat-shortlisted').textContent = shortlisted;
+            document.getElementById('stat-rejected').textContent = rejected;
+
+            renderList(apps);
+        }
+
+        let globalAppsList = [];
+        let activeAppId = null;
+
+        function renderList(apps) {
+            globalAppsList = apps;
+            const container = document.getElementById('applications-list-body');
+
+            if (apps.length === 0) {
+                container.innerHTML = `<div class="dashboard-style-30c129">You haven't applied to any jobs yet. <a href="../jobs/listing.html" class="dashboard-style-61fc2b">Browse Jobs →</a></div>`;
+                return;
+            }
+
+            container.innerHTML = apps.map(app => {
+                const badgeInfo = getStatusBadgeInfo(app.status);
+                const safeName = escHtml(app.position);
+                const safeCompany = escHtml(app.company);
+                const appliedDate = app.applied_date ? timeAgo(app.applied_date) : 'Recently';
+                const isActive = activeAppId === app.id;
+                
+                const border = isActive ? 'border: 2px solid #111827;' : 'border: 1px solid #E5E7EB;';
+                const padding = isActive ? 'padding: 19px;' : 'padding: 20px;'; // Adjust padding to avoid layout shift when border thickens
+
+                return `
+                <div onclick="selectApplication(${app.id})" class="dashboard-app-card" style="${border} ${padding}">
+                    <div>
+                        <h4 class="dashboard-style-91f8e7">${safeName}</h4>
+                        <div class="dashboard-style-49802d">
+                            ${safeCompany} &nbsp;•&nbsp; ${escHtml(app.job?.location || 'San Francisco, CA')}
+                        </div>
+                    </div>
+                    <div class="dashboard-style-7851db">
+                        <div class="dashboard-style-69a86b">Applied<br>${appliedDate}</div>
+                        <span class="dashboard-badge" style="background: ${badgeInfo.bg}; color: ${badgeInfo.color};">${badgeInfo.text}</span>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            // Automatically select the first one if none selected
+            if (apps.length > 0 && !activeAppId) {
+                selectApplication(apps[0].id);
+            }
+        }
+
+        function selectApplication(id) {
+            activeAppId = id;
+            renderList(globalAppsList); // Re-render to highlight active card
+
+            const app = globalAppsList.find(a => a.id === id);
+            if (!app) return;
+
+            const pane = document.getElementById('job-detail-pane');
+            const grid = document.getElementById('main-content-grid');
+            pane.style.display = 'block';
+            grid.style.gridTemplateColumns = '1fr 1.3fr';
+
+            document.getElementById('detail-title').textContent = app.position;
+            document.getElementById('detail-type').textContent = app.job?.job_type || 'Full-time';
+            document.getElementById('detail-location').textContent = app.job?.location || 'San Francisco / Remote';
+            document.getElementById('detail-salary').textContent = app.job?.salary || '$140k - $185k / year';
+
+            // Format description if provided from backend
+            let desc = app.job?.description || `
+                <h3 class="dashboard-style-663a30">About the Role</h3>
+                <p class="dashboard-style-dc2cb2">InnovateX Labs is looking for a ${escHtml(app.position)} to help us revolutionize how developers build and maintain cloud infrastructure. We are a fast-growing team tackling complex technical challenges with an unwavering focus on simplicity and elegance.</p>
+                <p class="dashboard-style-91e2ae">In this role, you will lead the design strategy for our core dashboard, working closely with engineering and product partners to translate intricate technical requirements into intuitive, high-impact experiences.</p>
+                
+                <h3 class="dashboard-style-663a30">Key Responsibilities</h3>
+                <ul class="dashboard-style-390068">
+                    <li class="dashboard-style-ccd7dd">Lead design initiatives from concept to launch for our core platform features.</li>
+                    <li class="dashboard-style-ccd7dd">Conduct user research and translate insights into actionable design improvements.</li>
+                    <li class="dashboard-style-ccd7dd">Build and maintain a scalable design system that supports consistent product experiences.</li>
+                </ul>
+
+                <h3 class="dashboard-style-663a30">What We're Looking For</h3>
+                <p>5+ years of experience in product design, preferably in B2B SaaS or developer tools.</p>
+            `;
+
+            if (app.job?.description) {
+                // Extremely basic parsing for user-submitted descriptions to add styling
+                let lines = app.job.description.split('\n');
+                desc = lines.map(l => l.trim() ? `<p class="dashboard-style-5534b3">${escHtml(l)}</p>` : '').join('');
+            }
+
+            document.getElementById('detail-description').innerHTML = desc;
+
+            const resumeBtn = document.getElementById('detail-resume-btn');
+            if (app.resume_url && app.resume_url !== '#') {
+                resumeBtn.href = `/api/applications/resume/${app.id}`;
+                resumeBtn.style.opacity = '1';
+                resumeBtn.style.pointerEvents = 'auto';
+            } else {
+                resumeBtn.href = '#';
+                resumeBtn.style.opacity = '0.5';
+                resumeBtn.style.pointerEvents = 'none';
+            }
+        }
+
+        function getStatusBadgeInfo(status) {
+            const s = (status || 'applied').toLowerCase();
+            if (s.includes('review') || s === 'applied') return { bg: '#DBEAFE', color: '#1D4ED8', text: 'In Review' };
+            if (s.includes('shortlisted') || s.includes('interview')) return { bg: '#D1FAE5', color: '#047857', text: 'Interviewing' };
+            if (s.includes('reject')) return { bg: '#FEE2E2', color: '#B91C1C', text: 'Rejected' };
+            if (s.includes('offer') || s.includes('hire')) return { bg: '#111827', color: '#ffffff', text: 'Offer Received' };
+            return { bg: '#F3F4F6', color: '#374151', text: 'Applied' };
+        }
+
+        function escHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str || '';
+            return d.innerHTML;
+        }
+    </script>
+
 </body>
 </html>

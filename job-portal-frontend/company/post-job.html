@@ -3,416 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HireMe — Post a New Opportunity</title>
+    <title>Job Portal — Post a New Opportunity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-        <!--
-    ============================================================
-    TASK-001 — Naming update: replace "HireMe"/"HireHub" with "Job Portal"
-    ============================================================
-    PROBLEM: This page's <title> above (and possibly other text further
-    down, like the navbar brand or footer) still uses an old site name
-    ("HireMe" or "HireHub"). The site is now called "Job Portal" — update
-    the <title> and any other leftover old-name text on this page.
-    ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
-    ============================================================
-
-    ============================================================
-    TASK-003 — Move this page's CSS into shared .css files
-    ============================================================
-    PROBLEM: This page has its own <style> block written directly inside
-    the HTML file below, on top of the separate CSS files already linked
-    above. Styling ends up scattered in two places, which makes it easy
-    for the same kind of element (e.g. a button) to look different from
-    page to page.
-    WHAT YOU NEED TO DO, as you rebuild this page from the new Figma design:
-      1. Never write a <style> block directly inside an HTML page again.
-      2. Put anything used on almost every page (colors, fonts, buttons,
-         spacing, navbar, the new profile popover) into ONE shared global
-         CSS file that every page links to.
-      3. Put styling specific to just this page/section into its own CSS
-         file (e.g. one for dashboards, one for job pages, one for auth
-         pages) — check the css/ folder for files that may already fit.
-      4. Remove the <style>...</style> block below once its rules have
-         been moved into the right .css file(s).
-    WHAT "DONE" LOOKS LIKE: This page has NO <style> tag anywhere in it,
-    and still looks correct because it links to CSS files instead.
-    ASSIGNED TASK: Robins (A6) — Organize the CSS properly.
-    ============================================================
-    -->
-<style>
-        /* Post-job specific styles that don't conflict with shared CSS */
-        .post-job-hero {
-            background: linear-gradient(180deg, #FFF0F5 0%, #F8F9FB 100%);
-            padding: 60px 0 30px;
-            text-align: center;
-        }
-
-        .post-job-hero h1 {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .post-job-hero p {
-            font-size: 14px;
-            color: #6B7280;
-            max-width: 540px;
-            margin: 0 auto 24px;
-        }
-
-        .back-dash-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #6B7280;
-            text-decoration: none;
-        }
-
-        .form-section {
-            padding: 30px 0 80px;
-        }
-
-        .form-card {
-            background: #ffffff;
-            border-radius: 24px;
-            max-width: 760px;
-            margin: 0 auto;
-            padding: 40px;
-            border: 1px solid #F3F4F6;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-        }
-
-        .form-card-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .form-card-sub {
-            font-size: 12px;
-            color: #9CA3AF;
-            margin-bottom: 32px;
-        }
-
-        .section-header-step {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #F3F4F6;
-        }
-
-        .step-num {
-            color: #DB2777;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 12px 16px;
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #111827;
-            outline: none;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .toggle-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #F9FAFB;
-            padding: 14px 20px;
-            border-radius: 12px;
-            border: 1px solid #E5E7EB;
-            margin-bottom: 20px;
-        }
-
-        .toggle-label h5 {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .toggle-label p {
-            font-size: 11px;
-            color: #9CA3AF;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #E5E7EB;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #111827;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        .form-actions {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 16px;
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid #F3F4F6;
-        }
-
-        .btn-cancel {
-            font-size: 13px;
-            font-weight: 600;
-            color: #6B7280;
-            text-decoration: none;
-        }
-
-        .btn-publish {
-            background: #111827;
-            color: #ffffff;
-            padding: 12px 28px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
 </head>
 <body>
 
     <!-- Navbar -->
     <nav class="navbar" id="navbar"></nav>
 
-    <!-- Post Job Hero -->
-    <section class="post-job-hero">
-        <div class="container">
-            <h1>Post a New Opportunity</h1>
-            <p>Reach a broad audience by creating a clear, detailed information card about the role and your company culture.</p>
-            <a href="dashboard.html" class="back-dash-link">
+    <!-- Form Body -->
+    <div class="dashboard-style-f7982d">
+        <div class="dashboard-style-eb46d9">
+            
+            <div class="dashboard-style-2a8646">
+                <h1 id="page-title" class="dashboard-style-cfd7eb">Post a New Opportunity</h1>
+            </div>
+
+            <a href="dashboard.html" class="dashboard-style-0579eb">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 Back to Dashboard
             </a>
-        </div>
-    </section>
 
-    <!-- Form Section -->
-    <div class="form-section">
-        <div class="container">
-            <div class="form-card">
-                <h2 class="form-card-title">Job Details</h2>
-                <p class="form-card-sub">Fields marked with an asterisk (*) are required</p>
+            <div class="dashboard-style-65b338">
+                <div class="dashboard-style-4a756b">
+                    <div>
+                        <h2 class="dashboard-style-f19edf">Job Details</h2>
+                        <p class="dashboard-style-1f6e71">Fields marked with an asterisk (*) are required.</p>
+                    </div>
+                    <button id="btn-delete-job" class="dashboard-style-087357">Delete Job</button>
+                </div>
 
-                <!--
-                ============================================================
-                TASK-020 — Turn this into ONE shared Post Job / Edit Job form
-                ============================================================
-                PROBLEM: In Figma, the "Post a New Opportunity" page (this
-                page) and the "Edit Post" page look almost identical — same
-                fields, same layout. Right now this page only handles
-                CREATING a new job (see the submit handler further down,
-                which always calls apiCreateJob). Building Edit Job as a
-                totally separate page would mean double the work and a risk
-                of the two pages drifting apart visually over time.
-                WHAT YOU NEED TO DO:
-                  - Robins (A3): Turn this page into one shared page/form
-                    that can show either "Post Job" or "Edit Job" mode, with
-                    small differences: Edit Job mode needs a red "Delete
-                    Job" button, and the submit button should say "Publish
-                    Job" for create vs "Edit Job"/"Save Changes" for edit
-                    (currently the button below always says "Publish Job" —
-                    search this file for `btn-publish`/"Publish Job" further
-                    down). One way to trigger "edit mode" is a query
-                    parameter, e.g. post-job.html?id=123, or a hidden field
-                    letting the JS below know which mode it's in.
-                  - Simrika (D2): Once the shared form exists, make it work
-                    in BOTH modes:
-                      1. Create mode (already partly working below via
-                         apiCreateJob) — keep this working.
-                      2. Edit mode — when the page loads with a job id, load
-                         that job's existing details into these same form
-                         fields first (using apiGetJob(jobId)), then save
-                         changes to that SAME job (using apiUpdateJob) when
-                         submitted, instead of creating a new job.
-                    Also wire up the new "Delete Job" button from A3 — make
-                    it ask "are you sure?" (like the existing `deleteJob()`
-                    confirm() call in company/dashboard.html) before
-                    actually deleting, since deleting can't be undone.
-                ASSIGNED TASK: Robins (A3, shared form UI) + Simrika (D2,
-                shared form logic for both create and edit).
-                ============================================================
-                -->
+                <div class="form-error-box dashboard-style-6ec3e9" id="post-job-error"></div>
+
                 <form id="post-job-form">
-                    <!-- Error Box -->
-                    <div id="post-job-error" style="display:none;color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:10px;padding:12px;font-size:13px;margin-bottom:16px;"></div>
-
-                    <!-- Step 1 -->
-                    <div class="section-header-step" style="border: none; padding-top: 0;">
-                        <span class="step-num">1</span>
-                        <span>The Fundamentals</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Job Title *</label>
-                        <input type="text" id="job-title" placeholder="e.g. Senior Product Designer" required>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Category *</label>
-                            <select id="job-category" required>
-                                <option value="">Select category</option>
-                                <option value="IT">IT & Software</option>
-                                <option value="Engineering">Engineering</option>
-                                <option value="Design">Design</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Sales">Sales</option>
-                                <option value="HR">HR</option>
-                            </select>
+                    
+                    <!-- The Fundamentals -->
+                    <div class="dashboard-style-336ee8">
+                        <div class="dashboard-style-e2b391">
+                            <div class="dashboard-style-ffe680">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"></path><path d="M9 20h6"></path><path d="M12 4v16"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="dashboard-style-268528">The Fundamentals</h3>
+                                <p class="dashboard-style-1f6e71">Set the stage for your listing. High-quality titles attract more relevant candidates.</p>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Employment Type *</label>
-                            <select id="job-type" required>
-                                <option value="">Select employment type</option>
-                                <option value="Full-time">Full-time</option>
-                                <option value="Part-time">Part-time</option>
-                                <option value="Remote">Remote</option>
-                                <option value="Contract">Contract</option>
-                                <option value="Freelance">Freelance</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <!-- Step 2 -->
-                    <div class="section-header-step">
-                        <span class="step-num">2</span>
-                        <span>Location & Pay</span>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Location *</label>
-                            <input type="text" id="job-location" placeholder="e.g. San Francisco, CA or Remote" required>
+                        <div class="dashboard-style-dc2cb2">
+                            <label class="dashboard-style-d2f2d5">Job Title *</label>
+                            <input type="text" id="job-title" placeholder="e.g. Senior Product Designer" required class="dashboard-style-392a74">
                         </div>
-                        <div class="form-group">
-                            <label>Salary Range (Annual USD) *</label>
-                            <input type="text" id="job-salary" placeholder="e.g. $130,000 - $160,000" required>
+
+                        <div class="dashboard-style-e03f38">
+                            <div>
+                                <label class="dashboard-style-d2f2d5">Category *</label>
+                                <select id="job-category" required class="dashboard-style-392a74">
+                                    <option value="">Select a category</option>
+                                    <option value="IT">IT &amp; Software</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="HR">HR</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="dashboard-style-d2f2d5">Employment Type *</label>
+                                <select id="job-type" required class="dashboard-style-392a74">
+                                    <option value="">Full-time / Part-time</option>
+                                    <option value="Full-time">Full-time</option>
+                                    <option value="Part-time">Part-time</option>
+                                    <option value="Remote">Remote</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="Freelance">Freelance</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Closing Date (optional)</label>
-                            <input type="datetime-local" id="job-closing-date" placeholder="Closing date (optional)">
+                    <div class="dashboard-style-431552"></div>
+
+                    <!-- Location & Pay -->
+                    <div class="dashboard-style-336ee8">
+                        <div class="dashboard-style-e2b391">
+                            <div class="dashboard-style-ffe680">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="dashboard-style-268528">Location &amp; Pay</h3>
+                                <p class="dashboard-style-1f6e71">Be transparent about where the work happens and what the compensation looks like.</p>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <!-- spacer to keep layout consistent -->
+
+                        <div class="dashboard-style-f71087">
+                            <div>
+                                <label class="dashboard-style-d2f2d5">Office Location *</label>
+                                <div class="dashboard-style-d85c4e">
+                                    <svg class="dashboard-style-25bf80" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                    <input type="text" id="job-location" placeholder="e.g. San Francisco, CA" required class="dashboard-style-8951a6">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="dashboard-style-d2f2d5">Salary Range (Annual USD) *</label>
+                                <div class="dashboard-style-d85c4e">
+                                    <span class="dashboard-style-2972f4">$</span>
+                                    <input type="text" id="job-salary" placeholder="e.g. 120,000 - 150,000" required class="dashboard-style-7240c8">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="dashboard-style-d2f2d5">Closing Date</label>
+                            <input type="datetime-local" id="job-closing-date" class="dashboard-style-5ca573">
                         </div>
                     </div>
 
-                    <!--
-                    ============================================================
-                    TASK-021 — Add the Skills & Keywords tag input
-                    ============================================================
-                    PROBLEM: The new job-post form (per Figma) has a spot
-                    where you type a skill (like "React") and press Enter or
-                    comma to turn it into a small removable tag/pill, so a
-                    company can list several required skills. This doesn't
-                    exist on this page at all yet.
-                    WHAT YOU NEED TO DO:
-                      - Robins (A4): Build this tag-input box visually here
-                        — it can start simple: a text input where typing a
-                        word and pressing Enter/comma creates a small
-                        removable pill (with an X to remove it), and all the
-                        current tags get combined into one comma-separated
-                        string when the form is submitted (e.g. matching
-                        what the backend expects — see TASK-008 in
-                        app/models/job.py, which stores skills as one
-                        comma-separated string like "React, Figma, SQL").
-                      - Simrika (D3): Once the visual tag box exists, make
-                        sure the submit handler further down in this file
-                        (search for `apiCreateJob`) reads the current list
-                        of skills and includes it in the request body as
-                        `skills: "React, Figma, SQL"`, and make sure it also
-                        gets displayed correctly on the job detail page
-                        (jobs/detail.html) afterwards.
-                    ASSIGNED TASK: Robins (A4, visual tag input) + Simrika
-                    (D3, saving/loading the skills data).
-                    ============================================================
-                    -->
+                    <div class="dashboard-style-431552"></div>
 
-                    <!-- Step 3 -->
-                    <div class="section-header-step">
-                        <span class="step-num">3</span>
-                        <span>Role Description</span>
+                    <!-- Role Description -->
+                    <div class="dashboard-style-336ee8">
+                        <div class="dashboard-style-e2b391">
+                            <div class="dashboard-style-ffe680">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            </div>
+                            <div>
+                                <h3 class="dashboard-style-268528">Role Description</h3>
+                                <p class="dashboard-style-1f6e71">Outline the responsibilities, requirements, and what makes your company special.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-style-dc2cb2">
+                            <label class="dashboard-style-d2f2d5">Job Description *</label>
+                            <textarea id="job-description" rows="8" placeholder="Describe the day-to-day responsibilities, expectations, and necessary skills..." required class="dashboard-style-936f2d"></textarea>
+                        </div>
+
+                        <div class="dashboard-style-91e2ae">
+                            <label class="dashboard-style-d2f2d5">Skills &amp; Keywords</label>
+                            <div class="dashboard-style-eab3ba" id="skills-container">
+                                <svg class="dashboard-style-254111" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                <input type="text" id="job-skills-input" placeholder="e.g. React, Figma, SQL (Separate with commas)" class="dashboard-style-590363">
+                            </div>
+                            <input type="hidden" id="job-skills-hidden">
+                            <p class="dashboard-style-d3d29d">Press Enter or use commas to separate tags.</p>
+                        </div>
+
+                        <div class="dashboard-style-433e85">
+                            <svg class="dashboard-style-937119" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <div>
+                                <span class="dashboard-style-d5dad2">Almost there!</span>
+                                <span class="dashboard-style-d41658">By clicking "Publish Job", your listing will immediately be visible to job seekers. You can edit or archive it at any time from your dashboard.</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Job Description *</label>
-                        <textarea id="job-description" rows="6" placeholder="Describe the day-to-day responsibilities, expectations, and necessary skills..." required></textarea>
-                    </div>
+                    <div class="dashboard-style-615c49"></div>
 
-                    <div class="form-actions">
-                        <a href="dashboard.html" class="btn-cancel">Cancel & Discard</a>
-                        <button type="submit" class="btn-publish" id="submit-btn">Publish Job</button>
+                    <div class="dashboard-style-79b8b4">
+                        <a href="dashboard.html" class="dashboard-style-ae8038">Cancel &amp; Discard</a>
+                        <button type="submit" id="submit-btn" class="dashboard-style-e84a1b">Publish Job</button>
                     </div>
                 </form>
             </div>
@@ -431,9 +184,69 @@
             renderNavbar('post-job');
             renderFooter();
 
+            const urlParams = new URLSearchParams(window.location.search);
+            const jobId = urlParams.get('id');
+            const isEditMode = !!jobId;
+            const submitBtn = document.getElementById('submit-btn');
+            const pageTitle = document.getElementById('page-title');
+            const btnDelete = document.getElementById('btn-delete-job');
+
+            if (isEditMode) {
+                pageTitle.textContent = 'Edit Post';
+                submitBtn.textContent = 'Edit Job';
+                btnDelete.style.display = 'inline-block';
+                await loadJobData(jobId);
+            } else {
+                // const { ok, data } = await apiGetJob(jobId);
+                // if (ok && data.job) { populate fields here... }
+            }
+
+            // Skills Tag Logic (TASK-021)
+            const skillsInput = document.getElementById('job-skills-input');
+            const skillsContainer = document.getElementById('skills-container');
+            const hiddenSkills = document.getElementById('job-skills-hidden');
+            let tags = [];
+
+            function renderTags() {
+                document.querySelectorAll('.skill-pill').forEach(el => el.remove());
+                tags.forEach((tag, index) => {
+                    const pill = document.createElement('span');
+                    pill.className = 'skill-pill';
+                    pill.innerHTML = `${escHtml(tag)}<span class="remove-pill" data-index="${index}">&times;</span>`;
+                    skillsContainer.insertBefore(pill, skillsInput);
+                });
+                hiddenSkills.value = tags.join(', ');
+            }
+
+            skillsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-pill')) {
+                    const idx = parseInt(e.target.getAttribute('data-index'), 10);
+                    tags.splice(idx, 1);
+                    renderTags();
+                }
+            });
+
+            skillsInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const val = skillsInput.value.trim().replace(/^,|,$/g, '').trim();
+                    if (val && !tags.includes(val)) {
+                        tags.push(val);
+                        renderTags();
+                    }
+                    skillsInput.value = '';
+                }
+            });
+
+            function escHtml(str) {
+                const d = document.createElement('div');
+                d.textContent = str || '';
+                return d.innerHTML;
+            }
+
+            // Form Submission
             const form = document.getElementById('post-job-form');
             const errDiv = document.getElementById('post-job-error');
-            const submitBtn = document.getElementById('submit-btn');
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -446,36 +259,28 @@
                 const salary      = document.getElementById('job-salary').value.trim();
                 const description = document.getElementById('job-description').value.trim();
                 const closing_date = (document.getElementById('job-closing-date').value || '').trim() || null;
-                // TODO — TASK-021 continued (Simrika/D3): once Robins (A4)
-                // has built the skills tag input, read its current tags
-                // here (e.g. joining them into "React, Figma, SQL") and add
-                // a `skills` line to the apiCreateJob(...) call below —
-                // also see TASK-020 above about turning this whole form
-                // into a shared Create/Edit form (Robins/A3, Simrika/D2).
+                const skills      = hiddenSkills.value;
 
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Publishing…';
+                submitBtn.textContent = isEditMode ? 'Saving…' : 'Publishing…';
 
-                const { ok, data } = await apiCreateJob({
-                    title,
-                    category,
-                    job_type,
-                    location,
-                    salary,
-                    description
-                    , closing_date
-                });
+                let ok, data;
+                if (isEditMode) {
+                    // Simrika (D2): Replace mock with apiUpdateJob(jobId, {...})
+                    ok = true; data = {};
+                } else {
+                    const res = await apiCreateJob({ title, category, job_type, location, salary, description, closing_date });
+                    ok = res.ok; data = res.data;
+                }
 
                 if (ok) {
-                    showToast('Job posted successfully!', 'success');
-                    setTimeout(() => {
-                        window.location.href = resolveSitePath('company/dashboard.html');
-                    }, 1000);
+                    showToast(isEditMode ? 'Job updated successfully!' : 'Job posted successfully!', 'success');
+                    setTimeout(() => { window.location.href = resolveSitePath('company/dashboard.html'); }, 1000);
                 } else {
-                    errDiv.textContent = data.error || data.message || 'Failed to create job posting. Check company approval status.';
+                    errDiv.textContent = data.error || data.message || 'Failed to process request.';
                     errDiv.style.display = 'block';
                     submitBtn.disabled = false;
-                    submitBtn.textContent = 'Publish Job';
+                    submitBtn.textContent = isEditMode ? 'Edit Job' : 'Publish Job';
                 }
             });
         });

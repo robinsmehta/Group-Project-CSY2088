@@ -2,70 +2,6 @@
 // Depends on: config.js
 // Load on every page after config.js
 
-// ============================================================
-// TODO — TASK-001 — Naming update: "HireHub" → "Job Portal"
-// ============================================================
-// PROBLEM: The site is now called "Job Portal", not "HireHub" (the old
-// name). This file builds the navbar brand text and the footer brand text
-// further down — search this file for the literal text "HireHub" (there
-// are 2 places: the navbar logo/brand link, and the footer heading) and
-// replace both with "Job Portal". The same text also appears in the
-// <title> tag and other spots across every HTML page — as you (Robins)
-// rebuild each page from Figma, make sure "HireHub" doesn't survive
-// anywhere (page titles, footer, navbar).
-// ASSIGNED TASK: Robins (A1) — Naming update, part of rebuilding every page.
-// ============================================================
-
-// ============================================================
-// TODO — TASK-002 — Build the shared Profile Edit popover's BEHAVIOUR
-// ============================================================
-//
-// PROBLEM:
-// Robins (A2) is building what the Profile Edit popover LOOKS like — a
-// small floating box with Name, Email, Password fields (+ Description for
-// companies) that opens when the circle icon in the navbar is clicked.
-// Right now nothing in this file makes that popover actually open, close,
-// load the current user's info, or save changes. Since the same circle
-// icon appears on almost every page, this needs to be built ONCE here in
-// shared.js, not separately on each page.
-//
-// WHAT YOU NEED TO DO:
-// 1. Once Robins has a rough version of the popover HTML/CSS, add a
-//    function here, e.g. `initProfilePopover()`, that:
-//      a) Finds the circle icon in the navbar (rendered inside
-//         `renderNavbar()` below — look for the `navbar-user-avatar` /
-//         `navbar-user` markup a little further down in this function)
-//         and adds a click listener that shows/hides the popover.
-//      b) When opened, fills the Name/Email fields with the currently
-//         logged-in user's info — you already have this in
-//         `getLoggedInUser()` further down this file.
-//      c) When the "Update" button inside the popover is clicked, sends
-//         the new name/email/password to the backend using the new
-//         `apiUpdateMyProfile(role, payload)` helper (see the TODO for
-//         this in js/api.js — TASK-010) and shows a success/error message
-//         (reuse `showToast()` from this same file).
-//      d) Closes when clicking outside the popover or on an "X" button.
-// 2. Call `initProfilePopover()` from inside `renderNavbar()` below, after
-//    the navbar HTML has been inserted into the page (so the circle icon
-//    actually exists in the DOM by the time you try to attach the click
-//    listener to it).
-//
-// HOW THIS PART CONNECTS:
-// renderNavbar() below (which runs on every page) builds the circle icon
-// markup. Your popover logic attaches to that same icon. The popover then
-// talks to the backend routes Ugeesha/Simrika/Reeju are each adding
-// (TASK-009 in app/routes/auth_routes.py) via the new apiUpdateMyProfile
-// helper (TASK-010 in js/api.js).
-//
-// WHAT "DONE" LOOKS LIKE:
-// On any page, clicking the circle icon lets you actually update your
-// name/email/password, and it behaves the same way no matter which page
-// you're on.
-//
-// ASSIGNED TASK:
-// Sagar (B1) — Build the Profile Edit popover's actual behavior.
-// ============================================================
-
 // Navbar & Footer Injection
 
 function renderNavbar(activePage) {
@@ -86,7 +22,9 @@ function renderNavbar(activePage) {
         ];
     } else if (user.role === 'admin') {
         links = [
-            { href: resolveSitePath('admin/dashboard.html'), label: 'Dashboard', key: 'dashboard' }
+            { href: resolveSitePath('admin/dashboard.html'),          label: 'Overview',           key: 'dashboard' },
+            { href: resolveSitePath('admin/company-approvals.html'),   label: 'Company Approvals',  key: 'approvals' },
+            { href: resolveSitePath('admin/user-directory.html'),      label: 'User Directory',     key: 'users' }
         ];
     } else {
         links = [
@@ -111,22 +49,92 @@ function renderNavbar(activePage) {
                 ? resolveSitePath('admin/dashboard.html')
                 : resolveSitePath('user/dashboard.html');
 
+        const addAdminBtn = user.role === 'admin' ? '<button class="btn btn-outline btn-sm" id="navbar-add-admin" style="margin-right: 12px; background: #111827; color: white; border-radius: 20px; padding: 6px 14px; font-weight: 600;">Add admin</button>' : '';
+
         // NOTE for Robins (A2): the logged-in person's name label next to
         // the profile circle (the "New small addition" in the brief) is
         // already implemented right here — `${name}` is rendered next to
         // the avatar circle below. When you rebuild the navbar to match
         // Figma, just make sure this name label survives in your new markup.
+        const logoutBtn = `<button class="btn btn-ghost btn-sm" id="btn-logout" style="margin-left: 12px; background:#DC2626; color:white; border-radius:20px; padding:6px 14px; font-weight:600; border:none; cursor:pointer;">Log Out</button>`;
+
         authSection = `
-            <a href="${dashHref}" class="navbar-user">
-                <span class="navbar-user-avatar">${initials}</span>
-                <span>${name}</span>
-            </a>
-            <button class="btn btn-ghost btn-sm" id="btn-logout">Logout</button>
+            ${addAdminBtn}
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button id="profile-modal-trigger" style="background:none; border:none; cursor:pointer; font-weight:700; font-size:14px; color:#111827; font-family:inherit;">
+                    ${name}
+                </button>
+                ${logoutBtn}
+            </div>
+
+            <!-- Profile Edit Modal -->
+            <div id="profile-modal" style="display: none; position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+                <div style="background: #ffffff; border-radius: 24px; padding: 40px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); position: relative; text-align: left;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                        <h4 style="margin:0; font-size: 24px; font-weight: 700; color: #111827; letter-spacing: -0.5px;">Profile Edit</h4>
+                        <button id="profile-modal-close" style="background:none; border:none; font-size: 20px; cursor: pointer; color: #111827; line-height: 1;">✕</button>
+                    </div>
+                    
+                    <div id="profile-error" class="auth-error-box" style="display:none; margin-bottom: 20px;"></div>
+                    
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Name</label>
+                        <input type="text" id="popover-name" value="${name}" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Email Address</label>
+                        <input type="email" id="popover-email" value="${user.email}" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                    </div>
+                    ${user.role === 'company' ? `
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Description</label>
+                        <textarea id="popover-description" rows="3" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">${user.description || ''}</textarea>
+                    </div>
+                    ` : ''}
+                    <div class="form-group" style="margin-bottom: 32px;">
+                        <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Password (leave blank to keep current)</label>
+                        <input type="password" id="popover-password" placeholder="••••••••••••" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                    </div>
+                    <button id="popover-update-btn" style="width: 100%; background: #111827; color: #ffffff; padding: 16px; border: none; border-radius: 30px; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.1s;">Update</button>
+                </div>
+            </div>
+
+            <!-- Add Admin Modal -->
+            <div id="add-admin-modal" style="display: none; position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+                <div style="background: #ffffff; border-radius: 24px; padding: 40px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); position: relative; text-align: left;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                        <h4 style="margin:0; font-size: 24px; font-weight: 700; color: #111827; letter-spacing: -0.5px;">Add Admin</h4>
+                        <button id="add-admin-modal-close" style="background:none; border:none; font-size: 20px; cursor: pointer; color: #111827; line-height: 1;">✕</button>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Name</label>
+                        <input type="text" id="admin-name" placeholder="e.g. Jane Doe" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Email Address</label>
+                        <input type="email" id="admin-email" placeholder="jane.doe@example.com" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 32px;">
+                        <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Password</label>
+                        <input type="password" id="admin-password" placeholder="••••••••••••" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                    </div>
+                    <button id="add-admin-btn" style="width: 100%; background: #000000; color: #ffffff; padding: 16px; border: none; border-radius: 30px; font-size: 15px; font-weight: 700; cursor: pointer;">Add</button>
+                </div>
+            </div>
         `;
     } else {
         authSection = `
-            <a href="${resolveSitePath('auth/login.html')}" class="btn btn-ghost btn-sm">Sign in</a>
-            <a href="${resolveSitePath('auth/register.html')}" class="btn btn-primary btn-sm">Register</a>
+            <div style="display: flex; align-items: center; gap: 24px;">
+                <a href="${resolveSitePath('auth/login.html')}" style="color: #111827; font-weight: 600; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                    Login
+                </a>
+                <a href="${resolveSitePath('auth/register.html')}" style="background: #111827; color: #ffffff; padding: 10px 24px; border-radius: 24px; font-weight: 600; font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Register
+                </a>
+            </div>
         `;
     }
 
@@ -137,8 +145,8 @@ function renderNavbar(activePage) {
     const html = `
         <nav class="navbar" id="navbar">
             <div class="navbar-inner">
-                <!-- TODO — TASK-001 (Robins/A1): rename "HireHub" to "Job Portal" below -->
-                <a href="${resolveSitePath('index.html')}" class="navbar-brand">HireHub</a>
+                <!-- TODO — TASK-001 (Robins/A1): rename "Job Portal" to "Job Portal" below -->
+                <a href="${resolveSitePath('index.html')}" class="navbar-brand">Job Portal</a>
                 <div class="navbar-links">${navLinks}</div>
                 <div class="navbar-actions">${authSection}</div>
                 <button class="navbar-hamburger" id="nav-hamburger" aria-label="Menu">
@@ -167,49 +175,80 @@ function renderNavbar(activePage) {
         hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
     }
 
+    // Modal Trigger Logic
+    const modalTrigger = document.getElementById('profile-modal-trigger');
+    const modal = document.getElementById('profile-modal');
+    const modalClose = document.getElementById('profile-modal-close');
+    
+    if (modalTrigger && modal && modalClose) {
+        modalTrigger.addEventListener('click', () => modal.style.display = 'flex');
+        modalClose.addEventListener('click', () => modal.style.display = 'none');
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+    }
+
+    // Add Admin Modal Trigger Logic
+    const addAdminTrigger = document.getElementById('navbar-add-admin');
+    const addAdminModal = document.getElementById('add-admin-modal');
+    const addAdminClose = document.getElementById('add-admin-modal-close');
+    
+    if (addAdminTrigger && addAdminModal && addAdminClose) {
+        addAdminTrigger.addEventListener('click', () => addAdminModal.style.display = 'flex');
+        addAdminClose.addEventListener('click', () => addAdminModal.style.display = 'none');
+        addAdminModal.addEventListener('click', (e) => { if (e.target === addAdminModal) addAdminModal.style.display = 'none'; });
+    }
+
+    const addAdminBtnSubmit = document.getElementById('add-admin-btn');
+    if (addAdminBtnSubmit) {
+        addAdminBtnSubmit.addEventListener('click', async () => {
+            const name     = document.getElementById('admin-name').value.trim();
+            const email    = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            if (!name || !email || !password) {
+                if (typeof showToast === 'function') showToast('Please fill in all fields.', 'error');
+                else alert('Please fill in all fields.');
+                return;
+            }
+            addAdminBtnSubmit.disabled = true;
+            addAdminBtnSubmit.textContent = 'Adding...';
+            
+            // Assume apiCreateAdmin is available globally from api.js
+            if (typeof apiCreateAdmin === 'function') {
+                const { ok, data } = await apiCreateAdmin(name, email, password);
+                addAdminBtnSubmit.disabled = false;
+                addAdminBtnSubmit.textContent = 'Add';
+
+                if (ok) {
+                    if (typeof showToast === 'function') showToast('Admin created successfully', 'success');
+                    else alert('Admin created successfully');
+                    addAdminModal.style.display = 'none';
+                    document.getElementById('admin-name').value = '';
+                    document.getElementById('admin-email').value = '';
+                    document.getElementById('admin-password').value = '';
+                } else {
+                    if (typeof showToast === 'function') showToast(data.error || 'Failed to create admin', 'error');
+                    else alert(data.error || 'Failed to create admin');
+                }
+            } else {
+                addAdminBtnSubmit.disabled = false;
+                addAdminBtnSubmit.textContent = 'Add';
+                alert('API not loaded');
+            }
+        });
+    }
+
     document.getElementById('btn-logout')?.addEventListener('click', handleLogout);
     document.getElementById('btn-logout-mobile')?.addEventListener('click', handleLogout);
 }
 
 function renderFooter() {
     const html = `
-        <footer class="footer" id="footer">
-            <div class="footer-inner">
-                <div>
-                    <!-- TODO — TASK-001 (Robins/A1): rename "HireHub" to "Job Portal" below (2 spots in this footer block) -->
-                    <div class="footer-brand-name">HireHub</div>
-                    <p class="footer-tagline">Connecting talent with opportunity. Find your next role or your next great hire.</p>
-                </div>
-                <div class="footer-col">
-                    <h4>For Job Seekers</h4>
-                    <ul>
-                        <li><a href="${resolveSitePath('jobs/listing.html')}">Browse Jobs</a></li>
-                        <li><a href="${resolveSitePath('auth/register.html')}">Create Account</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>For Employers</h4>
-                    <ul>
-                        <li><a href="${resolveSitePath('auth/register.html')}">Post a Job</a></li>
-                        <li><a href="${resolveSitePath('company/dashboard.html')}">Employer Dashboard</a></li>
-                        <li><a href="${resolveSitePath('company/applicants.html')}">View Applicants</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Company</h4>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom page-container">
-                <span>&copy; ${new Date().getFullYear()} HireHub. All rights reserved.</span>
+        <footer class="footer" id="footer" style="background-color: #ffffff; border-top: 1px solid #E5E7EB; padding: 24px 20px;">
+            <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+                <div style="color: #111827; font-size: 16px; font-weight: 800; letter-spacing: -0.5px;">Job Portal</div>
+                <div style="font-size: 12px; color: #9CA3AF;">© All rights reserved 2026</div>
             </div>
         </footer>
     `;
-
     const el = document.getElementById('footer') || document.querySelector('.footer');
     if (el) el.outerHTML = html;
 }

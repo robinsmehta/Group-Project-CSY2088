@@ -131,9 +131,9 @@ def login():
     password = data.get('password')
     role = data.get('role')
 
-    if not email or not password or not role:
+    if not email or not password:
         return jsonify({
-            'error': 'Missing required fields: email, password, and role are required.'
+            'error': 'Missing required fields: email and password are required.'
         }), 400
 
     # Delegate business logic to auth_service layer
