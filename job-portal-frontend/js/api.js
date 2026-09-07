@@ -96,7 +96,11 @@ async function apiUpdateJob(jobId, jobData) {
 // ===========================================================================
 
 async function apiGetMyApplications() {
-    return apiFetch('/applications/mine');
+    return apiFetch('/applications/mine', { cache: 'no-store' });
+}
+
+async function apiGetMyApplicationStats() {
+    return apiFetch('/applications/mine/stats', { cache: 'no-store' });
 }
 
 async function apiApplyToJob(jobId, resumeFile) {

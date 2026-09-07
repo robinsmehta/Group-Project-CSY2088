@@ -84,6 +84,15 @@ def get_my_applications():
     return jsonify(result), status_code
 
 
+@application_bp.route('/mine/stats', methods=['GET'])
+@role_required('user')
+def get_my_application_stats():
+    """Return application status counts for the logged-in user."""
+    user_id = session.get('user_id')
+    result, status_code = application_service.get_my_application_stats(user_id)
+    return jsonify(result), status_code
+
+
 # ============================================================
 # 3. GET /api/applications/job/<job_id>
 # ============================================================

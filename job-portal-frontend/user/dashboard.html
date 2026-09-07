@@ -236,13 +236,12 @@
                 Shortlisted / Rejected) + a "Recent Applications" list.
               - Reeju (E3): once the new list-style HTML exists, connect
                 it to the real application data so it only ever shows the
-                4 agreed statuses (see the matching TODO further down in
-                the <script> section of this page, near
-                renderKanbanCards()).
+                4 agreed statuses (see the matching dashboard logic module
+                near renderKanbanCards()).
               - Reeju (E4): wire the 4 stat numbers to the new
                 "my application stats" backend endpoint (see TASK-007 in
-                app/services/application_service.py and TASK-011 in
-                js/api.js).
+                 app/services/application_service.py and TASK-011 in
+                 js/api.js).
             ASSIGNED TASK: Robins (A1, layout) + Reeju (E3 list, E4 stats).
             ============================================================
             -->
@@ -265,23 +264,23 @@
                 <div class="stat-card">
                     <div class="stat-icon-wrapper">🎯</div>
                     <div class="stat-info">
-                        <label>Interviews</label>
-                        <span id="stat-interviews">0</span>
+                        <label>Shortlisted</label>
+                        <span id="stat-shortlisted">0</span>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon-wrapper">🎉</div>
                     <div class="stat-info">
-                        <label>Offered</label>
-                        <span id="stat-offered">0</span>
+                        <label>Rejected</label>
+                        <span id="stat-rejected">0</span>
                     </div>
                 </div>
             </div>
 
             <!-- Kanban Board Section — see TASK-012 above: this whole board
                  is being replaced by a "Recent Applications" list per the
-                 new Figma design. Also see TASK-017 in the <script> section
-                 below (near the very bottom of this file) for the "View CV"
+                 new Figma design. Also see TASK-017 in the dashboard logic
+                 module for the "View CV"
                  button that needs to be added to each application row/card. -->
             <div class="kanban-section" id="applications">
                 <div class="kanban-header">
@@ -291,7 +290,7 @@
                     </div>
                 </div>
 
-                <div class="kanban-board">
+                <div class="kanban-board" id="kanban-board"> 
                     <!-- Column 1: Applied -->
                     <div class="kanban-column" data-status="applied">
                         <div class="kanban-column-header">
@@ -353,255 +352,10 @@
     <!-- Footer -->
     <footer class="footer" id="footer"></footer>
 
-    <!--
-    ============================================================
-    TASK-014 — Move this page's JavaScript into its own file
-    ============================================================
-    PROBLEM: All of this page's "smart" logic (loading applications,
-    building the board, calculating stats) is written directly inside this
-    HTML file in the <script> block below, instead of in its own separate
-    .js file. This makes the HTML file long and messy, and makes the logic
-    harder for a teammate to find later.
-    WHAT YOU NEED TO DO: As you wire up this page, move the JavaScript
-    below out of this <script>...</script> block and into its own file
-    (e.g. js/user-dashboard.js), then link to it the same way this page
-    already links to js/config.js, js/shared.js, and js/api.js just above.
-    ASSIGNED TASK: Reeju (E8) — Move JavaScript out of the HTML pages.
-    ============================================================
-    -->
+    <!-- User dashboard behavior is loaded from js/user-dashboard.js. -->
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Protected Route Verification
-            await redirectIfNotLoggedIn('user');
-
-            // Render Nav & Footer
-            renderNavbar('dashboard');
-            renderFooter();
-
-            // Load & render the candidate application board in read-only mode
-            await initKanbanBoard();
-
-            // TODO — TASK-011 (Reeju / E4): once the backend stats endpoint
-            // exists (see TASK-007 in application_service.py and TASK-011
-            // in js/api.js), call it here (e.g. `await loadApplicationStats()`)
-            // and fill in the 4 stat numbers at the top of the page (see
-            // TASK-012 higher up in this file for which 4 labels the new
-            // design needs: Total Applied / In Review / Shortlisted /
-            // Rejected).
-        });
-
-        // ============================================================
-        // TODO — TASK-015 — Remove the fake "sample applications" data
-        // ============================================================
-        // PROBLEM: `fallbackApps` below is completely made-up demo data.
-        // Right now, if a job seeker hasn't applied to any real jobs yet,
-        // this fake data is shown instead of a real "you haven't applied
-        // yet" message — which looks like a real bug (or even a data
-        // leak) to anyone testing the site, including a marker.
-        // WHAT YOU NEED TO DO:
-        //   1. Delete the `fallbackApps` array below completely, and
-        //      remove the `apps = fallbackApps;` fallback line further
-        //      down inside `initKanbanBoard()` (search this file for
-        //      "fallbackApps" to find it).
-        //   2. In its place, when the real API call returns zero
-        //      applications, show a friendly empty-state message instead,
-        //      e.g. "You haven't applied to any jobs yet — browse jobs to
-        //      get started," with a button/link to jobs/listing.html.
-        //      (There's a `showEmpty()` helper already available from
-        //      shared.js you can reuse for this.)
-        // ASSIGNED TASK: Reeju (E5) — Remove the fake sample applications.
-        // ============================================================
-        const fallbackApps = [
-            { id: 1, position: 'Senior Product Designer', company: 'TechPulse Labs', applied_date: '2026-07-28', status: 'applied' },
-            { id: 2, position: 'Frontend Engineer', company: 'BrightWave Tech', applied_date: '2026-07-25', status: 'under_review' },
-            { id: 3, position: 'Full Stack Developer', company: 'InnoTech Solutions', applied_date: '2026-07-20', status: 'shortlisted' },
-            { id: 4, position: 'Financial Analyst', company: 'Prime Bank', applied_date: '2026-07-10', status: 'rejected' }
-        ];
-
-        // ============================================================
-        // TODO — TASK-016 — Fix the "old data stuck on screen" bug
-        // ============================================================
-        // PROBLEM: `getApplicationsState()` below checks sessionStorage
-        // FIRST and reuses whatever was saved there from the first time
-        // the page was visited, instead of always asking the server for
-        // the current list. This means if a job seeker applies to a new
-        // job and comes straight back to this dashboard, the new
-        // application might not show up until they log out and back in
-        // (because sessionStorage still has the OLD saved list).
-        // WHAT YOU NEED TO DO:
-        //   1. Remove (or stop using) `getApplicationsState()` and
-        //      `saveApplicationsState()` below as a caching layer for the
-        //      application list.
-        //   2. Change `initKanbanBoard()` (a few lines further down) so it
-        //      ALWAYS calls `apiGetMyApplications()` fresh every time this
-        //      page loads, instead of checking sessionStorage first.
-        // WHAT "DONE" LOOKS LIKE: Apply to a job, go straight to this
-        // dashboard, and see it appear immediately — no logging out
-        // required.
-        // ASSIGNED TASK: Reeju (E6) — Fix the "old data stuck on screen" bug.
-        // ============================================================
-        function getApplicationsState() {
-            const saved = sessionStorage.getItem('user_kanban_applications');
-            if (saved) {
-                try { return JSON.parse(saved); } catch (_) {}
-            }
-            return null;
-        }
-
-        function saveApplicationsState(apps) {
-            sessionStorage.setItem('user_kanban_applications', JSON.stringify(apps));
-        }
-
-        async function initKanbanBoard() {
-            // Show loading state
-            document.querySelectorAll('.kanban-column').forEach(col => {
-                col.querySelector('.kanban-cards-container').innerHTML = '<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:12px;">Loading…</div>';
-            });
-
-            // Try to load from API
-            let apps = getApplicationsState();
-            if (!apps) {
-                const { ok, data } = await apiGetMyApplications();
-                const applications = ok ? (data?.applications || []) : [];
-                if (applications.length) {
-                    // Map API response fields to kanban format
-                    apps = applications.map(app => ({
-                        id:           app.id,
-                        position:     app.job?.title   || app.job_title   || 'Unknown Position',
-                        company:      app.job?.company_name || app.company_name || 'Unknown Company',
-                        applied_date: app.applied_at   || app.created_at  || '',
-                        status:       app.status        || 'applied'
-                    }));
-                    saveApplicationsState(apps);
-                } else {
-                    // Fallback to demo data if API fails or user has no applications
-                    apps = fallbackApps;
-                }
-            }
-
-            // Update stats
-            const total      = apps.length;
-            const inReview   = apps.filter(a => a.status === 'under_review').length;
-            const interviews = apps.filter(a => a.status === 'interview_scheduled').length;
-            const offered    = apps.filter(a => a.status === 'offered').length;
-            
-            if (document.getElementById('stat-total-applied')) document.getElementById('stat-total-applied').textContent = total;
-            if (document.getElementById('stat-in-review')) document.getElementById('stat-in-review').textContent = inReview;
-            if (document.getElementById('stat-interviews')) document.getElementById('stat-interviews').textContent = interviews;
-            if (document.getElementById('stat-offered')) document.getElementById('stat-offered').textContent = offered;
-
-            renderKanbanCards(apps);
-        }
-
-        // ============================================================
-        // TODO — TASK-017 — Rebuild this as a "Recent Applications" list
-        // (4 statuses only) + add a "View CV" link to each row
-        // ============================================================
-        // PROBLEM 1 (Reeju / E3): This function currently builds SIX
-        // columns (applied, under_review, interview_scheduled,
-        // shortlisted, offered, rejected). The new Figma design does NOT
-        // use a Kanban board at all — it shows a simple "Recent
-        // Applications" LIST — and there are only 4 official statuses:
-        // applied, under_review, shortlisted, rejected (interview_scheduled
-        // and offered are not real statuses — check
-        // app/models/application.py on the backend to confirm). Once
-        // Robins (A1) has rebuilt the HTML for the new list layout (see
-        // TASK-012 near the top of this file), rewrite this function to
-        // loop through `apps` and build one row per application in the
-        // new list container instead of six kanban columns, making sure
-        // only the 4 real statuses are ever shown/used.
-        //
-        // PROBLEM 2 (Reeju / E9): Once a job seeker applies to a job and
-        // uploads a résumé, they currently have no way to look at it
-        // again. On each application row (in the new list from Problem 1
-        // above), add a small "View CV" link/button, placed just above
-        // the "Applied"/status text. It should open that application's
-        // résumé using the SAME download link/route that Simrika is
-        // securing in D6 (see TASK-006 in
-        // app/routes/application_routes.py) — e.g.
-        // `${API_BASE_URL.replace('/api','')}${app.resume_url}` the same
-        // way company/applicants.html already links to a résumé download.
-        // This only works correctly once D6's security fix allows the
-        // job-seeker-who-owns-it case, so this is easiest to finish after
-        // D6 is done.
-        // ASSIGNED TASK: Reeju — E3 (list rebuild) and E9 (View CV link).
-        // ============================================================
-        function renderKanbanCards(apps) {
-            const statuses = ['applied', 'under_review', 'interview_scheduled', 'shortlisted', 'offered', 'rejected'];
-            
-            statuses.forEach(st => {
-                const container = document.getElementById(`col-${st}`);
-                if (container) container.innerHTML = '';
-            });
-
-            const counts = { applied: 0, under_review: 0, interview_scheduled: 0, shortlisted: 0, offered: 0, rejected: 0 };
-
-            apps.forEach(app => {
-                const st = app.status || 'applied';
-                if (counts[st] !== undefined) counts[st]++;
-
-                const container = document.getElementById(`col-${st}`);
-                if (!container) return;
-
-                const card = document.createElement('div');
-                card.className = 'kanban-card';
-                card.dataset.id = app.id;
-                card.dataset.status = st;
-
-                card.innerHTML = `
-                    <div class="kanban-card-company">${escapeHtml(app.company || 'Company')}</div>
-                    <div class="kanban-card-position">${escapeHtml(app.position || 'Position')}</div>
-                    <div>${createStatusBadge(st)}</div>
-                    <div class="kanban-card-footer">
-                        <span>Applied: ${formatDate(app.applied_date)}</span>
-                    </div>
-                `;
-
-                container.appendChild(card);
-            });
-
-            // Update Counts & Stats
-            statuses.forEach(st => {
-                const countEl = document.getElementById(`count-${st}`);
-                if (countEl) countEl.textContent = counts[st] || 0;
-            });
-
-            document.getElementById('stat-total-applied').textContent = apps.length;
-            document.getElementById('stat-in-review').textContent = counts.under_review + counts.applied;
-            document.getElementById('stat-interviews').textContent = counts.interview_scheduled + counts.shortlisted;
-            document.getElementById('stat-offered').textContent = counts.offered;
-        }
-
-        function createStatusBadge(status) {
-            const labels = {
-                applied: 'Applied',
-                under_review: 'Under Review',
-                interview_scheduled: 'Interview Scheduled',
-                shortlisted: 'Shortlisted',
-                offered: 'Offered',
-                rejected: 'Rejected'
-            };
-            const classes = {
-                applied: 'status-badge-applied',
-                under_review: 'status-badge-under-review',
-                interview_scheduled: 'status-badge-interview',
-                shortlisted: 'status-badge-shortlisted',
-                offered: 'status-badge-offered',
-                rejected: 'status-badge-rejected'
-            };
-            const label = labels[status] || status.replace(/_/g, ' ');
-            const cls = classes[status] || 'status-badge-default';
-            return `<span class="status-badge ${cls}">${escapeHtml(label)}</span>`;
-        }
-
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-    </script>
+    <script src="../js/user-dashboard.js"></script>
 </body>
 </html>
