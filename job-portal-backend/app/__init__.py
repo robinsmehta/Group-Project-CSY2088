@@ -18,7 +18,7 @@ import os
 from flask import Flask, jsonify, send_from_directory
 from sqlalchemy import text
 from .config import config_by_name
-from .extensions import db, bcrypt, migrate, cors
+from .extensions import db, bcrypt, migrate, cors, jwt
 
 
 def create_app(config_name: str = None) -> Flask:
@@ -75,6 +75,7 @@ def create_app(config_name: str = None) -> Flask:
             "supports_credentials": True
         }
     })
+    jwt.init_app(app)
 
     # --------------------------------------------------------
     # 4. Serve the frontend from the same origin in local development

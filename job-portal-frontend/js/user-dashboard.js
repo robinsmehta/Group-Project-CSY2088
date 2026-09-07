@@ -1,13 +1,28 @@
 // User dashboard logic.
 // Depends on: config.js, shared.js, api.js.
 
+let applicationRefreshInProgress = false;
+
 document.addEventListener('DOMContentLoaded', async () => {
     await redirectIfNotLoggedIn('user');
     renderNavbar('dashboard');
     renderFooter();
-    await loadApplicationStats();
-    await initKanbanBoard();
+    await refreshApplicationData();
 });
+
+window.addEventListener('focus', refreshApplicationData);
+window.addEventListener('pageshow', refreshApplicationData);
+
+async function refreshApplicationData() {
+    if (applicationRefreshInProgress) return;
+
+    applicationRefreshInProgress = true;
+    try {
+        await Promise.all([loadApplicationStats(), initKanbanBoard()]);
+    } finally {
+        applicationRefreshInProgress = false;
+    }
+}
 
 async function initKanbanBoard() {
     document.querySelectorAll('.kanban-column').forEach(col => {
@@ -17,15 +32,6 @@ async function initKanbanBoard() {
     sessionStorage.removeItem('user_kanban_applications');
     const { ok, data } = await apiGetMyApplications();
     const applications = ok ? (data?.applications || []) : [];
-    if (!applications.length) {
-        showEmpty(
-            'kanban-board',
-            "You haven't applied to any jobs yet",
-            'Browse available jobs and submit your first application.',
-            '<a href="../jobs/listing.html">Browse Jobs</a>'
-        );
-        return;
-    }
 
     const apps = applications.map(app => ({
         id: app.id,
@@ -39,23 +45,41 @@ async function initKanbanBoard() {
 }
 
 async function loadApplicationStats() {
-    const { ok, data } = await apiGetMyApplicationStats();
-    if (!ok) return;
+    const token = sessionStorage.getItem('access_token')
+        || sessionStorage.getItem('jwt_token')
+        || localStorage.getItem('access_token')
+        || localStorage.getItem('jwt_token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-    document.getElementById('stat-total-applied').textContent = data.total_applied || 0;
-    document.getElementById('stat-in-review').textContent = data.under_review || 0;
-    document.getElementById('stat-shortlisted').textContent = data.shortlisted || 0;
-    document.getElementById('stat-rejected').textContent = data.rejected || 0;
+    try {
+        const response = await fetch(`${API_BASE_URL}/applications/stats?t=${Date.now()}`, {
+            method: 'GET',
+            headers,
+            credentials: 'include',
+            cache: 'no-store'
+        });
+        if (!response.ok) return;
+
+        const data = await response.json();
+        document.getElementById('stat-total-applied').textContent = data.total || 0;
+        document.getElementById('stat-in-review').textContent = data.in_review || 0;
+        document.getElementById('stat-shortlisted').textContent = data.shortlisted || 0;
+        document.getElementById('stat-rejected').textContent = data.rejected || 0;
+    } catch (error) {
+        console.error('Unable to load application stats:', error);
+    }
 }
 
 function renderKanbanCards(apps) {
     const statuses = ['applied', 'under_review', 'shortlisted', 'rejected'];
     const counts = { applied: 0, under_review: 0, shortlisted: 0, rejected: 0 };
+    const emptyState = document.getElementById('applications-empty-state');
 
-    statuses.forEach(st => {
-        const container = document.getElementById(`col-${st}`);
-        if (container) container.innerHTML = '';
+    document.querySelectorAll('.kanban-cards-container').forEach(container => {
+        container.innerHTML = '';
     });
+
+    if (emptyState) emptyState.hidden = apps.length !== 0;
 
     apps.forEach(app => {
         const st = app.status || 'applied';
