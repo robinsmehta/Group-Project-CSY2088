@@ -211,6 +211,68 @@ def delete_company(company_id: int):
     return {'message': 'Company deleted successfully'}, 200
 
 
+def update_admin_profile(admin_id: int, name: str = None, email: str = None, password: str = None):
+    """
+    Allow a logged-in admin to update their own profile (name, email, password).
+
+    Args:
+        admin_id (int): The ID of the admin to update.
+        name (str, optional): New display name.
+        email (str, optional): New email address (must be unique).
+        password (str, optional): New password (plain text; will be hashed).
+                                 If empty/None, password is not changed.
+
+    Returns:
+        tuple: (response_dict, http_status_code)
+               200 OK on success with updated admin details.
+               400 Bad Request if no fields provided.
+               404 Not Found if admin doesn't exist.
+               409 Conflict if new email already exists.
+    """
+    admin = db.session.get(Admin, admin_id)
+    if not admin:
+        return {'error': 'Admin not found'}, 404
+
+    # Track if any updates were made
+    updates_made = False
+
+    # Update name if provided
+    if name is not None:
+        name = (name or '').strip()
+        if name:
+            admin.name = name
+            updates_made = True
+
+    # Update email if provided
+    if email is not None:
+        email = (email or '').strip().lower()
+        if email:
+            # Check if the new email is already in use by another admin
+            existing_admin = Admin.query.filter_by(email=email).first()
+            if existing_admin and existing_admin.id != admin_id:
+                return {'error': 'Email is already registered'}, 409
+            admin.email = email
+            updates_made = True
+
+    # Update password if provided
+    if password is not None and password.strip():
+        # Hash the new password using bcrypt
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        admin.password_hash = hashed_password
+        updates_made = True
+
+    if not updates_made:
+        return {'error': 'No fields to update'}, 400
+
+    # Commit changes to database
+    db.session.commit()
+
+    return {
+        'message': 'Admin profile updated successfully',
+        'admin': admin.to_dict()
+    }, 200
+
+
 def get_admin_stats():
     """
     Get platform statistics for admin dashboard.

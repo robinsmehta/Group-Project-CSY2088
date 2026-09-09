@@ -180,3 +180,7 @@ async function apiAdminDeleteCompany(companyId) {
 async function apiGetAdminStats() {
     return apiFetch('/admin/stats');
 }
+
+async function apiUpdateAdminProfile(name, email, password) {
+    return apiFetch('/admin/profile', { method: 'PUT', body: { name, email, password } });
+}
