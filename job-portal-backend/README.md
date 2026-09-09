@@ -87,7 +87,17 @@ Run the database setup script to generate required tables (`users`, `companies`,
 python init_db.py
 ```
 
-### Step 6: Execute the Application Server
+### Step 6: Optional Demo Data
+Populate the database with approved companies, job listings, and test users:
+```bash
+python seed_db.py
+```
+
+The seeded job-seeker account is `alice@example.com` with password `password123`.
+The seeded approved company account is `hr@technova.com` with password `password123`.
+After logging in as Alice, submit an application with a résumé before checking either application dashboard.
+
+### Step 7: Execute the Application Server
 Start the Flask development server:
 ```bash
 python run.py

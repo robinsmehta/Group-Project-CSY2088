@@ -66,6 +66,8 @@
                                     <option value="IT">IT &amp; Software</option>
                                     <option value="Engineering">Engineering</option>
                                     <option value="Design">Design</option>
+                                    <option value="Product">Product</option>
+                                    <option value="Data">Data</option>
                                     <option value="Marketing">Marketing</option>
                                     <option value="Finance">Finance</option>
                                     <option value="Sales">Sales</option>
@@ -179,6 +181,27 @@
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
     <script>
+        async function loadJobData(jobId) {
+            const { ok, data } = await apiGetJob(jobId);
+            const job = data?.job;
+            if (!ok || !job) {
+                const error = document.getElementById('post-job-error');
+                error.textContent = data?.error || 'Failed to load the job.';
+                error.style.display = 'block';
+                return;
+            }
+
+            document.getElementById('job-title').value = job.title || '';
+            document.getElementById('job-category').value = job.category || '';
+            document.getElementById('job-type').value = job.job_type || '';
+            document.getElementById('job-location').value = job.location || '';
+            document.getElementById('job-salary').value = job.salary || '';
+            document.getElementById('job-description').value = job.description || '';
+            if (job.closing_date) {
+                document.getElementById('job-closing-date').value = job.closing_date.slice(0, 16);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             await redirectIfNotLoggedIn('company');
             renderNavbar('post-job');
@@ -190,6 +213,29 @@
             const submitBtn = document.getElementById('submit-btn');
             const pageTitle = document.getElementById('page-title');
             const btnDelete = document.getElementById('btn-delete-job');
+
+            btnDelete.addEventListener('click', async () => {
+                if (!isEditMode || !window.confirm('Delete this job posting? This cannot be undone.')) {
+                    return;
+                }
+
+                btnDelete.disabled = true;
+                btnDelete.textContent = 'Deleting…';
+                const { ok, data } = await apiDeleteJob(jobId);
+
+                if (ok) {
+                    showToast('Job deleted successfully.', 'success');
+                    setTimeout(() => {
+                        window.location.href = resolveSitePath('company/dashboard.html');
+                    }, 800);
+                } else {
+                    const error = document.getElementById('post-job-error');
+                    error.textContent = data?.error || 'Failed to delete the job.';
+                    error.style.display = 'block';
+                    btnDelete.disabled = false;
+                    btnDelete.textContent = 'Delete Job';
+                }
+            });
 
             if (isEditMode) {
                 pageTitle.textContent = 'Edit Post';
@@ -266,8 +312,17 @@
 
                 let ok, data;
                 if (isEditMode) {
-                    // Simrika (D2): Replace mock with apiUpdateJob(jobId, {...})
-                    ok = true; data = {};
+                    const res = await apiUpdateJob(jobId, {
+                        title,
+                        category,
+                        job_type,
+                        location,
+                        salary,
+                        description,
+                        closing_date
+                    });
+                    ok = res.ok;
+                    data = res.data;
                 } else {
                     const res = await apiCreateJob({ title, category, job_type, location, salary, description, closing_date });
                     ok = res.ok; data = res.data;

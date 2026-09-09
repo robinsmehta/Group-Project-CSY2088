@@ -94,7 +94,8 @@ def create_app(config_name: str = None) -> Flask:
             full_path = os.path.join(full_path, 'index.html')
 
         if os.path.exists(full_path):
-            return send_from_directory(frontend_root, os.path.relpath(full_path, frontend_root))
+            relative_path = os.path.relpath(full_path, frontend_root).replace(os.sep, '/')
+            return send_from_directory(frontend_root, relative_path)
 
         return send_from_directory(frontend_root, 'index.html')
 
@@ -175,13 +176,6 @@ def create_app(config_name: str = None) -> Flask:
                 "error": str(e),
                 "message": "Failed to connect to MySQL database. Check your .env settings and ensure MySQL server is running."
             }), 500
-
-    @app.route('/api/uploads/resumes/<filename>', methods=['GET'])
-    def download_resume_direct(filename):
-        from flask import send_from_directory
-        upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
-        return send_from_directory(os.path.abspath(upload_folder), filename, as_attachment=False)
-
 
     # --------------------------------------------------------
     # 8. Register Flask CLI Commands

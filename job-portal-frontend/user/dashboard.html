@@ -160,10 +160,12 @@
         });
 
         async function initApplicationsList() {
-            let apps = getApplicationsState();
-            if (!apps) {
-                const { ok, data } = await apiGetMyApplications();
-                const applications = ok ? (data?.applications || []) : [];
+            const cachedApps = getApplicationsState();
+            const { ok, data } = await apiGetMyApplications();
+            let apps;
+
+            if (ok) {
+                const applications = data?.applications || [];
                 if (applications.length) {
                     apps = applications.map(app => ({
                         id:           app.id,
@@ -175,8 +177,10 @@
                     }));
                     saveApplicationsState(apps);
                 } else {
-                    apps = fallbackApps;
+                    apps = [];
                 }
+            } else {
+                apps = cachedApps || fallbackApps;
             }
 
             const total       = apps.length;
@@ -280,7 +284,7 @@
 
             const resumeBtn = document.getElementById('detail-resume-btn');
             if (app.resume_url && app.resume_url !== '#') {
-                resumeBtn.href = `/api/applications/resume/${app.id}`;
+                resumeBtn.href = app.resume_url;
                 resumeBtn.style.opacity = '1';
                 resumeBtn.style.pointerEvents = 'auto';
             } else {
