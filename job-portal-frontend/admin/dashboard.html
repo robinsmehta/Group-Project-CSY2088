@@ -29,17 +29,6 @@
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
     <script src="../js/api.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const user = getLoggedInUser();
-            if (!user || user.role !== 'admin') {
-                window.location.href = resolveSitePath('auth/login.html');
-                return;
-            }
-            renderNavbar('dashboard');
-            renderFooter();
-
-        });
-    </script>
+    <script src="../js/admin-dashboard.js"></script>
 </body>
 </html>

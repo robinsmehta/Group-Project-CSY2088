@@ -9,6 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCategories();
     wireHeroSearch();
     loadStats();
+
+    document.getElementById('featured-jobs-grid')?.addEventListener('click', (event) => {
+        const bookmark = event.target.closest('.job-bookmark');
+        if (bookmark) {
+            event.stopPropagation();
+            return;
+        }
+        const card = event.target.closest('[data-job-id]');
+        if (card) window.location.href = `${resolveSitePath('jobs/detail.html')}?id=${card.dataset.jobId}`;
+    });
 });
 
 function setHomeCtaLinks() {
@@ -48,10 +58,10 @@ function buildJobCard(job) {
     const posted   = timeAgo(job.created_at || job.posted_date || '');
 
     return `
-        <article class="job-card" onclick="window.location.href='${resolveSitePath(`jobs/detail.html`)}?id=${job.id}'" role="button" tabindex="0">
+        <article class="job-card" data-job-id="${job.id}" role="button" tabindex="0">
             <div class="job-card-top">
                 <div class="job-company-logo">${initials}</div>
-                <button class="job-bookmark" title="Save job" onclick="event.stopPropagation()">
+                <button class="job-bookmark" title="Save job">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
                     </svg>
