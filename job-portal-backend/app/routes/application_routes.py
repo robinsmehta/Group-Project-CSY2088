@@ -15,10 +15,8 @@
 
 import os
 from flask import Blueprint, request, jsonify, session, send_from_directory, current_app
-from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.services import application_service
 from app.utils.decorators import role_required
-from app.models.application import Application
 
 application_bp = Blueprint('applications', __name__)
 
@@ -84,30 +82,6 @@ def get_my_applications():
     user_id = session.get('user_id')
     result, status_code = application_service.get_my_applications(user_id)
     return jsonify(result), status_code
-
-
-@application_bp.route('/mine/stats', methods=['GET'])
-@role_required('user')
-def get_my_application_stats():
-    """Return application status counts for the logged-in user."""
-    user_id = session.get('user_id')
-    result, status_code = application_service.get_my_application_stats(user_id)
-    return jsonify(result), status_code
-
-
-@application_bp.route('/stats', methods=['GET'])
-@jwt_required()
-def get_application_stats():
-    """Return application status counts for the JWT-authenticated user."""
-    user_id = get_jwt_identity()
-    applications = Application.query.filter_by(user_id=user_id).all()
-
-    return jsonify({
-        'total': len(applications),
-        'in_review': sum(application.status == 'in_review' for application in applications),
-        'shortlisted': sum(application.status == 'shortlisted' for application in applications),
-        'rejected': sum(application.status == 'rejected' for application in applications)
-    }), 200
 
 
 # ============================================================

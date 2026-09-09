@@ -125,23 +125,6 @@ def get_my_applications(user_id: int):
     return {'applications': result}, 200
 
 
-def get_my_application_stats(user_id: int):
-    """Return application counts for the authenticated job seeker."""
-    applications = Application.query.filter_by(user_id=user_id).all()
-    counts = {status: 0 for status in ALLOWED_STATUSES}
-
-    for application in applications:
-        if application.status in counts:
-            counts[application.status] += 1
-
-    return {
-        'total_applied': len(applications),
-        'under_review': counts['under_review'],
-        'shortlisted': counts['shortlisted'],
-        'rejected': counts['rejected']
-    }, 200
-
-
 def get_applicants_for_job(job_id: int, company_id: int):
     """
     Get all applicant submissions for a specific job listing owned by a company.

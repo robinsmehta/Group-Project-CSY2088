@@ -11,4 +11,3 @@ pymysql              # MySQL driver — SQLAlchemy uses this to talk to MySQL
 python-dotenv        # Reads .env files so we can store secrets outside of code
 flask-bcrypt         # Password hashing utility (wraps bcrypt)
 flask-migrate        # Database migration tool — tracks and applies schema changes (like git for your DB)
-flask-jwt-extended   # JWT authentication decorators and identity helpers

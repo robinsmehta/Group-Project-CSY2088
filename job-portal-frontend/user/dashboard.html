@@ -29,70 +29,6 @@
                     </a>
                 </div>
 
- 
-            <!--
-            ============================================================
-            TASK-012 — Rebuild the stats + application list for the new design
-            ============================================================
-            PROBLEM: The new Figma design for this dashboard is DIFFERENT
-            from what's below in two ways:
-              1. Stats: the new design shows exactly 4 numbers — Total
-                 Applied, In Review, Shortlisted, Rejected — matching the
-                 4 official application statuses. The 4 stat cards below
-                 currently show "Interviews" and "Offered" instead, which
-                 are NOT among the 4 agreed statuses (see
-                 app/models/application.py on the backend — the status
-                 column only allows: applied, under_review, shortlisted,
-                 rejected). These 4 cards need to be relabelled to match.
-              2. Application list: the new design replaces this whole
-                 6-column Kanban board below with a simple "Recent
-                 Applications" LIST instead. As you (Robins/A) rebuild
-                 this section from Figma, replace the kanban-board
-                 structure with a list-style layout instead.
-            WHAT YOU NEED TO DO:
-              - Robins (A1): rebuild this section to match the new Figma
-                design — 4 stat cards (Total Applied / In Review /
-                Shortlisted / Rejected) + a "Recent Applications" list.
-              - Reeju (E3): once the new list-style HTML exists, connect
-                it to the real application data so it only ever shows the
-                4 agreed statuses (see the matching dashboard logic module
-                near renderKanbanCards()).
-              - Reeju (E4): wire the 4 stat numbers to the new
-                "my application stats" backend endpoint (see TASK-007 in
-                 app/services/application_service.py and TASK-011 in
-                 js/api.js).
-            ASSIGNED TASK: Robins (A1, layout) + Reeju (E3 list, E4 stats).
-            ============================================================
-            -->
-            <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon-wrapper">💼</div>
-                    <div class="stat-info">
-                        <label>Total Applied</label>
-                        <span id="stat-total-applied">0</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon-wrapper">🔍</div>
-                    <div class="stat-info">
-                        <label>Under Review</label>
-                        <span id="stat-in-review">0</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon-wrapper">🎯</div>
-                    <div class="stat-info">
-                        <label>Shortlisted</label>
-                        <span id="stat-shortlisted">0</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon-wrapper">🎉</div>
-                    <div class="stat-info">
-                        <label>Rejected</label>
-                        <span id="stat-rejected">0</span>
-
                 <!-- Compact Step Path Graph -->
                 <div class="dashboard-style-302538">
                     <!-- Connecting SVG line -->
@@ -114,42 +50,14 @@
                     <div class="dashboard-style-329ba6">
                         <span id="stat-shortlisted" class="dashboard-style-66c06f">0</span>
                         <span class="dashboard-style-14ed5a">Interviews</span>
- 
                     </div>
-
- 
-            <!-- Kanban Board Section — see TASK-012 above: this whole board
-                 is being replaced by a "Recent Applications" list per the
-                 new Figma design. Also see TASK-017 in the dashboard logic
-                 module for the "View CV"
-                 button that needs to be added to each application row/card. -->
-            <div class="kanban-section" id="applications">
-                <div class="kanban-header">
-                    <div>
-                        <h2>Application Status Board</h2>
-                        <p class="kanban-note">Your application progress is updated by hiring teams. This board reflects current status only and cannot be changed from your dashboard.</p>
 
                     <div class="dashboard-style-34acf5">
                         <span id="stat-rejected" class="dashboard-style-66c06f">0</span>
                         <span class="dashboard-style-14ed5a">Rejected</span>
- 
                     </div>
                 </div>
             </div>
-
- 
-                <div id="applications-empty-state" class="empty-state" hidden>
-                    <h3>You haven't applied to any jobs yet.</h3>
-                    <p>Browse available jobs and submit your first application.</p>
-                    <a href="../jobs/listing.html">Browse Jobs</a>
-                </div>
-
-                <div class="kanban-board" id="kanban-board"> 
-                    <!-- Column 1: Applied -->
-                    <div class="kanban-column" data-status="applied">
-                        <div class="kanban-column-header">
-                            <span>APPLIED</span>
-                            <span class="kanban-column-count" id="count-applied">0</span>
 
             <hr class="dashboard-style-b5493e">
 
@@ -162,7 +70,6 @@
                         <div class="dashboard-style-d85c4e">
                             <svg class="dashboard-style-d4a9d1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             <input type="text" placeholder="Search apps..." class="dashboard-style-3e09c8">
- 
                         </div>
                     </div>
                     
@@ -215,13 +122,6 @@
 
     <!-- Footer -->
     <footer class="footer" id="footer"></footer>
-
-
-    <!-- User dashboard behavior is loaded from js/user-dashboard.js. -->
-    <script src="../js/config.js"></script>
-    <script src="../js/shared.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/user-dashboard.js"></script>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
@@ -405,6 +305,5 @@
             return d.innerHTML;
         }
     </script>
-
 </body>
 </html>

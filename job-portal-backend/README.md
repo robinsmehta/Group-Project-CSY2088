@@ -90,7 +90,7 @@ python init_db.py
 ### Step 6: Execute the Application Server
 Start the Flask development server:
 ```bash
-
+python run.py
 ```
 The backend service listens on **http://127.0.0.1:5001** and also serves the frontend from the same origin.
 

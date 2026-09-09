@@ -28,7 +28,6 @@ class Config:
     # SECRET_KEY is used by Flask to sign session cookies and CSRF tokens.
     # If someone knows this key, they can forge session data — keep it secret!
     SECRET_KEY = os.environ.get('SECRET_KEY', 'your_secret_key_here')
-    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', SECRET_KEY)
 
     # --- Session Cookie Configuration ---
     # In this project’s local dev flow the frontend is served from the same host/port

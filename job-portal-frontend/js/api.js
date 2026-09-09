@@ -90,11 +90,7 @@ async function apiUpdateJob(jobId, jobData) {
 // APPLICATIONS
 
 async function apiGetMyApplications() {
-    return apiFetch(`/applications/mine?t=${Date.now()}`, { cache: 'no-store' });
-}
-
-async function apiGetMyApplicationStats() {
-    return apiFetch(`/applications/mine/stats?t=${Date.now()}`, { cache: 'no-store' });
+    return apiFetch('/applications/mine');
 }
 
 async function apiApplyToJob(jobId, resumeFile) {
@@ -105,7 +101,7 @@ async function apiApplyToJob(jobId, resumeFile) {
 }
 
 async function apiGetJobApplicants(jobId) {
-    return apiFetch(`/applications/job/${jobId}?t=${Date.now()}`, { cache: 'no-store' });
+    return apiFetch(`/applications/job/${jobId}`);
 }
 
 async function apiGetCompanyApplicants() {
