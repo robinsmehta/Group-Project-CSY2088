@@ -186,6 +186,37 @@ function renderNavbar(activePage) {
         modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
     }
 
+    const profileUpdateBtn = document.getElementById('popover-update-btn');
+    if (profileUpdateBtn && modal) {
+        profileUpdateBtn.addEventListener('click', async () => {
+            const name = document.getElementById('popover-name').value.trim();
+            const email = document.getElementById('popover-email').value.trim();
+            const password = document.getElementById('popover-password').value;
+            const profileError = document.getElementById('profile-error');
+
+            profileError.style.display = 'none';
+            profileUpdateBtn.disabled = true;
+            profileUpdateBtn.textContent = 'Updating...';
+
+            const { ok, data } = await apiUpdateAdminProfile(name, email, password);
+            profileUpdateBtn.disabled = false;
+            profileUpdateBtn.textContent = 'Update';
+
+            if (!ok) {
+                profileError.textContent = data.error || 'Unable to update profile.';
+                profileError.style.display = 'block';
+                return;
+            }
+
+            const updatedAdmin = data.admin || { ...user, name, email };
+            setLoggedInUser({ ...user, ...updatedAdmin, role: 'admin' });
+            modalTrigger.textContent = updatedAdmin.name;
+            document.getElementById('popover-password').value = '';
+            modal.style.display = 'none';
+            showToast('Profile updated successfully', 'success');
+        });
+    }
+
     // Add Admin Modal Trigger Logic
     const addAdminTrigger = document.getElementById('navbar-add-admin');
     const addAdminModal = document.getElementById('add-admin-modal');
