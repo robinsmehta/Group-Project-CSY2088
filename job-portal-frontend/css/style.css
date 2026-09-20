@@ -2,29 +2,47 @@
 
 /* DESIGN TOKENS */
 :root {
-    --color-primary: #111827;
-    --color-primary-dk: #1f2937;
-    --color-secondary: #374151;
-    --color-accent: #3B82F6;
-    --color-bg: #F0F2F5;
-    --color-white: #FFFFFF;
-    --color-text: #111827;
-    --color-muted: #6B7280;
-    --color-border: #E5E7EB;
-    --color-success: #16A34A;
-    --color-danger: #DC2626;
-    --color-warning: #D97706;
+    --color-primary:     #111827;
+    --color-primary-dk:  #1f2937;
+    --color-secondary:   #374151;
+    --color-bg:          #F0F2F5;
+    --color-surface:     #FFFFFF;
+    --color-text:        #111827;
+    --color-muted:       #6B7280;
+    --color-border:      #E5E7EB;
+
+    --color-accent:      #3B82F6;
+    --color-accent-dk:   #2563EB;
+
+    --color-success:     #16A34A;
+    --color-success-bg:  #DCFCE7;
+    --color-success-tx:  #166534;
+
+    --color-danger:      #DC2626;
+    --color-danger-bg:   #FEE2E2;
+    --color-danger-tx:   #991B1B;
+
+    --color-warning:     #D97706;
+    --color-warning-bg:  #FEF9C3;
+    --color-warning-tx:  #854D0E;
+
+    --color-info:        #3B82F6;
+    --color-info-bg:     #DBEAFE;
+    --color-info-tx:     #1E40AF;
+
+    --color-neutral-bg:  #F3F4F6;
+    --color-neutral-tx:  #6B7280;
+
+    /* legacy alias — keep so existing rules using --color-white still work */
+    --color-white: var(--color-surface);
 
     --font-base: 'Inter', system-ui, sans-serif;
-
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 20px;
-
     --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
-
     --nav-height: 64px;
     --sidebar-w: 240px;
     --content-max: 1200px;
@@ -226,79 +244,6 @@ textarea {
     border-top: 1px solid var(--color-border);
     display: flex;
     gap: 10px;
-}
-
-/* FOOTER */
-.footer {
-    background: var(--color-primary);
-    color: rgba(255, 255, 255, 0.75);
-    padding: 48px 0 0;
-    margin-top: 80px;
-}
-
-.footer-inner {
-    max-width: var(--content-max);
-    margin: 0 auto;
-    padding: 0 24px;
-    display: grid;
-    grid-template-columns: 1.6fr 1fr 1fr 1fr;
-    gap: 40px;
-}
-
-.footer-brand-name {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--color-white);
-    letter-spacing: -0.3px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.footer-tagline {
-    font-size: 13.5px;
-    line-height: 1.6;
-    max-width: 260px;
-}
-
-.footer-col h4 {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--color-white);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 14px;
-}
-
-.footer-col ul {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-.footer-col ul li a {
-    font-size: 13.5px;
-    color: rgba(255, 255, 255, 0.65);
-    transition: color var(--transition);
-}
-
-.footer-col ul li a:hover {
-    color: var(--color-white);
-}
-
-.footer-bottom {
-    margin-top: 40px;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 16px 24px;
-    max-width: var(--content-max);
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 12.5px;
-    color: rgba(255, 255, 255, 0.45);
 }
 
 /* BUTTONS */
@@ -554,65 +499,72 @@ textarea {
 }
 
 .badge-applied {
-    background: #e8f0fe;
-    color: #1a56a4;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-tx);
 }
 
-.badge-under_review {
-    background: #fffbeb;
-    color: #92601a;
+.badge-under_review,
+.badge-under-review {
+    background: var(--color-info-bg);
+    color: var(--color-info-tx);
 }
 
 .badge-shortlisted {
-    background: #f0fdf4;
-    color: #1a6b3a;
+    background: var(--color-success-bg);
+    color: var(--color-success-tx);
 }
 
 .badge-rejected {
-    background: #fff5f5;
-    color: #8b1c1c;
+    background: var(--color-danger-bg);
+    color: var(--color-danger-tx);
 }
 
 .badge-pending {
-    background: #fef9c3;
-    color: #7a4a0a;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-tx);
 }
 
-.badge-approved {
-    background: #f0fdf4;
-    color: #1a6b3a;
+.badge-approved,
+.badge-active {
+    background: var(--color-success-bg);
+    color: var(--color-success-tx);
+}
+
+.badge-closed {
+    background: var(--color-neutral-bg);
+    color: var(--color-neutral-tx);
 }
 
 .badge-unknown {
-    background: #f3f4f6;
-    color: var(--color-muted);
+    background: var(--color-neutral-bg);
+    color: var(--color-neutral-tx);
 }
 
 .badge-fulltime,
 .badge-full-time {
-    background: #e8f0fe;
-    color: #1a56a4;
+    background: var(--color-info-bg);
+    color: var(--color-info-tx);
 }
 
 .badge-parttime,
 .badge-part-time {
-    background: #fef3c7;
-    color: #92601a;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-tx);
 }
 
 .badge-remote {
-    background: #f0fdf4;
-    color: #1a6b3a;
+    background: var(--color-success-bg);
+    color: var(--color-success-tx);
 }
 
 .badge-contract {
-    background: #faf5ff;
-    color: #5a2d82;
+    background: var(--color-neutral-bg);
+    color: var(--color-neutral-tx);
 }
 
 .badge-internship {
-    background: #fff7ed;
-    color: #9a3412;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-tx);
 }
 
 /* PAGE CONTAINER & LAYOUT */
@@ -1030,10 +982,6 @@ textarea {
 
 /* RESPONSIVE BREAKPOINTS */
 @media (max-width: 1024px) {
-    .footer-inner {
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
-    }
 }
 
 @media (max-width: 768px) {
@@ -1050,11 +998,6 @@ textarea {
         margin-left: auto;
     }
 
-    .footer-inner {
-        grid-template-columns: 1fr 1fr;
-        gap: 28px;
-    }
-
     .footer-bottom {
         flex-direction: column;
         gap: 6px;
@@ -1067,10 +1010,6 @@ textarea {
 }
 
 @media (max-width: 480px) {
-    .footer-inner {
-        grid-template-columns: 1fr;
-    }
-
     .modal {
         padding: 20px;
     }

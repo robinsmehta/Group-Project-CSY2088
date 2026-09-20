@@ -72,7 +72,6 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer" id="footer"></footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
@@ -83,7 +82,6 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await redirectIfNotLoggedIn('company');
             renderNavbar('dashboard');
-            renderFooter();
 
             const user = getLoggedInUser();
             if (user) {
@@ -153,9 +151,7 @@
 
             tbody.innerHTML = filtered.map(job => {
                 const isActive = job.status !== 'closed';
-                const statusColor = isActive ? '#10B981' : '#6B7280';
-                const statusBg = isActive ? '#D1FAE5' : '#F3F4F6';
-                const statusText = isActive ? 'ACTIVE' : 'CLOSED';
+                const statusBadge = createStatusBadge(isActive ? 'active' : 'closed');
                 const category = job.category || 'Other';
                 
                 return `
@@ -168,9 +164,7 @@
                         ${escHtml(category)}
                     </td>
                     <td class="dashboard-style-a06415">
-                        <span class="company-status-badge" style="background: ${statusBg}; color: ${statusColor};">
-                            ${statusText}
-                        </span>
+                        ${statusBadge}
                     </td>
                     <td class="dashboard-style-acc1d6">
                         ${typeof job.application_count === 'number' ? job.application_count : '0'}

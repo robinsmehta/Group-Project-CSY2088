@@ -98,6 +98,16 @@ class ProductionConfig(Config):
     DEBUG = False
 
 
+class TestingConfig(Config):
+    """
+    Testing-specific settings.
+    Uses in-memory SQLite database and enables TESTING mode.
+    """
+    TESTING = True
+    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+
+
 # ----------------------------------------------------------------
 # Config selector dictionary.
 # create_app() will use this to pick the right config class
@@ -106,5 +116,6 @@ class ProductionConfig(Config):
 config_by_name = {
     'development': DevelopmentConfig,
     'production':  ProductionConfig,
+    'testing':     TestingConfig,
     'default':     DevelopmentConfig,  # fallback
 }

@@ -269,6 +269,8 @@ def login(email, password=None, role=None):
     if role == 'company':
         user_payload['company_id'] = account.id
         user_payload['company_name'] = getattr(account, 'company_name', '')
+    elif role == 'user':
+        user_payload['skills'] = getattr(account, 'skills', None)
 
     return {
         'message': 'Login successful',
@@ -287,3 +289,135 @@ def logout():
     # session.clear() removes user_id, role, and all stored credentials
     session.clear()
     return {'message': 'Logged out successfully'}, 200
+
+
+def update_user_profile(user_id, name=None, email=None, password=None, skills=None):
+    """
+    Allow a logged-in user (job seeker) to update their profile (name, email, password, skills).
+
+    Args:
+        user_id (int): Primary key of the user to update.
+        name (str, optional): New name.
+        email (str, optional): New email (must be unique).
+        password (str, optional): New plain text password to hash.
+        skills (str, optional): Comma-separated skills string.
+
+    Returns:
+        tuple: (response_dict, http_status_code)
+    """
+    if isinstance(user_id, dict):
+        data = user_id
+        user_id = data.get('user_id') or data.get('id')
+        name = data.get('name')
+        email = data.get('email')
+        password = data.get('password')
+        skills = data.get('skills')
+
+    user = db.session.get(User, user_id)
+    if not user:
+        return {'error': 'User not found'}, 404
+
+    updates_made = False
+
+    if name is not None:
+        name = (name or '').strip()
+        if name:
+            user.name = name
+            updates_made = True
+            session['name'] = name
+
+    if email is not None:
+        email = (email or '').strip().lower()
+        if email:
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user and existing_user.id != user_id:
+                return {'error': 'Email is already registered'}, 409
+            user.email = email
+            updates_made = True
+            session['email'] = email
+
+    if password is not None and str(password).strip():
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        user.password_hash = hashed_password
+        updates_made = True
+
+    if skills is not None:
+        user.skills = (skills or '').strip()
+        updates_made = True
+
+    if not updates_made:
+        return {'error': 'No fields to update'}, 400
+
+    db.session.commit()
+
+    return {
+        'message': 'User profile updated successfully',
+        'user': user.to_dict()
+    }, 200
+
+
+def update_company_profile(company_id, company_name=None, email=None, password=None, description=None):
+    """
+    Allow a logged-in company to update their profile (company_name, email, password, description).
+
+    Args:
+        company_id (int): Primary key of the company to update.
+        company_name (str, optional): New company name.
+        email (str, optional): New email (must be unique).
+        password (str, optional): New plain text password to hash.
+        description (str, optional): New company description.
+
+    Returns:
+        tuple: (response_dict, http_status_code)
+    """
+    if isinstance(company_id, dict):
+        data = company_id
+        company_id = data.get('company_id') or data.get('id')
+        company_name = data.get('company_name') or data.get('name')
+        email = data.get('email')
+        password = data.get('password')
+        description = data.get('description')
+
+    company = db.session.get(Company, company_id)
+    if not company:
+        return {'error': 'Company not found'}, 404
+
+    updates_made = False
+
+    if company_name is not None:
+        company_name = (company_name or '').strip()
+        if company_name:
+            company.company_name = company_name
+            updates_made = True
+            session['name'] = company_name
+            session['company_name'] = company_name
+
+    if email is not None:
+        email = (email or '').strip().lower()
+        if email:
+            existing_company = Company.query.filter_by(email=email).first()
+            if existing_company and existing_company.id != company_id:
+                return {'error': 'Email is already registered'}, 409
+            company.email = email
+            updates_made = True
+            session['email'] = email
+
+    if password is not None and str(password).strip():
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        company.password_hash = hashed_password
+        updates_made = True
+
+    if description is not None:
+        description = (description or '').strip()
+        company.description = description
+        updates_made = True
+
+    if not updates_made:
+        return {'error': 'No fields to update'}, 400
+
+    db.session.commit()
+
+    return {
+        'message': 'Company profile updated successfully',
+        'company': company.to_dict()
+    }, 200

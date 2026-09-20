@@ -3,7 +3,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     renderNavbar('home');
-    renderFooter();
     setHomeCtaLinks();
     loadHomeFeaturedJobs();
     renderCategories();

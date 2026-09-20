@@ -361,12 +361,12 @@
 
 /* Notice box (e.g., pending approval) */
 .info-notice {
-    background: #fffbeb;
-    border: 1px solid #fef08a;
+    background: var(--color-warning-bg);
+    border: 1px solid var(--color-warning);
     border-radius: 10px;
     padding: 10px 14px;
     font-size: 12.5px;
-    color: #854d0e;
+    color: var(--color-warning-tx);
     line-height: 1.5;
     margin-top: 16px;
 }

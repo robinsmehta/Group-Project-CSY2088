@@ -28,9 +28,8 @@ function renderNavbar(activePage) {
         ];
     } else {
         links = [
-            { href: resolveSitePath('user/dashboard.html'), label: 'Dashboard',       key: 'dashboard' },
-            { href: resolveSitePath('jobs/listing.html'), label: 'Browse Jobs',     key: 'jobs' },
-            { href: resolveSitePath('user/dashboard.html'), label: 'My Applications', key: 'applications' }
+            { href: resolveSitePath('user/dashboard.html'), label: 'Dashboard',   key: 'dashboard' },
+            { href: resolveSitePath('jobs/listing.html'),   label: 'Browse Jobs', key: 'jobs' }
         ];
     }
 
@@ -89,6 +88,12 @@ function renderNavbar(activePage) {
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Description</label>
                         <textarea id="popover-description" rows="3" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">${user.description || ''}</textarea>
+                    </div>
+                    ` : ''}
+                    ${user.role === 'user' ? `
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Skills (comma-separated)</label>
+                        <input type="text" id="popover-skills" value="${user.skills || ''}" placeholder="e.g. React, Python, SQL" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">
                     </div>
                     ` : ''}
                     <div class="form-group" style="margin-bottom: 32px;">
@@ -192,13 +197,19 @@ function renderNavbar(activePage) {
             const name = document.getElementById('popover-name').value.trim();
             const email = document.getElementById('popover-email').value.trim();
             const password = document.getElementById('popover-password').value;
+            const descEl = document.getElementById('popover-description');
+            const description = descEl ? descEl.value.trim() : undefined;
+            const skillsEl = document.getElementById('popover-skills');
+            const skills = skillsEl ? skillsEl.value.trim() : undefined;
             const profileError = document.getElementById('profile-error');
 
             profileError.style.display = 'none';
             profileUpdateBtn.disabled = true;
             profileUpdateBtn.textContent = 'Updating...';
 
-            const { ok, data } = await apiUpdateAdminProfile(name, email, password);
+            const payload = { name, company_name: name, email, password, description, skills };
+            const updateFn = typeof apiUpdateMyProfile === 'function' ? apiUpdateMyProfile : apiUpdateAdminProfile;
+            const { ok, data } = await updateFn(payload);
             profileUpdateBtn.disabled = false;
             profileUpdateBtn.textContent = 'Update';
 
@@ -208,9 +219,10 @@ function renderNavbar(activePage) {
                 return;
             }
 
-            const updatedAdmin = data.admin || { ...user, name, email };
-            setLoggedInUser({ ...user, ...updatedAdmin, role: 'admin' });
-            modalTrigger.textContent = updatedAdmin.name;
+            const updatedProfile = data.user || data.company || data.admin || { ...user, name, email };
+            const newName = updatedProfile.name || updatedProfile.company_name || name;
+            setLoggedInUser({ ...user, ...updatedProfile });
+            modalTrigger.textContent = newName;
             document.getElementById('popover-password').value = '';
             modal.style.display = 'none';
             showToast('Profile updated successfully', 'success');
@@ -271,20 +283,9 @@ function renderNavbar(activePage) {
     document.getElementById('btn-logout-mobile')?.addEventListener('click', handleLogout);
 }
 
-function renderFooter() {
-    const html = `
-        <footer class="footer" id="footer" style="background-color: #ffffff; border-top: 1px solid #E5E7EB; padding: 24px 20px;">
-            <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-                <div style="color: #111827; font-size: 16px; font-weight: 800; letter-spacing: -0.5px;">Job Portal</div>
-                <div style="font-size: 12px; color: #9CA3AF;">© All rights reserved 2026</div>
-            </div>
-        </footer>
-    `;
-    const el = document.getElementById('footer') || document.querySelector('.footer');
-    if (el) el.outerHTML = html;
-}
 
 // Path Helpers
+
 
 function resolveSitePath(route) {
     if (typeof window === 'undefined' || !window.location || !route) return route || '';
@@ -477,6 +478,24 @@ function showEmpty(containerId, title = 'Nothing here yet', message = '', action
             ${actionHtml}
         </div>
     `;
+}
+
+// Skill Match Badge Helper
+function computeSkillMatchBadge(jobSkillsStr) {
+    const user = typeof getLoggedInUser === 'function' ? getLoggedInUser() : null;
+    if (!user || user.role !== 'user') return '';
+    if (!user.skills || !jobSkillsStr) return '';
+
+    const userSkills = user.skills.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+    const jobSkills = jobSkillsStr.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+
+    if (userSkills.length === 0 || jobSkills.length === 0) return '';
+
+    const userSkillSet = new Set(userSkills);
+    const matchedCount = jobSkills.filter(s => userSkillSet.has(s)).length;
+    const matchPercentage = Math.round((matchedCount / jobSkills.length) * 100);
+
+    return `<span class="badge-skill-match" style="display:inline-flex; align-items:center; background:#ECFDF5; color:#059669; border:1px solid #A7F3D0; border-radius:20px; padding:4px 10px; font-size:12px; font-weight:700;">${matchPercentage}% match</span>`;
 }
 
 // API Health Check
