@@ -314,8 +314,8 @@ textarea {
 }
 
 .btn-danger:hover {
-    background: #a82929;
-    border-color: #a82929;
+    background: var(--color-danger);
+    border-color: var(--color-danger);
 }
 
 .btn-success {
@@ -325,8 +325,8 @@ textarea {
 }
 
 .btn-success:hover {
-    background: #276749;
-    border-color: #276749;
+    background: var(--color-success);
+    border-color: var(--color-success);
 }
 
 .btn-ghost {
@@ -435,13 +435,13 @@ textarea {
 .alert-success {
     background: #f0fdf4;
     border-color: var(--color-success);
-    color: #1a5c38;
+    color: var(--color-success-tx);
 }
 
 .alert-error {
     background: #fff5f5;
     border-color: var(--color-danger);
-    color: #8b1c1c;
+    color: var(--color-danger-tx);
 }
 
 .alert-warning {
@@ -468,14 +468,14 @@ textarea {
 .form-message.success {
     background: #f0fdf4;
     border-color: var(--color-success);
-    color: #1a5c38;
+    color: var(--color-success-tx);
     display: block;
 }
 
 .form-message.error {
     background: #fff5f5;
     border-color: var(--color-danger);
-    color: #8b1c1c;
+    color: var(--color-danger-tx);
     display: block;
 }
 
@@ -996,12 +996,6 @@ textarea {
     .navbar-hamburger {
         display: flex;
         margin-left: auto;
-    }
-
-    .footer-bottom {
-        flex-direction: column;
-        gap: 6px;
-        text-align: center;
     }
 
     .page-container {

@@ -2,8 +2,6 @@
    admin.css — Admin-specific pages
 */
 
-/* Imports shared dashboard styles — link both files on admin pages */
-
 .admin-page-body {
     background: #F0F2F5;
     min-height: 100vh;

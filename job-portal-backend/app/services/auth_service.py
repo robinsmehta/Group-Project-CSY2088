@@ -1,16 +1,14 @@
-# ============================================================
 # app/services/auth_service.py — Authentication Business Logic
 #
-# This is the BUSINESS LOGIC LAYER for authentication.
+# This is the business logic layer for authentication.
 # Routes in auth_routes.py call functions defined here.
 #
-# Responsibilities:
-#   - Check for duplicate emails in the database BEFORE password hashing
-#   - Hash passwords with bcrypt before storing (never store plain text)
-#   - Verify passwords on login using bcrypt.check_password_hash
-#   - Manage session state (store user_id, role, company approval status)
-#   - Return sanitized response dicts and HTTP status codes (never return password hashes)
-# ============================================================
+# What this file handles:
+#   - Checking for duplicate emails before doing anything expensive
+#   - Scrambling (hashing) passwords with bcrypt before saving — we never store plain text
+#   - Verifying passwords at login time using the same bcrypt library
+#   - Starting and ending server-side sessions that keep users logged in
+#   - Returning clean response data — password hashes are never included in API responses
 
 from flask import session
 from app.extensions import db, bcrypt
@@ -18,18 +16,9 @@ from app.models.user import User
 from app.models.company import Company
 from app.models.admin import Admin
 
-
-# TODO — TASK-009 (see auth_routes.py for full details): the new profile-edit
-# routes (update_user_profile / update_company_profile / update_admin_profile)
-# should live in this file, following the same pattern as the register_*
-# functions below — look up the record by id, update the provided fields,
-# and if a new password is given, hash it with
-# `bcrypt.generate_password_hash(password).decode('utf-8')` exactly like
-# `register_user()` and `register_company()` do a few lines down, before
-# saving it. Never save a password that hasn't been hashed.
 def register_user(name, email=None, password=None):
     """
-    Register a new job-seeker account.
+    Create a new job-seeker account in the database.
 
     Args:
         name (str or dict): Full name or dict containing name, email, password.
@@ -39,7 +28,7 @@ def register_user(name, email=None, password=None):
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # Accept both positional arguments and dictionary input for flexibility
+    # Accept both positional arguments and a single dictionary for flexibility
     if isinstance(name, dict):
         data = name
         name = data.get('name')
@@ -53,30 +42,18 @@ def register_user(name, email=None, password=None):
     if not name or not email or not password:
         return {'error': 'Name, email, and password are required fields'}, 400
 
-    # -------------------------------------------------------------------------
-    # 1. DUPLICATE EMAIL CHECK (BEFORE HASHING)
-    #
-    # WHY CHECK BEFORE HASHING?
-    # Password hashing using bcrypt is deliberately computationally expensive (work factor 12)
-    # to resist brute-force attacks. Running bcrypt hashing BEFORE checking if the email exists
-    # would allow malicious users to launch a Denial of Service (DoS) attack by spamming
-    # duplicate registration requests to consume CPU resources.
-    # -------------------------------------------------------------------------
+    # Check for duplicate email BEFORE hashing the password.
+    # Password hashing is intentionally slow (to resist brute-force attacks),
+    # so rejecting duplicates first avoids doing that expensive work for nothing.
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
         return {'error': 'Email is already registered'}, 409
 
-    # -------------------------------------------------------------------------
-    # 2. SECURE PASSWORD HASHING
-    #
-    # WHY BCRYPT?
-    # Plain text passwords must NEVER be saved in the database. Flask-Bcrypt generates
-    # a salt automatically and hashes the password securely. We decode it to utf-8
-    # so it can be stored as a String in MySQL.
-    # -------------------------------------------------------------------------
+    # Scramble the password using bcrypt so we never store the real thing.
+    # The result looks like '$2b$12$...' and is safe to store in the database.
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    # 3. Create new User record and commit to database
+    # Save the new user record to the database
     new_user = User(
         name=name,
         email=email,
@@ -85,14 +62,7 @@ def register_user(name, email=None, password=None):
     db.session.add(new_user)
     db.session.commit()
 
-    # -------------------------------------------------------------------------
-    # 4. RETURN SUCCESS RESPONSE (SANITISED)
-    #
-    # WHY PASSWORD HASH IS EXCLUDED:
-    # Even though bcrypt hashes are secure, returning password hashes in API responses
-    # exposes them to network sniffers, client logs, or XSS attacks. We only return
-    # essential user details (id, name, email).
-    # -------------------------------------------------------------------------
+    # Return the new user's details — but deliberately exclude the password hash
     return {
         'message': 'User registered successfully',
         'user': {
@@ -105,10 +75,11 @@ def register_user(name, email=None, password=None):
 
 def register_company(company_name, email=None, password=None, description=None):
     """
-    Register a new company/employer account.
+    Create a new company/employer account. The company starts with "pending" status
+    and cannot post jobs until an admin approves them.
 
     Args:
-        company_name (str or dict): Company name or dict with fields.
+        company_name (str or dict): Company name or dict with all fields.
         email (str, optional): Company contact/login email.
         password (str, optional): Plain text password to hash.
         description (str, optional): Optional description of the company.
@@ -131,16 +102,15 @@ def register_company(company_name, email=None, password=None, description=None):
     if not company_name or not email or not password:
         return {'error': 'Company name, email, and password are required fields'}, 400
 
-    # 1. Duplicate email check in companies table before hashing
+    # Check for duplicate email before hashing the password
     existing_company = Company.query.filter_by(email=email).first()
     if existing_company:
         return {'error': 'Email is already registered'}, 409
 
-    # 2. Securely hash password
+    # Scramble the password before storing it
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    # 3. Create Company record (default status='pending')
-    # Companies default to 'pending' and require admin approval before they can post jobs.
+    # New companies always start as 'pending' — an admin must approve them before they can post jobs
     new_company = Company(
         company_name=company_name,
         email=email,
@@ -151,7 +121,6 @@ def register_company(company_name, email=None, password=None, description=None):
     db.session.add(new_company)
     db.session.commit()
 
-    # 4. Return success response with note about admin approval
     return {
         'message': 'Company registered successfully. Account is pending admin approval.',
         'note': 'Your account is pending admin approval before you can post jobs.',
@@ -166,7 +135,9 @@ def register_company(company_name, email=None, password=None, description=None):
 
 def login(email, password=None, role=None):
     """
-    Authenticate a user, company, or admin account and establish a session.
+    Verify an account's credentials and start a session so the user stays logged in.
+    Works for job seekers, companies, and admins. If no role is provided, we try
+    to detect it automatically by searching each account table in order.
 
     Args:
         email (str or dict): Email address or dictionary of login credentials.
@@ -189,7 +160,7 @@ def login(email, password=None, role=None):
     if not email or not password:
         return {'error': 'Email and password are required fields'}, 400
 
-    # 1. Query the corresponding database model based on the requested role, or auto-detect
+    # Find the account record — look up by role if given, otherwise try each table in turn
     if not role:
         account = Admin.query.filter_by(email=email).first()
         if account:
@@ -212,38 +183,24 @@ def login(email, password=None, role=None):
         else:
             return {'error': 'Invalid role. Role must be user, company, or admin.'}, 400
 
-    # 2. Check if account exists
-    # SECURITY: Return generic error message ("Invalid email or password") to prevent email enumeration
+    # Use a generic error message so attackers cannot tell whether the email exists
     if not account:
         return {'error': 'Invalid email or password'}, 401
 
-    # -------------------------------------------------------------------------
-    # 3. VERIFY PASSWORD WITH BCRYPT
-    #
-    # WHY NOT STRING EQUALITY (==)?
-    # Bcrypt produces a random salt for every password hash. Comparing plain text
-    # password against stored hash using `==` will always fail and is insecure.
-    # `bcrypt.check_password_hash` extracts the salt from stored hash and re-hashes
-    # the candidate password in constant time to prevent timing attacks.
-    # -------------------------------------------------------------------------
+    # Check the password the user typed against the scrambled version we stored.
+    # We can't compare them directly because hashing is one-way; bcrypt handles this safely.
     if not bcrypt.check_password_hash(account.password_hash, password):
         return {'error': 'Invalid email or password'}, 401
 
-    # Prevent login if account has been suspended (users and companies only)
+    # Block suspended accounts from logging in
     if role in ('user', 'company'):
         is_active = getattr(account, 'is_active', None)
         if is_active is False:
             return {'error': 'This account has been suspended. Contact support.'}, 403
 
-    # -------------------------------------------------------------------------
-    # 4. STORE IDENTITY AND ROLE IN FLASK SESSION
-    #
-    # WHY SESSION STORAGE?
-    # Flask sessions use cryptographically signed HTTP cookies. Storing user_id, role,
-    # and approval status in the session allows server-side decorators like @role_required
-    # to authenticate subsequent requests instantly without database lookups.
-    # -------------------------------------------------------------------------
-    session.clear()  # Clear any stale session data
+    # Store the account's identity and role in the session so future requests stay logged in.
+    # The session is backed by a signed browser cookie — users cannot forge or tamper with it.
+    session.clear()  # Remove any leftover data from a previous session
     session['user_id'] = account.id
     session['role'] = role
 
@@ -255,7 +212,7 @@ def login(email, password=None, role=None):
     if role == 'company':
         approval_status = account.status
         session['status'] = approval_status
-        session['company_id'] = account.id  # Set company_id for consistency
+        session['company_id'] = account.id
         session['company_name'] = getattr(account, 'company_name', '')
 
     user_payload = {
@@ -281,25 +238,26 @@ def login(email, password=None, role=None):
 
 def logout():
     """
-    Log out the active account by clearing the Flask session.
+    End the current session so the user is logged out.
+    Clearing the session means the browser's cookie is no longer accepted by the server.
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # session.clear() removes user_id, role, and all stored credentials
     session.clear()
     return {'message': 'Logged out successfully'}, 200
 
 
 def update_user_profile(user_id, name=None, email=None, password=None, skills=None):
     """
-    Allow a logged-in user (job seeker) to update their profile (name, email, password, skills).
+    Let a logged-in job seeker update their profile details.
+    Only the fields you pass will be changed; omitted fields stay the same.
 
     Args:
         user_id (int): Primary key of the user to update.
         name (str, optional): New name.
         email (str, optional): New email (must be unique).
-        password (str, optional): New plain text password to hash.
+        password (str, optional): New plain text password (will be hashed before saving).
         skills (str, optional): Comma-separated skills string.
 
     Returns:
@@ -358,13 +316,14 @@ def update_user_profile(user_id, name=None, email=None, password=None, skills=No
 
 def update_company_profile(company_id, company_name=None, email=None, password=None, description=None):
     """
-    Allow a logged-in company to update their profile (company_name, email, password, description).
+    Let a logged-in company update their profile details.
+    Only the fields you pass will be changed; omitted fields stay the same.
 
     Args:
         company_id (int): Primary key of the company to update.
         company_name (str, optional): New company name.
         email (str, optional): New email (must be unique).
-        password (str, optional): New plain text password to hash.
+        password (str, optional): New plain text password (will be hashed before saving).
         description (str, optional): New company description.
 
     Returns:

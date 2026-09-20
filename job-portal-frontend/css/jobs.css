@@ -1203,7 +1203,7 @@
 }
 
 .jobs-style-a76376 {
-    display:none;color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:12px;font-size:13px;margin-bottom:20px;font-weight:500;
+    display:none;color:#DC2626;background:#FEF2F2;border:1px solid var(--color-danger-bg);border-radius:12px;padding:12px;font-size:13px;margin-bottom:20px;font-weight:500;
 }
 
 .jobs-style-bd6f8c {

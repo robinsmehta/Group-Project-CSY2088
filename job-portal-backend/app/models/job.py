@@ -1,19 +1,17 @@
-# ============================================================
 # app/models/job.py — Job Model
 #
-# This file defines the Job database table using SQLAlchemy ORM.
-#
+# Defines the Job database table using SQLAlchemy ORM.
 # Table name: jobs
-# Who uses this table: Companies post job listings; users browse and apply.
+# Companies post job listings; job seekers browse and apply.
 #
-# Each Job must belong to exactly one Company (enforced by the FK constraint).
-# ============================================================
+# Each Job belongs to exactly one Company (via company_id Foreign Key).
 
 from datetime import datetime, timezone
 from app.extensions import db
 
 
 def _to_utc_iso(dt):
+    """Convert a datetime object to UTC ISO format string (YYYY-MM-DDTHH:MM:SSZ)."""
     if dt is None:
         return None
     if dt.tzinfo is None:
@@ -27,65 +25,56 @@ class Job(db.Model):
 
     Relationships:
       - Belongs to ONE Company (many-to-one).
-        Access via: job_instance.company  →  Company object
       - Can have MANY Applications (one-to-many).
-        Access via: job_instance.applications  →  list of Application objects
     """
 
     __tablename__ = 'jobs'
 
-    # --- Columns ---
-
     # Primary Key
     id = db.Column(db.Integer, primary_key=True)
 
-    # Foreign Key: links this job to the company that posted it.
-    # db.ForeignKey('companies.id') tells MySQL: company_id must exist in companies.id
+    # Foreign Key linking this job to the company that posted it
     company_id = db.Column(
         db.Integer,
         db.ForeignKey('companies.id'),
         nullable=False
     )
 
-    # Short job title (e.g., "Senior Python Developer")
+    # Job title (e.g., "Senior Python Developer")
     title = db.Column(db.String(200), nullable=False)
 
-    # Full job description: responsibilities, requirements, etc.
+    # Full job description
     description = db.Column(db.Text, nullable=False)
 
-    # Where the job is located (e.g., "London, UK" or "Remote")
+    # Job location (e.g., "London, UK" or "Remote")
     location = db.Column(db.String(150), nullable=False)
 
     # Job category (e.g., "Software Engineering", "Marketing", "Finance")
-    # TODO: You could turn this into an ENUM or a separate table later
     category = db.Column(db.String(100), nullable=True)
 
-    # Employment type (e.g., "Full-time", "Part-time", "Remote", "Contract", "Freelance")
+    # Employment type (e.g., "Full-time", "Part-time", "Remote", "Contract")
     job_type = db.Column(db.String(50), nullable=True)
 
-    # Expected salary (e.g., "£40,000 - £50,000 per year")
-    # Stored as a string for flexibility (ranges, "Negotiable", etc.)
+    # Expected salary
     salary = db.Column(db.String(100), nullable=True)
 
-    # Comma-separated list of required skills (e.g., "React, Figma, SQL")
+    # Comma-separated list of required skills (e.g., "React, Python, SQL")
     skills = db.Column(db.String(500), nullable=True)
 
-    # Optional closing date for the job listing.
-    # When this date passes, the listing is considered closed.
+    # Closing date for the job listing
     closing_date = db.Column(db.DateTime, nullable=True)
 
-    # Persistent status column to reflect current state ('active'|'closed')
+    # Status flag ('active' or 'closed')
     status = db.Column(db.String(20), nullable=False, default='active')
 
-    # When the job listing was created
+    # Creation timestamp
     created_at = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),
         nullable=False
     )
 
-    # When the job listing was last edited.
-    # onupdate= automatically sets this to "now" every time the record is changed.
+    # Last edit timestamp
     updated_at = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),
@@ -93,14 +82,8 @@ class Job(db.Model):
         nullable=False
     )
 
-    # --- Relationships ---
-
-    # Many Jobs → One Company (the inverse of Company.jobs)
-    # back_populates='jobs' connects this to Company.jobs
+    # Relationships
     company = db.relationship('Company', back_populates='jobs')
-
-    # One Job → Many Applications
-    # If a Job is deleted, all its Applications are also deleted (cascade)
     applications = db.relationship(
         'Application',
         back_populates='job',
@@ -108,24 +91,22 @@ class Job(db.Model):
         lazy='dynamic'
     )
 
-    # --- Helper Methods ---
-
     def __repr__(self):
+        """String representation for debugging."""
         return f'<Job id={self.id} title="{self.title}" company_id={self.company_id}>'
 
     @property
     def is_closed(self):
+        """Check if the job's closing date has passed."""
         if self.closing_date:
             closing = self.closing_date
-            # If stored datetime is offset-naive, assume UTC for comparison
             if closing.tzinfo is None:
                 closing = closing.replace(tzinfo=timezone.utc)
             return closing <= datetime.now(timezone.utc)
         return False
 
     def to_dict(self):
-        """Serialise to dict for JSON API responses."""
-        # Compute status: if closing_date passed treat as closed, otherwise use stored status
+        """Converts the Job object into a Python dictionary for JSON responses."""
         computed_status = 'closed' if self.is_closed else (self.status or 'active')
 
         return {
