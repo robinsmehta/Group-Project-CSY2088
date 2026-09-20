@@ -90,6 +90,12 @@ function renderNavbar(activePage) {
                         <textarea id="popover-description" rows="3" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">${user.description || ''}</textarea>
                     </div>
                     ` : ''}
+                    ${user.role === 'user' ? `
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Skills (comma-separated)</label>
+                        <input type="text" id="popover-skills" value="${user.skills || ''}" placeholder="e.g. React, Python, SQL" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                    </div>
+                    ` : ''}
                     <div class="form-group" style="margin-bottom: 32px;">
                         <label style="display:block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #374151;">Password (leave blank to keep current)</label>
                         <input type="password" id="popover-password" placeholder="••••••••••••" style="width: 100%; padding: 12px 16px; background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; font-size: 14px; color: #111827; box-sizing: border-box;">
@@ -193,13 +199,15 @@ function renderNavbar(activePage) {
             const password = document.getElementById('popover-password').value;
             const descEl = document.getElementById('popover-description');
             const description = descEl ? descEl.value.trim() : undefined;
+            const skillsEl = document.getElementById('popover-skills');
+            const skills = skillsEl ? skillsEl.value.trim() : undefined;
             const profileError = document.getElementById('profile-error');
 
             profileError.style.display = 'none';
             profileUpdateBtn.disabled = true;
             profileUpdateBtn.textContent = 'Updating...';
 
-            const payload = { name, company_name: name, email, password, description };
+            const payload = { name, company_name: name, email, password, description, skills };
             const updateFn = typeof apiUpdateMyProfile === 'function' ? apiUpdateMyProfile : apiUpdateAdminProfile;
             const { ok, data } = await updateFn(payload);
             profileUpdateBtn.disabled = false;
@@ -470,6 +478,24 @@ function showEmpty(containerId, title = 'Nothing here yet', message = '', action
             ${actionHtml}
         </div>
     `;
+}
+
+// Skill Match Badge Helper
+function computeSkillMatchBadge(jobSkillsStr) {
+    const user = typeof getLoggedInUser === 'function' ? getLoggedInUser() : null;
+    if (!user || user.role !== 'user') return '';
+    if (!user.skills || !jobSkillsStr) return '';
+
+    const userSkills = user.skills.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+    const jobSkills = jobSkillsStr.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+
+    if (userSkills.length === 0 || jobSkills.length === 0) return '';
+
+    const userSkillSet = new Set(userSkills);
+    const matchedCount = jobSkills.filter(s => userSkillSet.has(s)).length;
+    const matchPercentage = Math.round((matchedCount / jobSkills.length) * 100);
+
+    return `<span class="badge-skill-match" style="display:inline-flex; align-items:center; background:#ECFDF5; color:#059669; border:1px solid #A7F3D0; border-radius:20px; padding:4px 10px; font-size:12px; font-weight:700;">${matchPercentage}% match</span>`;
 }
 
 // API Health Check

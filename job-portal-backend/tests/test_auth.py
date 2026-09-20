@@ -41,3 +41,16 @@ def test_access_role_required_route_without_session(client):
     response = client.get('/api/auth/company/test')
     assert response.status_code == 401
     assert 'authentication required' in response.json['error'].lower()
+
+
+def test_update_user_skills(client, job_seeker):
+    """Test updating job seeker profile skills."""
+    with client.session_transaction() as sess:
+        sess['user_id'] = job_seeker.id
+        sess['role'] = 'user'
+
+    payload = {'skills': 'React, Python, SQL'}
+    response = client.put('/api/auth/me/user', json=payload)
+    assert response.status_code == 200
+    assert response.json['user']['skills'] == 'React, Python, SQL'
+

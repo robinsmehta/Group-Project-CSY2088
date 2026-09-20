@@ -166,6 +166,10 @@ def current_user():
     if role == 'company':
         user['company_id'] = session.get('company_id', user_id)
         user['company_name'] = session.get('company_name') or user['name'] or ''
+    elif role == 'user':
+        user_obj = db.session.get(User, user_id)
+        if user_obj:
+            user['skills'] = user_obj.skills
 
     return jsonify({'user': user}), 200
 
@@ -203,7 +207,8 @@ def update_user_profile():
         user_id=user_id,
         name=data.get('name'),
         email=data.get('email'),
-        password=data.get('password')
+        password=data.get('password'),
+        skills=data.get('skills')
     )
     return jsonify(result), status_code
 

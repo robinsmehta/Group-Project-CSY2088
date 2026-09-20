@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function renderJobDetail(job) {
     const esc = (s) => { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; };
     const postedAgo = timeAgo(job.created_at);
+    const matchBadge = typeof computeSkillMatchBadge === 'function' ? computeSkillMatchBadge(job.skills) : '';
 
     document.title = `Job Portal — ${job.title || 'Job Details'}`;
     const postedDateEl = document.getElementById('header-posted-date');
@@ -110,7 +111,10 @@ function renderJobDetail(job) {
     if (headerContent) {
         headerContent.innerHTML = `
             <div class="jobs-style-f4b389">${esc(job.company_name || 'Unknown Company')}</div>
-            <h1 class="jobs-style-2e5e62">${esc(job.title)}</h1>
+            <h1 class="jobs-style-2e5e62" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                ${esc(job.title)}
+                ${matchBadge}
+            </h1>
             
             <div class="jobs-style-c4d0e1">
                 <div class="jobs-style-e4b265">

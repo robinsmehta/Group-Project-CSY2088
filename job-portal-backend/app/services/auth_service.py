@@ -269,6 +269,8 @@ def login(email, password=None, role=None):
     if role == 'company':
         user_payload['company_id'] = account.id
         user_payload['company_name'] = getattr(account, 'company_name', '')
+    elif role == 'user':
+        user_payload['skills'] = getattr(account, 'skills', None)
 
     return {
         'message': 'Login successful',
@@ -289,15 +291,16 @@ def logout():
     return {'message': 'Logged out successfully'}, 200
 
 
-def update_user_profile(user_id, name=None, email=None, password=None):
+def update_user_profile(user_id, name=None, email=None, password=None, skills=None):
     """
-    Allow a logged-in user (job seeker) to update their profile (name, email, password).
+    Allow a logged-in user (job seeker) to update their profile (name, email, password, skills).
 
     Args:
         user_id (int): Primary key of the user to update.
         name (str, optional): New name.
         email (str, optional): New email (must be unique).
         password (str, optional): New plain text password to hash.
+        skills (str, optional): Comma-separated skills string.
 
     Returns:
         tuple: (response_dict, http_status_code)
@@ -308,6 +311,7 @@ def update_user_profile(user_id, name=None, email=None, password=None):
         name = data.get('name')
         email = data.get('email')
         password = data.get('password')
+        skills = data.get('skills')
 
     user = db.session.get(User, user_id)
     if not user:
@@ -335,6 +339,10 @@ def update_user_profile(user_id, name=None, email=None, password=None):
     if password is not None and str(password).strip():
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         user.password_hash = hashed_password
+        updates_made = True
+
+    if skills is not None:
+        user.skills = (skills or '').strip()
         updates_made = True
 
     if not updates_made:

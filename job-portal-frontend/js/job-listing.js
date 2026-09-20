@@ -188,6 +188,7 @@ function buildListingCard(job) {
     const company  = escapeHtml(job.company_name || 'Unknown Company');
     const location = escapeHtml(job.location    || 'Not specified');
     const posted   = timeAgo(job.created_at);
+    const matchBadge = typeof computeSkillMatchBadge === 'function' ? computeSkillMatchBadge(job.skills) : '';
 
     // Format salary or fallback
     const salaryText = job.salary ? escapeHtml(job.salary) : 'Salary undisclosed';
@@ -208,9 +209,10 @@ function buildListingCard(job) {
                 <div class="jobs-style-cbc0b4">${company}</div>
                 <div class="jobs-style-9d8feb">${location}</div>
 
-                <!-- Job Type Badge -->
-                <div class="jobs-style-1265ee">
+                <!-- Job Type Badge & Match Badge -->
+                <div class="jobs-style-1265ee" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                     ${job.job_type ? `<span class="jobs-style-668e21">${escapeHtml(job.job_type)}</span>` : ''}
+                    ${matchBadge}
                 </div>
             </div>
 
