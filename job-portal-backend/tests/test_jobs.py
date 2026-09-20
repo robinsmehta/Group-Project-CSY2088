@@ -92,3 +92,22 @@ def test_company_cannot_update_or_delete_other_company_job(client, approved_comp
     delete_res = client.delete(f'/api/jobs/{job.id}')
     assert delete_res.status_code == 403
     assert 'permission' in delete_res.json['error'].lower() or 'do not own' in delete_res.json['error'].lower()
+
+
+def test_keyword_search_matches_skills(client, approved_company, db):
+    """Test that keyword search matches skills column."""
+    job = Job(
+        company_id=approved_company.id,
+        title='Backend Developer',
+        description='General backend role',
+        location='Remote',
+        skills='React, Docker, Kubernetes'
+    )
+    db.session.add(job)
+    db.session.commit()
+
+    res = client.get('/api/jobs?keyword=Kubernetes')
+    assert res.status_code == 200
+    assert len(res.json['jobs']) >= 1
+    assert any(j['id'] == job.id for j in res.json['jobs'])
+

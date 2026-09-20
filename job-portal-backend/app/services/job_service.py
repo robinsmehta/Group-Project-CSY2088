@@ -152,7 +152,7 @@ def get_all_jobs(keyword=None, location=None, category=None, job_type=None, page
     Joins with the companies table to include company information.
 
     Args:
-        keyword (str, optional): Search string to match in title or description.
+        keyword (str, optional): Search string to match in title, description, or skills.
         location (str, optional): Location string filter.
         category (str, optional): Category string filter.
         job_type (str, optional): Employment type filter.
@@ -180,7 +180,7 @@ def get_all_jobs(keyword=None, location=None, category=None, job_type=None, page
 
     # -------------------------------------------------------------------------
     # OPTIONAL SEARCH & FILTERING:
-    # Filter by category, location, and/or keyword (searches title and description).
+    # Filter by category, location, and/or keyword (searches title, description, and skills).
     # -------------------------------------------------------------------------
     if category and category.strip():
         query = query.filter(Job.category.ilike(f'%{category.strip()}%'))
@@ -196,7 +196,8 @@ def get_all_jobs(keyword=None, location=None, category=None, job_type=None, page
         query = query.filter(
             db.or_(
                 Job.title.ilike(search_pattern),
-                Job.description.ilike(search_pattern)
+                Job.description.ilike(search_pattern),
+                Job.skills.ilike(search_pattern)
             )
         )
 
