@@ -47,13 +47,17 @@ def get_all_jobs():
     location = request.args.get('location')
     category = request.args.get('category')
     job_type = request.args.get('job_type')
+    page     = request.args.get('page',     1)
+    per_page = request.args.get('per_page', 10)
 
     # Forward query parameters to service layer for SQL filtering
     result, status_code = job_service.get_all_jobs(
         keyword=keyword,
         location=location,
         category=category,
-        job_type=job_type
+        job_type=job_type,
+        page=page,
+        per_page=per_page
     )
     return jsonify(result), status_code
 
@@ -141,15 +145,12 @@ def update_job(job_id):
     company_id = session.get('company_id') or session.get('user_id')
     data = request.get_json(silent=True) or {}
 
-    # TODO — TASK-008 (continued, Simrika/D3): once you've added the `skills`
-    # column to the Job model (see app/models/job.py), also add 'skills' to
-    # this list so an edit request is allowed to update it.
-    updatable_fields = ['title', 'description', 'location', 'category', 'job_type', 'salary', 'closing_date']
+    updatable_fields = ['title', 'description', 'location', 'category', 'job_type', 'salary', 'closing_date', 'skills']
     provided_updates = {k: v for k, v in data.items() if k in updatable_fields}
 
     if not provided_updates:
         return jsonify({
-            'error': 'No valid fields provided for update. Allowed fields: title, description, location, category, salary'
+            'error': 'No valid fields provided for update. Allowed fields: title, description, location, category, salary, skills'
         }), 400
 
     # Delegate to service layer for ownership check and database update

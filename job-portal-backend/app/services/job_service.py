@@ -30,6 +30,7 @@
 # ============================================================
 
 from datetime import datetime, timezone
+from math import ceil
 
 from app.extensions import db
 from app.models.job import Job
@@ -49,7 +50,7 @@ def refresh_job_statuses():
         db.session.rollback()
 
 
-def create_job(company_id: int, title=None, description=None, location=None, category=None, salary=None, job_type=None):
+def create_job(company_id: int, title=None, description=None, location=None, category=None, salary=None, job_type=None, skills=None):
     """
     Create a new job listing for an approved company.
 
@@ -62,6 +63,8 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         location (str, optional): Job location.
         category (str, optional): Job category.
         salary (str, optional): Salary range / string representation.
+        job_type (str, optional): Job employment type.
+        skills (str, optional): Comma-separated list of required skills.
 
     Returns:
         tuple: (response_dict, http_status_code)
@@ -76,6 +79,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         category = data.get('category')
         salary = data.get('salary')
         job_type = data.get('job_type')
+        skills = data.get('skills')
 
     # Basic input checks
     title = (title or '').strip()
@@ -84,6 +88,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
     category = (category or '').strip() if category else None
     salary = (salary or '').strip() if salary else None
     job_type = (job_type or '').strip() if job_type else None
+    skills = (skills or '').strip() if skills else None
 
     if not title or not description or not location:
         return {'error': 'Title, description, and location are required fields'}, 400
@@ -117,12 +122,6 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         except ValueError:
             closing_date = None
 
-    # TODO — TASK-008 (continued, Simrika/D3): read the skills value the same
-    # way `category` and `job_type` are read above (e.g.
-    # `skills = data.get('skills')` inside the `if isinstance(title, dict):`
-    # block near the top of this function), then pass it into the Job(...)
-    # below as `skills=skills` — once you've added the `skills` column to
-    # app/models/job.py.
     # Create new Job record linked to this company
     new_job = Job(
         company_id=company_id,
@@ -132,6 +131,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         category=category,
         job_type=job_type,
         salary=salary,
+        skills=skills,
         closing_date=closing_date
     )
 
@@ -146,19 +146,32 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
     }, 201
 
 
-def get_all_jobs(keyword=None, location=None, category=None, job_type=None):
+def get_all_jobs(keyword=None, location=None, category=None, job_type=None, page=1, per_page=10):
     """
-    Retrieve all job listings, optionally filtered by keyword, location, and/or category.
+    Retrieve job listings with optional filtering/search and server-side pagination.
     Joins with the companies table to include company information.
 
     Args:
         keyword (str, optional): Search string to match in title or description.
         location (str, optional): Location string filter.
         category (str, optional): Category string filter.
+        job_type (str, optional): Employment type filter.
+        page (int): 1-based page number (default 1).
+        per_page (int): Number of results per page (default 10).
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
+    # Sanitise pagination params
+    try:
+        page = max(1, int(page))
+    except (TypeError, ValueError):
+        page = 1
+    try:
+        per_page = max(1, min(100, int(per_page)))
+    except (TypeError, ValueError):
+        per_page = 10
+
     # Ensure any expired jobs are marked closed in the DB before listing
     refresh_job_statuses()
 
@@ -188,11 +201,23 @@ def get_all_jobs(keyword=None, location=None, category=None, job_type=None):
         )
 
     # Order by creation date (newest first)
-    jobs = query.order_by(Job.created_at.desc()).all()
+    query = query.order_by(Job.created_at.desc())
+
+    # -------------------------------------------------------------------------
+    # PAGINATION:
+    # Get total count BEFORE slicing so callers know how many pages exist.
+    # -------------------------------------------------------------------------
+    total_count = query.count()
+    total_pages = ceil(total_count / per_page) if total_count > 0 else 1
+
+    jobs = query.offset((page - 1) * per_page).limit(per_page).all()
 
     # to_dict() includes company_name via the relationship
     return {
-        'count': len(jobs),
+        'count': total_count,
+        'page': page,
+        'per_page': per_page,
+        'total_pages': total_pages,
         'jobs': [j.to_dict() for j in jobs]
     }, 200
 
@@ -258,11 +283,8 @@ def update_job(job_id: int, company_id: int, updated_fields: dict = None, **kwar
         job.job_type = updated_fields['job_type'].strip()
     if 'salary' in updated_fields and updated_fields['salary'] is not None:
         job.salary = updated_fields['salary'].strip()
-    # TODO — TASK-008 (continued, Simrika/D3): add the same kind of check here
-    # for 'skills', e.g.:
-    #   if 'skills' in updated_fields and updated_fields['skills'] is not None:
-    #       job.skills = updated_fields['skills'].strip()
-    # This lets the Edit Job form save updated skills, not just Post Job.
+    if 'skills' in updated_fields and updated_fields['skills'] is not None:
+        job.skills = updated_fields['skills'].strip()
     if 'closing_date' in updated_fields:
         closing_date_raw = updated_fields.get('closing_date')
         if closing_date_raw:

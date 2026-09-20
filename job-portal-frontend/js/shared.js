@@ -28,9 +28,8 @@ function renderNavbar(activePage) {
         ];
     } else {
         links = [
-            { href: resolveSitePath('user/dashboard.html'), label: 'Dashboard',       key: 'dashboard' },
-            { href: resolveSitePath('jobs/listing.html'), label: 'Browse Jobs',     key: 'jobs' },
-            { href: resolveSitePath('user/dashboard.html'), label: 'My Applications', key: 'applications' }
+            { href: resolveSitePath('user/dashboard.html'), label: 'Dashboard',   key: 'dashboard' },
+            { href: resolveSitePath('jobs/listing.html'),   label: 'Browse Jobs', key: 'jobs' }
         ];
     }
 
@@ -192,13 +191,17 @@ function renderNavbar(activePage) {
             const name = document.getElementById('popover-name').value.trim();
             const email = document.getElementById('popover-email').value.trim();
             const password = document.getElementById('popover-password').value;
+            const descEl = document.getElementById('popover-description');
+            const description = descEl ? descEl.value.trim() : undefined;
             const profileError = document.getElementById('profile-error');
 
             profileError.style.display = 'none';
             profileUpdateBtn.disabled = true;
             profileUpdateBtn.textContent = 'Updating...';
 
-            const { ok, data } = await apiUpdateAdminProfile(name, email, password);
+            const payload = { name, company_name: name, email, password, description };
+            const updateFn = typeof apiUpdateMyProfile === 'function' ? apiUpdateMyProfile : apiUpdateAdminProfile;
+            const { ok, data } = await updateFn(payload);
             profileUpdateBtn.disabled = false;
             profileUpdateBtn.textContent = 'Update';
 
@@ -208,9 +211,10 @@ function renderNavbar(activePage) {
                 return;
             }
 
-            const updatedAdmin = data.admin || { ...user, name, email };
-            setLoggedInUser({ ...user, ...updatedAdmin, role: 'admin' });
-            modalTrigger.textContent = updatedAdmin.name;
+            const updatedProfile = data.user || data.company || data.admin || { ...user, name, email };
+            const newName = updatedProfile.name || updatedProfile.company_name || name;
+            setLoggedInUser({ ...user, ...updatedProfile });
+            modalTrigger.textContent = newName;
             document.getElementById('popover-password').value = '';
             modal.style.display = 'none';
             showToast('Profile updated successfully', 'success');
@@ -271,20 +275,9 @@ function renderNavbar(activePage) {
     document.getElementById('btn-logout-mobile')?.addEventListener('click', handleLogout);
 }
 
-function renderFooter() {
-    const html = `
-        <footer class="footer" id="footer" style="background-color: #ffffff; border-top: 1px solid #E5E7EB; padding: 24px 20px;">
-            <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
-                <div style="color: #111827; font-size: 16px; font-weight: 800; letter-spacing: -0.5px;">Job Portal</div>
-                <div style="font-size: 12px; color: #9CA3AF;">© All rights reserved 2026</div>
-            </div>
-        </footer>
-    `;
-    const el = document.getElementById('footer') || document.querySelector('.footer');
-    if (el) el.outerHTML = html;
-}
 
 // Path Helpers
+
 
 function resolveSitePath(route) {
     if (typeof window === 'undefined' || !window.location || !route) return route || '';

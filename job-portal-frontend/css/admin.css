@@ -289,14 +289,14 @@
     gap: 6px;
     font-size: 11px;
     font-weight: 700;
-    color: #D97706;
+    color: var(--color-warning-tx);
 }
 
 .admin-style-9c18fb {
     display: inline-block;
     width: 6px;
     height: 6px;
-    background: #D97706;
+    background: var(--color-warning);
     border-radius: 50%;
 }
 
@@ -384,8 +384,8 @@
     border-radius: 16px;
     font-size: 11px;
     font-weight: 700;
-    background: #DCFCE7;
-    color: #166534;
+    background: var(--color-success-bg);
+    color: var(--color-success-tx);
     letter-spacing: 0.5px;
 }
 
@@ -395,8 +395,8 @@
     border-radius: 16px;
     font-size: 11px;
     font-weight: 700;
-    background: #FEE2E2;
-    color: #991B1B;
+    background: var(--color-danger-bg);
+    color: var(--color-danger-tx);
     letter-spacing: 0.5px;
 }
 
@@ -415,16 +415,3 @@
     padding: 6px;
     color: #9CA3AF;
 }
-
-.admin-pagination-btn {
-    width: 32px;
-    height: 32px;
-
-    border-radius:50 .admin-pagination-btn {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 13px;
-        font-family: inherit;
-    }

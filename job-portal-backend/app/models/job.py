@@ -13,6 +13,14 @@ from datetime import datetime, timezone
 from app.extensions import db
 
 
+def _to_utc_iso(dt):
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.isoformat().replace('+00:00', 'Z')
+
+
 class Job(db.Model):
     """
     Represents a job listing posted by a company.
@@ -59,45 +67,8 @@ class Job(db.Model):
     # Stored as a string for flexibility (ranges, "Negotiable", etc.)
     salary = db.Column(db.String(100), nullable=True)
 
-    # ========================================================
-    # TASK-008 — Add a "skills" field to store job skill tags
-    # ========================================================
-    #
-    # PROBLEM:
-    # The new Post Job form has a "Skills & Keywords" tag box where a company
-    # types skills like "React", presses Enter, and gets a little removable
-    # pill/tag for each one (built visually by Robins, see A4). Right now
-    # there is nowhere in the database to save this information at all —
-    # this column simply does not exist yet.
-    #
-    # WHAT YOU NEED TO DO:
-    # 1. Add a new column below, similar to the other db.Column(...) lines
-    #    in this class, for example:
-    #        skills = db.Column(db.String(500), nullable=True)
-    #    A simple text field is enough — store all the skills as ONE string,
-    #    separated by commas (e.g. "React, Figma, SQL"), matching what the
-    #    design's placeholder text already suggests. You do NOT need a
-    #    separate table for this.
-    # 2. Add "skills" to the `to_dict()` method further down in this file so
-    #    it gets included when a job is sent to the frontend as JSON.
-    # 3. After adding the column, you'll need to update the database schema
-    #    (e.g. via a migration, or by recreating the local dev database —
-    #    check init_db.py and the migrations/ folder for how this project
-    #    manages schema changes).
-    #
-    # HOW THIS PART CONNECTS:
-    # - job_routes.py (create_job / update_job) needs to accept "skills" as
-    #   an updatable field so the Post Job / Edit Job form can save it.
-    # - The job detail page (jobs/detail.html) needs to display these skills
-    #   when someone views a job listing.
-    #
-    # WHAT "DONE" LOOKS LIKE:
-    # You can add skills like "React, Figma, SQL" when posting a job, save
-    # it, and see those exact skills displayed later when viewing that job.
-    #
-    # ASSIGNED TASK:
-    # Simrika (D3) — Add the Skills & Keywords feature.
-    # ========================================================
+    # Comma-separated list of required skills (e.g., "React, Figma, SQL")
+    skills = db.Column(db.String(500), nullable=True)
 
     # Optional closing date for the job listing.
     # When this date passes, the listing is considered closed.
@@ -167,12 +138,10 @@ class Job(db.Model):
             'category':          self.category,
             'job_type':          self.job_type,
             'salary':            self.salary,
-            # TODO — TASK-008 (continued): once you add the `skills` column
-            # above, also add it here, e.g.  'skills': self.skills,
-            # so it's actually sent to the frontend in the job's JSON data.
-            'closing_date':      self.closing_date.isoformat() if self.closing_date else None,
+            'skills':            self.skills,
+            'closing_date':      _to_utc_iso(self.closing_date),
             'status':            computed_status,
             'application_count': self.applications.count() if hasattr(self.applications, 'count') else len(self.applications),
-            'created_at':        self.created_at.isoformat() if self.created_at else None,
-            'updated_at':        self.updated_at.isoformat() if self.updated_at else None,
+            'created_at':        _to_utc_iso(self.created_at),
+            'updated_at':        _to_utc_iso(self.updated_at),
         }

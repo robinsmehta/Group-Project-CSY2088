@@ -229,48 +229,40 @@
 }
 
 .badge-applied {
-    background: #FEF9C3;
-    color: #854D0E;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-tx);
 }
 
-.badge-under-review {
-    background: #DBEAFE;
-    color: #1E40AF;
+.badge-under-review,
+.badge-under_review {
+    background: var(--color-info-bg);
+    color: var(--color-info-tx);
 }
 
 .badge-shortlisted {
-    background: #E0E7FF;
-    color: #3730A3;
+    background: var(--color-success-bg);
+    color: var(--color-success-tx);
 }
 
 .badge-rejected {
-    background: #FEE2E2;
-    color: #991B1B;
+    background: var(--color-danger-bg);
+    color: var(--color-danger-tx);
 }
 
-.badge-hired {
-    background: #DCFCE7;
-    color: #166534;
-}
-
-.badge-active {
-    background: #D1FAE5;
-    color: #065F46;
+.badge-active,
+.badge-approved {
+    background: var(--color-success-bg);
+    color: var(--color-success-tx);
 }
 
 .badge-closed {
-    background: #F3F4F6;
-    color: #6B7280;
+    background: var(--color-neutral-bg);
+    color: var(--color-neutral-tx);
 }
 
 .badge-pending {
-    background: #FEF9C3;
-    color: #854D0E;
-}
-
-.badge-approved {
-    background: #DCFCE7;
-    color: #166534;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-tx);
 }
 
 /* ---- Action Buttons ---- */
@@ -319,8 +311,8 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #FEF9C3;
-    color: #854D0E;
+    background: var(--color-warning-bg);
+    color: var(--color-warning-tx);
     padding: 8px 16px;
     border-radius: 12px;
     font-size: 13px;
@@ -332,7 +324,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #EAB308;
+    background: var(--color-warning);
     flex-shrink: 0;
 }
 

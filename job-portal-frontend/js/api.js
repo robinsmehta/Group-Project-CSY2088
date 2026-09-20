@@ -60,13 +60,28 @@ async function apiRegisterCompany(company_name, email, password, description) {
     return apiFetch('/auth/register/company', { method: 'POST', body: { company_name, email, password, description } });
 }
 
+async function apiUpdateMyProfile(payload) {
+    const user = typeof getLoggedInUser === 'function' ? getLoggedInUser() : null;
+    const role = user?.role;
+    if (role === 'user') {
+        return apiFetch('/auth/me/user', { method: 'PUT', body: payload });
+    } else if (role === 'company') {
+        return apiFetch('/auth/me/company', { method: 'PUT', body: payload });
+    } else if (role === 'admin') {
+        return apiFetch('/admin/profile', { method: 'PUT', body: payload });
+    }
+    return { ok: false, status: 400, data: { error: 'Unknown or unauthenticated user role' } };
+}
+
 // JOBS
 
 async function apiGetJobs(params = {}) {
     const qs = new URLSearchParams();
-    if (params.keyword)  qs.set('keyword',  params.keyword);
-    if (params.location) qs.set('location', params.location);
-    if (params.category) qs.set('category', params.category);
+    if (params.keyword)   qs.set('keyword',   params.keyword);
+    if (params.location)  qs.set('location',  params.location);
+    if (params.category)  qs.set('category',  params.category);
+    if (params.page)      qs.set('page',      String(params.page));
+    if (params.per_page)  qs.set('per_page',  String(params.per_page));
     const query = qs.toString() ? `?${qs.toString()}` : '';
     return apiFetch(`/jobs${query}`);
 }

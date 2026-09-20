@@ -15,6 +15,14 @@ from datetime import datetime, timezone
 from app.extensions import db
 
 
+def _to_utc_iso(dt):
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.isoformat().replace('+00:00', 'Z')
+
+
 class Application(db.Model):
     """
     Represents a job application submitted by a user for a job listing.
@@ -108,6 +116,6 @@ class Application(db.Model):
             'user_id':     self.user_id,
             'resume_path': self.resume_path,
             'status':      self.status,
-            'applied_at':  self.applied_at.isoformat() if self.applied_at else None,
-            'updated_at':  self.updated_at.isoformat() if self.updated_at else None,
+            'applied_at':  _to_utc_iso(self.applied_at),
+            'updated_at':  _to_utc_iso(self.updated_at),
         }

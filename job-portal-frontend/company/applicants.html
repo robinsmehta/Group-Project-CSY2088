@@ -77,7 +77,6 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer" id="footer"></footer>
 
     <script src="../js/config.js"></script>
     <script src="../js/shared.js"></script>
@@ -88,7 +87,6 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await redirectIfNotLoggedIn('company');
             renderNavbar('applicants');
-            renderFooter();
             await loadApplicants();
 
             document.getElementById('applicant-search-input')?.addEventListener('input', renderFilteredApplicants);

@@ -13,6 +13,14 @@ from datetime import datetime, timezone
 from app.extensions import db  # Import the shared SQLAlchemy instance
 
 
+def _to_utc_iso(dt):
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.isoformat().replace('+00:00', 'Z')
+
+
 class User(db.Model):
     """
     Represents a job-seeking user in the system.
@@ -88,6 +96,6 @@ class User(db.Model):
             'id':         self.id,
             'name':       self.name,
             'email':      self.email,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'created_at': _to_utc_iso(self.created_at),
             'is_active':  bool(self.is_active)
         }
