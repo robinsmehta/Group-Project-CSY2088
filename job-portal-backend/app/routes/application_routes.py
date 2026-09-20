@@ -130,13 +130,7 @@ def update_application_status(application_id):
 
 
 # GET /api/applications/resumes/<filename> — securely download a resume file
-#
-# SECURITY NOTE (TASK-006):
-# This route was previously open to anyone with the URL. It now requires the
-# requester to be logged in and to be either:
-#   a) The job seeker who originally uploaded the resume, or
-#   b) The company whose job listing the application was submitted for.
-# Anyone else gets a 403 Forbidden response.
+
 @application_bp.route('/resumes/<filename>', methods=['GET'])
 def download_resume(filename):
     """

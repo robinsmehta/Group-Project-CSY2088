@@ -1,0 +1,10 @@
+# Root .gitignore
+.DS_Store
+*.log
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+uploads/
+.vscode/
+.idea/

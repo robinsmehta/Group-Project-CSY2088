@@ -2,37 +2,35 @@
 
 A web application designed to connect Job Seekers, Employers, and Platform Administrators.
 
-## Project Architecture
+- **Job Seekers**: Search for jobs, filter by keyword or location, upload resumes, and track job applications.
+- **Employers (Companies)**: Post job openings, review candidates, and manage hiring statuses.
+- **Administrators**: Review company registrations, manage users, and moderate job posts.
 
-This repository follows a decoupled architecture separating the backend API service from the frontend presentation layer:
+---
+
+## Project Structure
 
 ```text
 codes/
-├── job-portal-backend/     # Python (Flask) REST API service and database models
-└── job-portal-frontend/    # HTML5, CSS3, and JavaScript frontend application
+├── job-portal-backend/     # Python Flask backend server and database models
+└── job-portal-frontend/    # HTML, CSS, and JavaScript web pages
 ```
 
 ---
 
 ## Quick Start Guide
 
-### 1. Run the Backend API Service
+### 1. Start the Backend Server
 
 ```bash
 cd job-portal-backend
-source venv/bin/activate
+source venv/bin/activate   # On Windows: venv\Scripts\activate
 python run.py
 ```
 
-The API service runs by default at `http://localhost:5001/api`. For complete backend setup instructions, database initialization, and configuration details, refer to [job-portal-backend/README.md](job-portal-backend/README.md).
+### 2. Open the App in Your Browser
 
-### 2. Run the Frontend Application
+Open your browser and navigate to:
+**`http://127.0.0.1:5001/`**
 
-Launch the frontend via VS Code Live Server or Python HTTP server module:
-
-```bash
-cd job-portal-frontend
-python3 -m http.server 5500
-```
-
-Open `http://localhost:5500` in your web browser. Refer to [job-portal-frontend/README.md](job-portal-frontend/README.md) for page mapping and JavaScript development guidelines.
+> **Note**: The backend automatically serves the frontend pages on port 5001 so logins, sessions, and uploads work smoothly without extra setup. For detailed setup steps, refer to [job-portal-backend/README.md](job-portal-backend/README.md) and [job-portal-frontend/README.md](job-portal-frontend/README.md).

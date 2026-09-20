@@ -1,57 +1,55 @@
-# Job Portal — Backend (Flask API)
+# Job Portal — Backend
 
-## Overview
+This directory contains the Python (Flask) backend server and database logic for the Job Portal.
 
-This directory contains the Python and Flask backend service for the Job Portal web application. The application provides a RESTful API to manage user authentication, job postings, application submissions, and administrative oversight, connecting to a MySQL database using Flask-SQLAlchemy (ORM).
+---
 
-## System Design and Roles
+## What It Does
 
-The application provides functionality tailored to three primary user roles:
-- **Employers (Companies)**: Register accounts (pending administrative approval) and manage job postings and candidate applications.
-- **Job Seekers (Users)**: Register accounts, search and filter job listings, submit applications, and track application statuses.
-- **Administrators**: Moderate platform accounts, approve company registrations, and manage system content.
+The backend connects to a MySQL database and handles API requests for three types of users:
+- **Job Seekers**: Create accounts, search jobs, apply with resumes, and track application status.
+- **Employers**: Register accounts, post job listings, and review job applicants.
+- **Administrators**: Approve or reject company accounts, manage users, and moderate job posts.
 
-## Project Structure
+---
+
+## Folder Layout
 
 ```text
 job-portal-backend/
 ├── app/
-│   ├── __init__.py          # Application factory initialization
-│   ├── config.py            # Environment configurations (Database URI, secret keys, upload directory)
-│   ├── extensions.py        # Shared extension instances (db, bcrypt, migrate, cors)
-│   ├── models/              # SQLAlchemy model definitions (User, Company, Job, Application, Admin)
-│   ├── routes/              # API blueprints and endpoint handlers
-│   ├── services/            # Business logic layer (authentication, job workflows, application handling)
-│   └── utils/               # Utilities and security decorators (role_required)
-├── migrations/              # Database schema migration scripts (Flask-Migrate)
-├── uploads/                 # Storage location for uploaded resume documents
-├── requirements.txt         # Dependencies specification file
-├── run.py                   # Main application entry point
-├── init_db.py               # Database initialization script
-├── .env.example             # Environment configuration template
-└── .gitignore               # Ignored files and patterns for Git
+│   ├── __init__.py          # Sets up the Flask application
+│   ├── config.py            # Database and application settings
+│   ├── extensions.py        # Database and security plugins (SQLAlchemy, Bcrypt, CORS)
+│   ├── models/              # Database tables (User, Company, Job, Application, Admin)
+│   ├── routes/              # URL endpoints (Auth, Jobs, Applications, Admin)
+│   ├── services/            # Core business rules and database logic
+│   └── utils/               # Helper utilities and security checks
+├── migrations/              # Database schema history
+├── uploads/                 # Storage folder for uploaded resume PDFs
+├── requirements.txt         # Required Python packages
+├── run.py                   # Main script to start the server
+├── init_db.py               # Database setup script
+├── seed_db.py               # Script to add sample test data
+└── .env.example             # Template for database credentials
 ```
 
-## Local Development and Database Setup
+---
 
-Follow these instructions to configure the database, environment, and run the service locally.
+## How to Set Up and Run
 
-### Step 1: Database Initialization
-Ensure a MySQL server instance is running locally and execute the following query to create the database:
+### Step 1: Create the MySQL Database
+Make sure MySQL server is running locally, then create a blank database:
 ```sql
 CREATE DATABASE job_portal;
 ```
 
-### Step 2: Virtual Environment Configuration
-Create and activate a Python virtual environment:
+### Step 2: Create a Virtual Environment
 ```bash
-# Navigate to the backend directory
 cd job-portal-backend
-
-# Create virtual environment
 python3 -m venv venv
 
-# Activate virtual environment
+# Activate it:
 # On macOS / Linux:
 source venv/bin/activate
 
@@ -59,99 +57,77 @@ source venv/bin/activate
 venv\Scripts\activate
 ```
 
-### Step 3: Dependencies Installation
-Install required packages using pip:
+### Step 3: Install Required Packages
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 4: Environment Configuration (`.env`)
-Create a `.env` file from the provided template:
+### Step 4: Configure Environment Settings (`.env`)
+Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
-Update `.env` with your local MySQL database credentials:
+Open `.env` in a text editor and set your local MySQL password:
 ```ini
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=your_actual_mysql_password
+DB_PASSWORD=your_mysql_password
 DB_NAME=job_portal
-SECRET_KEY=your_secure_secret_key
+SECRET_KEY=your_secret_key
 FLASK_ENV=development
 ```
 
-### Step 5: Table Schema Generation
-Run the database setup script to generate required tables (`users`, `companies`, `jobs`, `applications`, `admins`):
+### Step 5: Initialize Database Tables
+Create all database tables (`users`, `companies`, `jobs`, `applications`, `admins`):
 ```bash
 python init_db.py
 ```
 
-### Step 6: Optional Demo Data
-Populate the database with approved companies, job listings, and test users:
+### Step 6: (Optional) Add Sample Test Data
+To add sample users, companies, and job listings for testing:
 ```bash
 python seed_db.py
 ```
+**Default Test Accounts:**
+- **Job Seeker**: `alice@example.com` / `password123`
+- **Employer**: `hr@technova.com` / `password123`
+- **Admin**: `admin@hirehub.com` / `admin123`
 
-The seeded job-seeker account is `alice@example.com` with password `password123`.
-The seeded approved company account is `hr@technova.com` with password `password123`.
-After logging in as Alice, submit an application with a résumé before checking either application dashboard.
-
-### Step 7: Execute the Application Server
-Start the Flask development server:
+### Step 7: Start the Server
 ```bash
 python run.py
 ```
-The backend service listens on **http://127.0.0.1:5001** and also serves the frontend from the same origin.
-
-> Important: For local development, open the app only at **http://127.0.0.1:5001/**.
-> Do not serve the frontend separately via Live Server, Python `http.server`, or
-> `file://` because session cookies are configured same-site and cross-origin
-> access will prevent authentication from working.
-
-### Step 7: Verify Service Health
-Perform a HTTP GET request to verify API and database connectivity:
-```http
-GET http://localhost:5001/api/health
-```
-Expected `200 OK` response payload:
-```json
-{
-  "status": "ok",
-  "database": "connected",
-  "message": "Flask server and MySQL database are successfully connected!"
-}
-```
+The server will start at **http://127.0.0.1:5001/**.
 
 ---
 
-## API Endpoints Reference
+## Core API Endpoints
 
-| Method | Endpoint | Description | Access Control |
-|--------|----------|-------------|----------------|
-| POST | `/api/auth/register/user` | Register job seeker account | Public |
-| POST | `/api/auth/register/company` | Register company account (pending status) | Public |
-| POST | `/api/auth/login` | Authenticate account and establish session | Public |
-| POST | `/api/auth/logout` | Terminate active session | Authenticated |
-| GET | `/api/jobs` | Retrieve approved job listings | Public |
-| GET | `/api/jobs/<id>` | Retrieve single job detail | Public |
-| POST | `/api/jobs` | Create new job posting | Company |
-| PUT | `/api/jobs/<id>` | Update job posting | Company |
-| DELETE | `/api/jobs/<id>` | Remove job posting | Company |
-| POST | `/api/applications` | Submit application to a job | User |
-| GET | `/api/applications/mine` | List user submitted applications | User |
-| GET | `/api/jobs/<id>/applications` | List applicants for a job | Company |
-| PUT | `/api/applications/<id>/status` | Update applicant status | Company |
-| GET | `/api/admin/companies/pending` | List pending company registrations | Admin |
-| PUT | `/api/admin/companies/<id>/approve` | Approve company registration | Admin |
-| PUT | `/api/admin/companies/<id>/reject` | Reject company registration | Admin |
-| DELETE | `/api/admin/jobs/<id>` | Administrative removal of job posting | Admin |
-| DELETE | `/api/admin/users/<id>` | Administrative removal of user account | Admin |
-| DELETE | `/api/admin/companies/<id>` | Administrative removal of company account | Admin |
+| Method | URL Path | What It Does | Who Can Access |
+|--------|----------|--------------|----------------|
+| POST | `/api/auth/register/user` | Register a job seeker account | Everyone |
+| POST | `/api/auth/register/company` | Register a company account (starts as pending) | Everyone |
+| POST | `/api/auth/login` | Log into an account | Everyone |
+| POST | `/api/auth/logout` | Log out of an active account | Logged-in Users |
+| GET | `/api/jobs` | Get job listings with search/filters | Everyone |
+| GET | `/api/jobs/<id>` | View details for a single job | Everyone |
+| POST | `/api/jobs` | Post a new job | Employers |
+| PUT | `/api/jobs/<id>` | Edit a job posting | Employers |
+| DELETE | `/api/jobs/<id>` | Delete a job posting | Employers |
+| POST | `/api/applications` | Apply for a job with a resume | Job Seekers |
+| GET | `/api/applications/mine` | View submitted job applications | Job Seekers |
+| GET | `/api/applications/job/<id>` | View applicants for a specific job | Employers |
+| PUT | `/api/applications/<id>/status` | Change application status | Employers |
+| GET | `/api/admin/companies/pending` | View pending company applications | Admins |
+| PUT | `/api/admin/companies/<id>/approve` | Approve a company account | Admins |
+| PUT | `/api/admin/companies/<id>/reject` | Reject a company account | Admins |
+| GET | `/api/admin/stats` | View platform statistics | Admins |
 
-## Development Standards and Best Practices
+---
 
-1. **Security**: Passwords are securely hashed using Bcrypt before storage. Password hashes must never be returned in API response bodies.
-2. **Architecture**: Routes handle request parsing and response rendering; business rules reside strictly in `services/`.
-3. **Environment Isolation**: Database credentials and secret keys must remain inside `.env` and must never be committed to repository tracking.
-4. **Session Control**: Session cookie headers are validated via the `@role_required` decorator across protected API routes.
+## Automated Tests
+To run unit and integration tests:
+```bash
+pytest
+```
