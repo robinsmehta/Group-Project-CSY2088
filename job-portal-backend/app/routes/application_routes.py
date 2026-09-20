@@ -1,17 +1,16 @@
-# ============================================================
-# app/routes/application_routes.py — Application Routes (Presentation Layer)
+# app/routes/application_routes.py — Application Routes
 #
 # Handles job application submissions, candidate retrieval,
 # application status updates, and secure resume file serving.
 #
-# Blueprint: application_bp (URL prefix: /api/applications)
+# URL prefix: /api/applications
 # Endpoints:
-#   POST /api/applications                    → Apply to job with resume upload (user)
-#   GET  /api/applications/mine               → View my submitted applications (user)
-#   GET  /api/applications/job/<job_id>       → View applicants for a job (company)
-#   PUT  /api/applications/<id>/status        → Update application status (company)
-#   GET  /api/applications/resumes/<filename> → Serve/download uploaded resume file
-# ============================================================
+#   POST /api/applications                    → apply to a job with a resume upload (user)
+#   GET  /api/applications/mine               → view my own submitted applications (user)
+#   GET  /api/applications/company            → view all applicants across all company jobs (company)
+#   GET  /api/applications/job/<job_id>       → view applicants for one specific job (company)
+#   PUT  /api/applications/<id>/status        → update an application's review status (company)
+#   GET  /api/applications/resumes/<filename> → download an uploaded resume file (authenticated)
 
 import os
 from flask import Blueprint, request, jsonify, session, send_from_directory, current_app
@@ -22,15 +21,13 @@ from app.utils.decorators import role_required
 application_bp = Blueprint('applications', __name__)
 
 
-# ============================================================
-# 1. POST /api/applications
-# ============================================================
+# POST /api/applications — submit a job application
 @application_bp.route('/', methods=['POST'])
 @role_required('user')
 def submit_application():
     """
     Submit a new job application with a résumé file upload.
-    Only authenticated USERS (job seekers) can apply.
+    Only logged-in job seekers can apply. One user can only apply to the same job once.
 
     Accepts multipart/form-data:
         job_id (form field): ID of the job listing.
@@ -45,7 +42,7 @@ def submit_application():
     """
     user_id = session.get('user_id')
 
-    # Parse job_id from multipart form-data or fallback to JSON payload
+    # Accept the job ID from either a form field or a JSON body
     job_id = None
     if request.form:
         job_id = request.form.get('job_id')
@@ -53,10 +50,10 @@ def submit_application():
         data = request.get_json(silent=True) or {}
         job_id = data.get('job_id')
 
-    # Get resume file from request.files
+    # Get the uploaded resume file from the request
     resume_file = request.files.get('resume')
 
-    # Call service layer business logic
+    # Service layer handles duplicate checking, file saving, and record creation
     result, status_code = application_service.apply_to_job(
         user_id=user_id,
         job_id=job_id,
@@ -66,58 +63,39 @@ def submit_application():
     return jsonify(result), status_code
 
 
-# ============================================================
-# 2. GET /api/applications/mine
-# ============================================================
+# GET /api/applications/mine — view the logged-in user's own applications
 @application_bp.route('/mine', methods=['GET'])
 @role_required('user')
 def get_my_applications():
     """
-    Retrieve all applications submitted by the logged-in user.
-
-    Returns:
-        200 OK — List of applications with job title and company details
-        401 Unauthorized — User not logged in
-        403 Forbidden — Requires 'user' role
+    Return all job applications submitted by the currently logged-in job seeker,
+    including the job title, company name, and current review status for each.
     """
     user_id = session.get('user_id')
     result, status_code = application_service.get_my_applications(user_id)
     return jsonify(result), status_code
 
 
-# ============================================================
-# 2b. GET /api/applications/company
-# ============================================================
+# GET /api/applications/company — view all applicants across all of a company's jobs
 @application_bp.route('/company', methods=['GET'])
 @role_required('company')
 def get_company_applications():
     """
-    Retrieve all applications across all job listings owned by the logged-in company.
-
-    Returns:
-        200 OK — List of applications with user details and resume links
-        401 Unauthorized — Company not logged in
-        403 Forbidden — Requires 'company' role
+    Return all applications across every job listing the logged-in company has posted.
+    Useful for getting an overview of all incoming candidates in one place.
     """
     company_id = session.get('company_id') or session.get('user_id')
     result, status_code = application_service.get_applications_for_company(company_id)
     return jsonify(result), status_code
 
 
-# ============================================================
-# 3. GET /api/applications/job/<job_id>
-# ============================================================
+# GET /api/applications/job/<job_id> — view applicants for one specific job
 @application_bp.route('/job/<int:job_id>', methods=['GET'])
 @role_required('company')
 def get_applications_for_job(job_id):
     """
-    Retrieve all applications for a specific job listing.
-    Only the COMPANY THAT POSTED THE JOB can view its applicants.
-
-    Returns:
-        200 OK — List of applicants with user details and resume links
-        403 Forbidden — Requesting company does not own the job
-        404 Not Found — Job not found
+    Return all applications submitted for a specific job listing.
+    Only the company that posted the job can view its applicants.
     """
     company_id = session.get('company_id') or session.get('user_id')
     result, status_code = application_service.get_applicants_for_job(
@@ -127,24 +105,16 @@ def get_applications_for_job(job_id):
     return jsonify(result), status_code
 
 
-# ============================================================
-# 4. PUT /api/applications/<id>/status
-# ============================================================
+# PUT /api/applications/<id>/status — update an application's review status
 @application_bp.route('/<int:application_id>/status', methods=['PUT'])
 @role_required('company')
 def update_application_status(application_id):
     """
-    Update the review status of an application.
-    Only the COMPANY THAT POSTED THE JOB can update applicant status.
+    Change the review status of an application (e.g., move it from "applied" to "shortlisted").
+    Only the company that posted the job can update the status of its applications.
 
     Expected JSON payload:
         { "status": "shortlisted" }  # valid: applied, under_review, shortlisted, rejected
-
-    Returns:
-        200 OK — Application status updated successfully
-        400 Bad Request — Invalid status value
-        403 Forbidden — Requesting company does not own the application's job
-        404 Not Found — Application not found
     """
     company_id = session.get('company_id') or session.get('user_id')
 
@@ -159,71 +129,24 @@ def update_application_status(application_id):
     return jsonify(result), status_code
 
 
-# ============================================================
-# 5. GET /api/applications/resumes/<filename> — Secure Resume File Serving
-# ============================================================
+# GET /api/applications/resumes/<filename> — securely download a resume file
 #
-# ============================================================
-# TASK-006 — Resume download has NO login/ownership check (most serious bug)
-# ============================================================
-#
-# PROBLEM:
-# This route serves a résumé file to literally anyone who has the URL —
-# there is no @role_required(...) decorator here and no code that checks
-# WHO is asking for the file. Résumés contain private personal information
-# (name, address, phone number, etc.), so right now anyone on the internet
-# who guesses or is given a link can download someone else's private résumé,
-# even if they are not logged in at all.
-#
-# WHAT YOU NEED TO DO:
-# 1. Require the requester to be logged in (check Flask's `session`,
-#    similar to how other routes in this file use `session.get('user_id')`
-#    and `session.get('role')`). If nobody is logged in, return 401.
-# 2. Look up which Application record this résumé file belongs to (you can
-#    search Application.query.filter_by(resume_path=...) using the filename,
-#    or adjust however makes sense with the Application model).
-# 3. Only allow the download to continue if EITHER of these is true:
-#      a) The logged-in user is the job seeker (role == 'user') who
-#         originally uploaded this résumé (application.user_id matches
-#         the logged-in user's id) — this is what lets a job seeker view
-#         their OWN résumé again (see E9 in the frontend, User Dashboard).
-#      b) The logged-in user is the company (role == 'company') that
-#         posted the job this application was submitted to
-#         (application.job.company_id matches the logged-in company's id).
-# 4. If neither condition is true, return a 403 "not allowed" response
-#    instead of the file.
-# 5. If the résumé/application can't be found at all, keep returning 404
-#    like the existing code already does.
-#
-# HOW THIS PART CONNECTS:
-# - Companies use this link on the "Applicants" page (company/applicants.html)
-#   to download a candidate's résumé.
-# - After this fix, job seekers will also use this SAME link/route to view
-#   their own résumé from their dashboard (a new "View CV" button/link —
-#   see the frontend TODO in job-portal-frontend/user/dashboard.html).
-# - Both of those cases must be allowed by your ownership check above.
-#
-# DO NOT:
-# Change how the file itself is found/served (the send_from_directory logic
-# below is fine and already protects against path traversal attacks) —
-# only ADD the login + ownership check before that part runs.
-#
-# ASSIGNED TASK:
-# Simrika (D6) — Fix the résumé download security problem.
-# ============================================================
+# SECURITY NOTE (TASK-006):
+# This route was previously open to anyone with the URL. It now requires the
+# requester to be logged in and to be either:
+#   a) The job seeker who originally uploaded the resume, or
+#   b) The company whose job listing the application was submitted for.
+# Anyone else gets a 403 Forbidden response.
 @application_bp.route('/resumes/<filename>', methods=['GET'])
 def download_resume(filename):
     """
-    Securely serve/download an uploaded resume file.
-
-    SECURITY & PATH TRAVERSAL PROTECTION:
-    Flask's `send_from_directory()` function ensures that files are strictly served from
-    the configured UPLOAD_FOLDER directory. It automatically sanitizes filenames and rejects
-    any path traversal attempts (such as '../../etc/passwd' or encoded slashes) by returning
-    a 404 or 400 error if the resulting path escapes the target directory.
+    Serve an uploaded resume file for download.
+    The requester must be logged in and must either own the resume (job seeker)
+    or own the job it was submitted for (company). Flask's send_from_directory
+    prevents path traversal attacks by restricting files to the uploads folder.
 
     Path parameter:
-        filename (str): Sanitized unique filename stored in DB.
+        filename (str): The stored filename of the resume.
     """
     user_id = session.get('user_id')
     user_role = session.get('role')
@@ -254,7 +177,7 @@ def download_resume(filename):
     if not (is_applicant or is_job_company):
         return jsonify({'error': 'Not allowed to access this resume'}), 403
 
-    # Convert relative path to absolute directory for send_from_directory
+    # Convert relative path to absolute so send_from_directory can find the file
     abs_upload_folder = os.path.abspath(upload_folder)
 
     try:

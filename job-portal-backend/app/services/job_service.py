@@ -1,33 +1,17 @@
-# ============================================================
 # app/services/job_service.py — Job Business Logic Layer
 #
-# This file contains the core business rules for job operations:
-#   1. Creating job listings (with company approval verification)
-#   2. Searching/retrieving job listings (with optional dynamic filters)
-#   3. Fetching single job listing details
-#   4. Updating job listings (with company ownership verification)
-#   5. Deleting job listings (with company ownership & admin override rules)
+# Contains the core rules for all job listing operations:
+#   1. Creating job listings (only allowed for approved companies)
+#   2. Searching and listing jobs (with optional filters and pagination)
+#   3. Fetching a single job's full details
+#   4. Updating job listings (only the company that owns the job may edit it)
+#   5. Deleting job listings (owning company or any admin may delete)
 #
-# Architectural Notes & Security Design:
-#
-# 1. WHY THE APPROVAL CHECK HAPPENS BEFORE JOB CREATION:
-#    Checking company.status == 'approved' before creating a job ensures that
-#    unapproved, pending, or rejected companies cannot post job listings on the platform.
-#    This enforces administrative authorization at the backend database boundary,
-#    preventing unverified accounts from publishing content even if client-side controls are bypassed.
-#
-# 2. WHY OWNERSHIP IS CHECKED IN THE SERVICE LAYER RATHER THAN TRUSTING THE FRONTEND:
-#    Ownership validation (job.company_id == company_id) MUST be enforced in the service layer.
-#    Frontend inputs and HTTP request headers/payloads can be forged or manipulated (e.g. via Postman,
-#    cURL, or browser dev tools). Validating ownership in the service layer ensures complete security,
-#    preventing one company from modifying or deleting another company's job postings.
-#
-# 3. WHY SEARCH/FILTER USES OPTIONAL QUERY PARAMETERS RATHER THAN SEPARATE ENDPOINTS PER FILTER TYPE:
-#    Using optional query parameters (e.g., GET /api/jobs?keyword=...&location=...&category=...)
-#    follows RESTful API design principles. It allows clients to combine any dynamic set of filters
-#    (e.g., keyword + location, or category only) within a single unified endpoint handler rather than
-#    creating individual, redundant routes for every filter permutation (e.g. /jobs/category, /jobs/location).
-# ============================================================
+# Why ownership checks live here and not in the route:
+#   The route layer only checks that the person is logged in with the right role.
+#   Checking that a company actually owns a specific job must happen here,
+#   because a malicious user could forge requests from any tool — the frontend
+#   cannot be trusted to enforce this rule on its own.
 
 from datetime import datetime, timezone
 from math import ceil
@@ -39,9 +23,9 @@ from sqlalchemy import text
 
 
 def refresh_job_statuses():
-    """Synchronously backfill/close jobs whose closing_date has passed."""
+    """Mark any jobs whose closing date has passed as 'closed' in the database."""
     now = datetime.now(timezone.utc)
-    # Use raw SQL for efficiency
+    # Use a direct SQL update for efficiency rather than loading every job into Python
     try:
         sql = text("UPDATE jobs SET status='closed' WHERE closing_date IS NOT NULL AND closing_date <= :now AND status != 'closed'")
         db.session.execute(sql, {'now': now})
@@ -52,24 +36,25 @@ def refresh_job_statuses():
 
 def create_job(company_id: int, title=None, description=None, location=None, category=None, salary=None, job_type=None, skills=None):
     """
-    Create a new job listing for an approved company.
+    Post a new job listing for an approved company.
+    Rejects the request if the company's account has not been approved by an admin yet.
 
     Accepts parameters individually or as a single dictionary passed in the 'title' argument.
 
     Args:
         company_id (int): Primary key of the requesting company.
-        title (str or dict): Job title, or dict containing job details.
+        title (str or dict): Job title, or a dict containing all job details.
         description (str, optional): Detailed job description.
         location (str, optional): Job location.
         category (str, optional): Job category.
-        salary (str, optional): Salary range / string representation.
-        job_type (str, optional): Job employment type.
+        salary (str, optional): Salary range or description.
+        job_type (str, optional): Employment type (e.g. Full-time, Part-time).
         skills (str, optional): Comma-separated list of required skills.
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # Support receiving a dictionary as the second argument (data dict)
+    # Support receiving all fields packed into a dict as the second argument
     data = None
     if isinstance(title, dict):
         data = title
@@ -81,7 +66,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         job_type = data.get('job_type')
         skills = data.get('skills')
 
-    # Basic input checks
+    # Clean up whitespace and treat empty strings as missing
     title = (title or '').strip()
     description = (description or '').strip()
     location = (location or '').strip()
@@ -93,16 +78,12 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
     if not title or not description or not location:
         return {'error': 'Title, description, and location are required fields'}, 400
 
-    # Look up the company by company_id
+    # Look up the company by ID
     company = Company.query.get(company_id)
     if not company:
         return {'error': 'Company not found'}, 404
 
-    # -------------------------------------------------------------------------
-    # APPROVAL CHECK BEFORE JOB CREATION:
-    # We verify that the company's account status is 'approved'.
-    # Pending or rejected companies cannot post job listings.
-    # -------------------------------------------------------------------------
+    # Only approved companies may post jobs — pending or rejected accounts are blocked here
     if company.status != 'approved':
         return {
             'error': 'Your company account is pending admin approval and cannot post jobs yet.'
@@ -122,7 +103,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
         except ValueError:
             closing_date = None
 
-    # Create new Job record linked to this company
+    # Create the job record and link it to the company
     new_job = Job(
         company_id=company_id,
         title=title,
@@ -136,7 +117,7 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
     )
 
     db.session.add(new_job)
-    # Determine persistent status based on closing_date
+    # Set the initial status based on whether the closing date has already passed
     new_job.status = 'closed' if new_job.is_closed else 'active'
     db.session.commit()
 
@@ -148,21 +129,21 @@ def create_job(company_id: int, title=None, description=None, location=None, cat
 
 def get_all_jobs(keyword=None, location=None, category=None, job_type=None, page=1, per_page=10):
     """
-    Retrieve job listings with optional filtering/search and server-side pagination.
-    Joins with the companies table to include company information.
+    Return a paginated list of job listings, with optional filters.
+    All filters are optional — leaving them all blank returns every active job.
 
     Args:
-        keyword (str, optional): Search string to match in title, description, or skills.
-        location (str, optional): Location string filter.
-        category (str, optional): Category string filter.
-        job_type (str, optional): Employment type filter.
-        page (int): 1-based page number (default 1).
-        per_page (int): Number of results per page (default 10).
+        keyword (str, optional): Search term matched against title, description, or skills.
+        location (str, optional): Filter to jobs in a specific location.
+        category (str, optional): Filter to jobs in a specific category.
+        job_type (str, optional): Filter by employment type (e.g. Full-time).
+        page (int): Which page of results to return (starts at 1).
+        per_page (int): How many results to include per page (default 10, max 100).
 
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # Sanitise pagination params
+    # Clamp pagination values to safe ranges
     try:
         page = max(1, int(page))
     except (TypeError, ValueError):
@@ -172,16 +153,13 @@ def get_all_jobs(keyword=None, location=None, category=None, job_type=None, page
     except (TypeError, ValueError):
         per_page = 10
 
-    # Ensure any expired jobs are marked closed in the DB before listing
+    # Make sure any jobs whose deadline has passed are marked closed before we return them
     refresh_job_statuses()
 
-    # Query the jobs table and join with companies
+    # Start building the database query, joining with companies so we can include company names
     query = Job.query.join(Company)
 
-    # -------------------------------------------------------------------------
-    # OPTIONAL SEARCH & FILTERING:
-    # Filter by category, location, and/or keyword (searches title, description, and skills).
-    # -------------------------------------------------------------------------
+    # Apply any filters the caller passed — each one narrows the results further
     if category and category.strip():
         query = query.filter(Job.category.ilike(f'%{category.strip()}%'))
 
@@ -201,19 +179,15 @@ def get_all_jobs(keyword=None, location=None, category=None, job_type=None, page
             )
         )
 
-    # Order by creation date (newest first)
+    # Show newest jobs first
     query = query.order_by(Job.created_at.desc())
 
-    # -------------------------------------------------------------------------
-    # PAGINATION:
-    # Get total count BEFORE slicing so callers know how many pages exist.
-    # -------------------------------------------------------------------------
+    # Count total results before slicing so callers know how many pages exist
     total_count = query.count()
     total_pages = ceil(total_count / per_page) if total_count > 0 else 1
 
     jobs = query.offset((page - 1) * per_page).limit(per_page).all()
 
-    # to_dict() includes company_name via the relationship
     return {
         'count': total_count,
         'page': page,
@@ -225,7 +199,8 @@ def get_all_jobs(keyword=None, location=None, category=None, job_type=None, page
 
 def get_job_by_id(job_id: int):
     """
-    Retrieve full details for a single job listing by ID.
+    Return full details for a single job listing.
+    Also updates any expired listings to 'closed' before returning.
 
     Args:
         job_id (int): Primary key of the job.
@@ -233,7 +208,7 @@ def get_job_by_id(job_id: int):
     Returns:
         tuple: (response_dict, http_status_code)
     """
-    # Ensure statuses are fresh
+    # Ensure the job's status is up to date before returning it
     refresh_job_statuses()
 
     job = Job.query.get(job_id)
@@ -247,12 +222,12 @@ def get_job_by_id(job_id: int):
 
 def update_job(job_id: int, company_id: int, updated_fields: dict = None, **kwargs):
     """
-    Update an existing job listing. Only the owning company can update its jobs.
+    Edit an existing job listing. Only the company that posted the job can make changes.
 
     Args:
         job_id (int): Primary key of the job to update.
-        company_id (int): Primary key of the requesting company (from session).
-        updated_fields (dict, optional): Dictionary containing updated fields.
+        company_id (int): Primary key of the company making the request.
+        updated_fields (dict, optional): Dictionary of fields to change.
 
     Returns:
         tuple: (response_dict, http_status_code)
@@ -264,14 +239,11 @@ def update_job(job_id: int, company_id: int, updated_fields: dict = None, **kwar
     if not job:
         return {'error': 'Job not found'}, 404
 
-    # -------------------------------------------------------------------------
-    # OWNERSHIP CHECK IN SERVICE LAYER:
-    # Ensure job.company_id matches the requesting company_id.
-    # -------------------------------------------------------------------------
+    # Make sure the company asking for the change actually owns this job
     if job.company_id != company_id:
         return {'error': 'You do not own this job'}, 403
 
-    # Update only fields provided
+    # Update only the fields that were provided — leave everything else unchanged
     if 'title' in updated_fields and updated_fields['title'] is not None:
         job.title = updated_fields['title'].strip()
     if 'description' in updated_fields and updated_fields['description'] is not None:
@@ -299,7 +271,7 @@ def update_job(job_id: int, company_id: int, updated_fields: dict = None, **kwar
             closing_date = None
         job.closing_date = closing_date
 
-    # Update persistent status according to closing_date
+    # Re-evaluate the job's open/closed status after changes
     job.status = 'closed' if job.is_closed else 'active'
 
     db.session.commit()
@@ -313,13 +285,12 @@ def update_job(job_id: int, company_id: int, updated_fields: dict = None, **kwar
 def delete_job(job_id: int, company_id: int = None, is_admin: bool = False):
     """
     Delete a job listing.
-    - If is_admin is True: deletion is allowed regardless of ownership.
-    - If is_admin is False: company_id must match job.company_id.
+    Admins can delete any job. Companies can only delete their own jobs.
 
     Args:
         job_id (int): Primary key of the job to delete.
-        company_id (int, optional): ID of requesting company (required if not admin).
-        is_admin (bool): Flag indicating if request comes from an administrator.
+        company_id (int, optional): ID of the requesting company (required if not admin).
+        is_admin (bool): True if the request comes from an admin account.
 
     Returns:
         tuple: (response_dict, http_status_code)
@@ -328,9 +299,7 @@ def delete_job(job_id: int, company_id: int = None, is_admin: bool = False):
     if not job:
         return {'error': 'Job not found'}, 404
 
-    # -------------------------------------------------------------------------
-    # OWNERSHIP & ADMIN DELETION CHECK:
-    # -------------------------------------------------------------------------
+    # If this is not an admin request, verify the company owns the job before deleting
     if not is_admin:
         if not company_id or job.company_id != company_id:
             return {'error': 'You do not have permission to delete this job'}, 403

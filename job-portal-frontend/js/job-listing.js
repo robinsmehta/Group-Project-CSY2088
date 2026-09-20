@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadInitialJobsAndFilters() {
-    // Fetch all jobs (high per_page) to build sidebar filter counts, then load page 1.
+    // Fetch all jobs to populate sidebar filter counts, then load page 1.
     const { ok, data } = await apiGetJobs({ per_page: 1000 });
     const jobs = ok ? (data.jobs || (Array.isArray(data) ? data : [])) : [];
     buildFiltersFromJobs(jobs);
@@ -159,9 +159,7 @@ async function loadJobs(page = 1) {
     count.textContent = `Showing ${filtered.length} of ${totalCount} Job${totalCount !== 1 ? 's' : ''}`;
     grid.innerHTML = filtered.map(job => buildListingCard(job)).join('');
 
-    // -----------------------------------------------------------------------
-    // Re-render pagination buttons — same ellipsis pattern as user-directory
-    // -----------------------------------------------------------------------
+    // Re-render pagination buttons
     if (paginationEl) {
         const pages = [];
         for (let i = 1; i <= Math.min(3, totalPages); i++) pages.push(i);

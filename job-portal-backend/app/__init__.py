@@ -1,18 +1,6 @@
-# ============================================================
 # app/__init__.py — Flask Application Factory
 #
-# This file is the heart of the application. It defines the
-# create_app() function, which:
-#   1. Creates a Flask app instance
-#   2. Loads configuration (from config.py)
-#   3. Initialises all extensions (db, bcrypt, cors, migrate)
-#   4. Registers all Blueprints (route groups)
-#
-# WHY a factory function?
-#   - Makes testing easier (you can create multiple app instances)
-#   - Avoids circular imports (extensions are created before the app)
-#   - Follows Flask best practices for larger projects
-# ============================================================
+# Creates and configures the Flask application instance using the Application Factory pattern.
 
 import os
 from flask import Flask, jsonify, send_from_directory
@@ -26,48 +14,32 @@ def create_app(config_name: str = None) -> Flask:
     Application Factory Function.
 
     Args:
-        config_name (str): One of 'development', 'production', or 'default'.
+        config_name (str): One of 'development', 'production', or 'testing'.
                            If not provided, reads FLASK_ENV from environment.
 
     Returns:
         Flask: A fully configured Flask application instance.
     """
 
-    # If no config name given, read FLASK_ENV from environment (default: 'development')
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'development')
 
-    # Create the Flask application instance.
-    # __name__ tells Flask where to find templates and static files.
     app = Flask(__name__)
     app.url_map.strict_slashes = False
 
-    # --------------------------------------------------------
     # 1. Load Configuration
-    # --------------------------------------------------------
-    # Apply the matching config class (DevelopmentConfig or ProductionConfig)
     app.config.from_object(config_by_name.get(config_name, config_by_name['default']))
 
-    # --------------------------------------------------------
     # 2. Ensure the uploads folder exists
-    # --------------------------------------------------------
-    # Flask won't create this directory automatically — we do it here.
     upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
     os.makedirs(upload_folder, exist_ok=True)
 
-    # --------------------------------------------------------
     # 3. Initialise Extensions
-    # --------------------------------------------------------
-    # init_app() binds each extension to this specific app instance.
-    db.init_app(app)                    # Connect SQLAlchemy to the app + DB
-    bcrypt.init_app(app)                # Attach Bcrypt for password hashing
-    migrate.init_app(app, db)           # Attach Flask-Migrate (needs both app and db)
+    db.init_app(app)
+    bcrypt.init_app(app)
+    migrate.init_app(app, db)
     cors.init_app(app, supports_credentials=True, resources={
         r"/api/*": {
-            # The frontend is served by the same Flask app on http://127.0.0.1:5001.
-            # Only same-origin API requests are supported locally. Live server or
-            # file:// usage is unsupported because Flask session cookies are
-            # expected to be same-site and will be blocked across origins.
             "origins": ["http://127.0.0.1:5001"],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
@@ -76,14 +48,16 @@ def create_app(config_name: str = None) -> Flask:
         }
     })
 
-    # --------------------------------------------------------
-    # 4. Serve the frontend from the same origin in local development
-    # --------------------------------------------------------
+    # 4. Serve static frontend assets from the same origin in local development
     frontend_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'job-portal-frontend'))
 
     @app.route('/', defaults={'path': ''}, methods=['GET'])
     @app.route('/<path:path>', methods=['GET'])
     def serve_frontend(path):
+        """
+        Serves HTML pages and static files (CSS, JS) from the job-portal-frontend directory.
+        Falls back to index.html for non-API frontend routing.
+        """
         if path.startswith('api/') or path == 'api':
             return jsonify({'error': 'Not Found'}), 404
 
@@ -99,38 +73,27 @@ def create_app(config_name: str = None) -> Flask:
 
         return send_from_directory(frontend_root, 'index.html')
 
-    # --------------------------------------------------------
     # 5. Register Blueprints (Route Groups)
-    # --------------------------------------------------------
-    # Each Blueprint is a group of related routes defined in a separate file.
-    # We import them here (inside the function) to avoid circular imports.
     from .routes.auth_routes        import auth_bp
     from .routes.job_routes         import job_bp
     from .routes.application_routes import application_bp
     from .routes.admin_routes       import admin_bp
 
-    # Register each blueprint with a URL prefix.
-    # All auth routes will start with /api/auth/...
     app.register_blueprint(auth_bp,        url_prefix='/api/auth')
     app.register_blueprint(job_bp,         url_prefix='/api/jobs')
     app.register_blueprint(application_bp, url_prefix='/api/applications')
     app.register_blueprint(admin_bp,       url_prefix='/api/admin')
 
-    # --------------------------------------------------------
     # 6. Import all models so Flask-Migrate & db.create_all() detect them
-    # --------------------------------------------------------
-    # Even though we don't use the models directly here,
-    # SQLAlchemy needs to "see" them before it can create/migrate tables.
     from .models import user, company, job, application, admin  # noqa: F401
 
-    # --------------------------------------------------------
-    # 7. Database Health-Check & Demonstration Protected Routes
-    # --------------------------------------------------------
+    # 7. Database Health-Check & Test Routes
     from .utils.decorators import role_required
 
     @app.route('/api/company/test', methods=['GET'])
     @role_required('company')
     def company_test_route():
+        """Protected test endpoint for verifying company role authorization."""
         from flask import session
         return jsonify({
             'message': 'Access granted: Company protected route test successful',
@@ -141,6 +104,7 @@ def create_app(config_name: str = None) -> Flask:
 
     @app.route('/api/session/debug', methods=['GET'])
     def session_debug():
+        """Debugging endpoint that returns current session contents."""
         from flask import session
         return jsonify({
             'session_data': dict(session),
@@ -153,15 +117,12 @@ def create_app(config_name: str = None) -> Flask:
     @app.route('/api/health', methods=['GET'])
     def health_check():
         """
-        GET /api/health — Database & API Health Check Endpoint.
+        Database & API Health Check Endpoint.
 
-        Attempts to query the MySQL database.
-        Returns:
-            200 OK: {"status": "ok", "database": "connected"} if DB query succeeds.
-            500 Error: {"status": "error", "database": "disconnected", "error": "..."} if DB query fails.
+        Queries the database to verify connectivity.
+        Returns 200 OK if connected, or 500 Error if connection fails.
         """
         try:
-            # Execute a simple lightweight query to verify active MySQL connectivity
             db.session.execute(text("SELECT 1"))
             return jsonify({
                 "status": "ok",
@@ -169,7 +130,6 @@ def create_app(config_name: str = None) -> Flask:
                 "message": "Flask server and MySQL database are successfully connected!"
             }), 200
         except Exception as e:
-            # Return detailed error message if connection fails (e.g. wrong credentials, DB not running)
             return jsonify({
                 "status": "error",
                 "database": "disconnected",
@@ -177,9 +137,7 @@ def create_app(config_name: str = None) -> Flask:
                 "message": "Failed to connect to MySQL database. Check your .env settings and ensure MySQL server is running."
             }), 500
 
-    # --------------------------------------------------------
     # 8. Register Flask CLI Commands
-    # --------------------------------------------------------
     @app.cli.command("init-db")
     def init_db_command():
         """Flask CLI command to initialize database tables: flask init-db"""

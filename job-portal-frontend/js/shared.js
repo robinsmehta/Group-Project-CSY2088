@@ -495,7 +495,7 @@ function computeSkillMatchBadge(jobSkillsStr) {
     const matchedCount = jobSkills.filter(s => userSkillSet.has(s)).length;
     const matchPercentage = Math.round((matchedCount / jobSkills.length) * 100);
 
-    return `<span class="badge-skill-match" style="display:inline-flex; align-items:center; background:#ECFDF5; color:#059669; border:1px solid #A7F3D0; border-radius:20px; padding:4px 10px; font-size:12px; font-weight:700;">${matchPercentage}% match</span>`;
+    return `<span class="badge-skill-match" style="display:inline-flex; align-items:center; background:var(--color-success-bg); color:var(--color-success-tx); border:1px solid var(--color-success); border-radius:20px; padding:4px 10px; font-size:12px; font-weight:700;">${matchPercentage}% match</span>`;
 }
 
 // API Health Check

@@ -1,10 +1,8 @@
 // js/api.js — Centralised API Client
-// All HTTP calls go through this layer.
+// Handles all HTTP requests to the backend API.
 // Depends on: config.js (API_BASE_URL)
 
-// ---------------------------------------------------------------------------
 // Core fetch wrapper with session-cookie support
-// ---------------------------------------------------------------------------
 async function apiFetch(path, options = {}) {
     const url = `${API_BASE_URL}${path}`;
     const defaults = { credentials: 'include' };
@@ -17,10 +15,7 @@ async function apiFetch(path, options = {}) {
     try {
         res = await fetch(url, merged);
     } catch (networkErr) {
-        // Network failure (backend unreachable, CORS block, offline, etc.)
-        // Return the same {ok,status,data} shape callers already expect instead
-        // of throwing, so every page's existing "couldn't load" fallback runs
-        // instead of leaving the UI stuck on its loading state forever.
+        // Return structured error response when network failure occurs
         console.warn(`[API] Network error calling ${url}:`, networkErr.message);
         return {
             ok: false,
@@ -42,7 +37,7 @@ async function apiFetch(path, options = {}) {
     return { ok: res.ok, status: res.status, data };
 }
 
-// AUTH
+// Authentication API functions
 
 async function apiLogin(email, password, role) {
     return apiFetch('/auth/login', { method: 'POST', body: { email, password, role } });
@@ -73,7 +68,7 @@ async function apiUpdateMyProfile(payload) {
     return { ok: false, status: 400, data: { error: 'Unknown or unauthenticated user role' } };
 }
 
-// JOBS
+// Job API functions
 
 async function apiGetJobs(params = {}) {
     const qs = new URLSearchParams();
@@ -102,7 +97,7 @@ async function apiUpdateJob(jobId, jobData) {
     return apiFetch(`/jobs/${jobId}`, { method: 'PUT', body: jobData });
 }
 
-// APPLICATIONS
+// Application API functions
 
 async function apiGetMyApplications() {
     return apiFetch('/applications/mine');
@@ -130,11 +125,7 @@ async function apiUpdateApplicationStatus(applicationId, status) {
     });
 }
 
-
-
-
-
-// ADMIN
+// Admin API functions
 
 async function apiGetPendingCompanies(search) {
     const qs = new URLSearchParams();

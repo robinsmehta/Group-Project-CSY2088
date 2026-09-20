@@ -1,22 +1,19 @@
-# ============================================================
-# app/routes/auth_routes.py — Authentication Routes (Presentation Layer)
+# app/routes/auth_routes.py — Authentication Routes
 #
-# This file is the PRESENTATION LAYER for authentication.
-# Its job is ONLY to:
-#   1. Receive HTTP requests
-#   2. Extract and validate request input (presence of required JSON fields)
-#   3. Pass the data to the Business Logic layer (auth_service.py)
-#   4. Return an HTTP response with appropriate status code
+# Handles all user login, logout, and registration requests.
+# This layer receives HTTP requests, checks that required fields are present,
+# then passes the work to auth_service.py which contains the actual logic.
 #
-# Blueprint: auth_bp
-# URL Prefix (set in app/__init__.py): /api/auth
+# URL prefix: /api/auth
 # Endpoints:
-#   POST /api/auth/register/user
-#   POST /api/auth/register/company
-#   POST /api/auth/login
-#   POST /api/auth/logout
-#   GET  /api/auth/company/test (protected test route demonstrating @role_required)
-# ============================================================
+#   POST /api/auth/register/user     → create a new job-seeker account
+#   POST /api/auth/register/company  → create a new employer account
+#   POST /api/auth/login             → log in as user, company, or admin
+#   POST /api/auth/logout            → end the current session
+#   GET  /api/auth/me                → return info about who is logged in
+#   PUT  /api/auth/me/user           → job seeker updates their own profile
+#   PUT  /api/auth/me/company        → company updates their own profile
+#   GET  /api/auth/company/test      → protected test route for company role
 
 from flask import Blueprint, request, jsonify, session
 from app.services import auth_service
@@ -25,13 +22,12 @@ from app.utils.decorators import role_required
 auth_bp = Blueprint('auth', __name__)
 
 
-# ============================================================
 # POST /api/auth/register/user
-# ============================================================
 @auth_bp.route('/register/user', methods=['POST'])
 def register_user():
     """
-    Register a new job-seeker account.
+    Create a new job-seeker account.
+    Anyone can call this endpoint — no login required.
 
     Expected JSON body:
         {
@@ -47,7 +43,7 @@ def register_user():
     """
     data = request.get_json(silent=True) or {}
 
-    # Basic route-level input validation
+    # Check that all required fields were sent before doing anything else
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
@@ -57,18 +53,17 @@ def register_user():
             'error': 'Missing required fields: name, email, and password are required.'
         }), 400
 
-    # Delegate business logic to auth_service layer
+    # Hand off to the service layer which handles password hashing and database saving
     result, status_code = auth_service.register_user(name=name, email=email, password=password)
     return jsonify(result), status_code
 
 
-# ============================================================
 # POST /api/auth/register/company
-# ============================================================
 @auth_bp.route('/register/company', methods=['POST'])
 def register_company():
     """
-    Register a new employer/company account.
+    Create a new employer/company account.
+    New company accounts start as "pending" and cannot post jobs until an admin approves them.
 
     Expected JSON body:
         {
@@ -95,7 +90,7 @@ def register_company():
             'error': 'Missing required fields: company_name, email, and password are required.'
         }), 400
 
-    # Delegate business logic to auth_service layer
+    # Hand off to the service layer for the actual registration logic
     result, status_code = auth_service.register_company(
         company_name=company_name,
         email=email,
@@ -105,13 +100,13 @@ def register_company():
     return jsonify(result), status_code
 
 
-# ============================================================
 # POST /api/auth/login
-# ============================================================
 @auth_bp.route('/login', methods=['POST'])
 def login():
     """
-    Authenticate a user, company, or admin and establish a session.
+    Log in as a user, company, or admin and start a session.
+    After a successful login the caller's browser will hold a session cookie
+    that keeps them logged in for future requests.
 
     Expected JSON body:
         {
@@ -121,9 +116,9 @@ def login():
         }
 
     Response Statuses:
-        200 OK — Authentication successful, session initialized
+        200 OK — Login successful, session started
         400 Bad Request — Missing required fields or invalid role format
-        401 Unauthorized — Invalid email or password
+        401 Unauthorized — Wrong email or password
     """
     data = request.get_json(silent=True) or {}
 
@@ -136,14 +131,12 @@ def login():
             'error': 'Missing required fields: email and password are required.'
         }), 400
 
-    # Delegate business logic to auth_service layer
+    # Service layer verifies the password and sets up the session
     result, status_code = auth_service.login(email=email, password=password, role=role)
     return jsonify(result), status_code
 
 
-# ============================================================
-# POST /api/auth/logout
-# ============================================================
+# GET /api/auth/me — return info about the currently logged-in account
 @auth_bp.route('/me', methods=['GET'])
 def current_user():
     """Return the currently authenticated user from the server-side session."""
@@ -174,12 +167,12 @@ def current_user():
     return jsonify({'user': user}), 200
 
 
+# POST /api/auth/logout
 @auth_bp.route('/logout', methods=['POST'])
 def logout():
     """
-    Log out the currently authenticated user/company/admin.
-
-    Clears server-side session data.
+    Log out the currently authenticated user, company, or admin.
+    Clears the server-side session so the browser cookie is no longer valid.
 
     Response Statuses:
         200 OK — Logout successful
@@ -188,17 +181,13 @@ def logout():
     return jsonify(result), status_code
 
 
-# ============================================================
-# PUT /api/auth/me/user — Update Job Seeker Profile
-# ============================================================
+# PUT /api/auth/me/user — job seeker updates their own profile
 @auth_bp.route('/me/user', methods=['PUT'])
 @role_required('user')
 def update_user_profile():
     """
-    Update profile for the currently authenticated job seeker.
-
-    Protected: Requires 'user' role.
-    Extracts user_id from session['user_id'].
+    Let the currently logged-in job seeker update their name, email, password, or skills.
+    Only users with the 'user' role can call this endpoint.
     """
     user_id = session.get('user_id')
     data = request.get_json(silent=True) or {}
@@ -213,17 +202,13 @@ def update_user_profile():
     return jsonify(result), status_code
 
 
-# ============================================================
-# PUT /api/auth/me/company — Update Company Profile
-# ============================================================
+# PUT /api/auth/me/company — company updates their own profile
 @auth_bp.route('/me/company', methods=['PUT'])
 @role_required('company')
 def update_company_profile():
     """
-    Update profile for the currently authenticated company.
-
-    Protected: Requires 'company' role.
-    Extracts company_id from session['company_id'] or session['user_id'].
+    Let the currently logged-in company update their name, email, password, or description.
+    Only accounts with the 'company' role can call this endpoint.
     """
     company_id = session.get('company_id') or session.get('user_id')
     data = request.get_json(silent=True) or {}
@@ -238,19 +223,18 @@ def update_company_profile():
     return jsonify(result), status_code
 
 
-# ============================================================
-# GET /api/auth/company/test — Protected Route Example
-# ============================================================
+# GET /api/auth/company/test — protected test route demonstrating @role_required
 @auth_bp.route('/company/test', methods=['GET'])
 @role_required('company')
 def company_test_route():
     """
-    Demonstration protected endpoint requiring 'company' role.
+    A protected test endpoint that only an approved company can reach.
+    Useful for verifying that the session and role-checking middleware work correctly.
 
     Response Statuses:
-        200 OK — Session valid & role matches 'company'
+        200 OK — Session valid and role matches 'company'
         401 Unauthorized — User not logged in
-        403 Forbidden — User logged in with non-company role
+        403 Forbidden — Logged in with a different role
     """
     return jsonify({
         'message': 'Access granted to protected company test endpoint!',

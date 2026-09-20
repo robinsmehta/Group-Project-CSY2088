@@ -1,21 +1,15 @@
-# ============================================================
 # app/models/application.py — Application Model
 #
-# This file defines the Application (job application) table.
-#
+# Defines the Application database table using SQLAlchemy ORM.
 # Table name: applications
-# Who uses this table: Tracks which User applied to which Job,
-# along with the résumé file path and current review status.
-#
-# This is a JOIN TABLE between users and jobs —
-# it sits in the middle and holds extra data about the relationship.
-# ============================================================
+# Tracks job applications submitted by job seekers for job listings.
 
 from datetime import datetime, timezone
 from app.extensions import db
 
 
 def _to_utc_iso(dt):
+    """Convert a datetime object to UTC ISO format string (YYYY-MM-DDTHH:MM:SSZ)."""
     if dt is None:
         return None
     if dt.tzinfo is None:
@@ -29,40 +23,32 @@ class Application(db.Model):
 
     Relationships:
       - Belongs to ONE Job (many-to-one).
-        Access via: application_instance.job  →  Job object
       - Belongs to ONE User (many-to-one).
-        Access via: application_instance.user  →  User object
     """
 
     __tablename__ = 'applications'
 
-    # --- Columns ---
-
     # Primary Key
     id = db.Column(db.Integer, primary_key=True)
 
-    # Foreign Key → Which job is this application for?
+    # Foreign Key → Job
     job_id = db.Column(
         db.Integer,
         db.ForeignKey('jobs.id'),
         nullable=False
     )
 
-    # Foreign Key → Which user submitted this application?
+    # Foreign Key → User
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id'),
         nullable=False
     )
 
-    # File path to the uploaded résumé PDF stored on the server.
-    # Example: "uploads/user_1_resume.pdf"
-    # TODO: When saving a file, generate a safe unique filename and store path here.
+    # File path to the uploaded resume stored on the server
     resume_path = db.Column(db.String(300), nullable=True)
 
-    # Current review status of the application.
-    # Workflow: applied → under_review → shortlisted or rejected
-    # Companies update this as they review applications.
+    # Review status: 'applied', 'under_review', 'shortlisted', 'rejected'
     status = db.Column(
         db.Enum(
             'applied',
@@ -75,14 +61,14 @@ class Application(db.Model):
         nullable=False
     )
 
-    # When the application was first submitted
+    # Submission timestamp
     applied_at = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),
         nullable=False
     )
 
-    # When the application status was last changed
+    # Last status update timestamp
     updated_at = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),
@@ -90,17 +76,12 @@ class Application(db.Model):
         nullable=False
     )
 
-    # --- Relationships ---
-
-    # Link back to the Job this application is for
+    # Relationships
     job = db.relationship('Job', back_populates='applications')
-
-    # Link back to the User who applied
     user = db.relationship('User', back_populates='applications')
 
-    # --- Helper Methods ---
-
     def __repr__(self):
+        """String representation for debugging."""
         return (
             f'<Application id={self.id} '
             f'user_id={self.user_id} '
@@ -109,7 +90,7 @@ class Application(db.Model):
         )
 
     def to_dict(self):
-        """Serialise to dict for JSON API responses."""
+        """Converts the Application object into a Python dictionary for JSON responses."""
         return {
             'id':          self.id,
             'job_id':      self.job_id,

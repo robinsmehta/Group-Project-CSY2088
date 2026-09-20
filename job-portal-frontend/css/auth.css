@@ -300,7 +300,7 @@
 .auth-error-box {
     display: none;
     background: #FEF2F2;
-    border: 1px solid #FECACA;
+    border: 1px solid var(--color-danger-bg);
     border-radius: 10px;
     padding: 12px 14px;
     font-size: 13px;

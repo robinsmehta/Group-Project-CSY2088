@@ -1,19 +1,15 @@
-# ============================================================
 # app/models/user.py — User Model (Job Seeker)
 #
-# This file defines the User database table using SQLAlchemy ORM.
-# Instead of writing SQL like "CREATE TABLE users (...)",
-# we write a Python class and SQLAlchemy translates it to SQL.
-#
+# Defines the User database table using SQLAlchemy ORM.
 # Table name: users
-# Who uses this table: Job seekers who register on the platform.
-# ============================================================
+# Represents job seekers who register on the platform.
 
 from datetime import datetime, timezone
-from app.extensions import db  # Import the shared SQLAlchemy instance
+from app.extensions import db
 
 
 def _to_utc_iso(dt):
+    """Convert a datetime object to UTC ISO format string (YYYY-MM-DDTHH:MM:SSZ)."""
     if dt is None:
         return None
     if dt.tzinfo is None:
@@ -26,51 +22,37 @@ class User(db.Model):
     Represents a job-seeking user in the system.
 
     Relationships:
-      - A User can have MANY Applications (one-to-many).
-        Access via: user_instance.applications  →  list of Application objects
+      - A User can have many job Applications (one-to-many).
     """
 
-    # Tell SQLAlchemy which table in MySQL to map this class to
     __tablename__ = 'users'
 
-    # --- Columns ---
-
-    # Primary Key: unique integer auto-incremented by MySQL for every new row
+    # Primary Key
     id = db.Column(db.Integer, primary_key=True)
 
-    # Full name of the user (e.g., "Jane Doe")
-    # nullable=False means this field is REQUIRED — the DB will reject a row without it
+    # Full name of the user
     name = db.Column(db.String(100), nullable=False)
 
-    # Email address — must be unique across all users (used as login identifier)
+    # Unique email address used as login identifier
     email = db.Column(db.String(150), unique=True, nullable=False)
 
-    # Hashed password — NEVER store plain text passwords!
-    # bcrypt.generate_password_hash() will produce a string like '$2b$12$...'
-    # that gets stored here. See auth_service.py for hashing logic.
+    # Hashed password (never store plain text passwords)
     password_hash = db.Column(db.String(255), nullable=False)
 
-    # Timestamp of when this user account was created.
-    # default=lambda: datetime.now(timezone.utc) automatically fills this in
-    # when a new User is inserted — you don't have to set it manually.
+    # Timestamp when account was created
     created_at = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),
         nullable=False
     )
 
-    # Active flag for suspension (admins can revoke access without deleting)
+    # Active flag for suspension (admins can suspend access without deleting)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     # Job seeker skills (comma-separated, e.g. "React, Python, SQL")
     skills = db.Column(db.String(500), nullable=True)
 
-    # --- Relationships ---
-
-    # One User → Many Applications
-    # back_populates='user' creates a reverse link: application.user → User object
-    # cascade='all, delete-orphan' ensures deleting a User automatically deletes all their Applications
-    # lazy='dynamic' means applications aren't loaded from DB until you access this attribute
+    # Relationships
     applications = db.relationship(
         'Application',
         back_populates='user',
@@ -78,22 +60,14 @@ class User(db.Model):
         lazy='dynamic'
     )
 
-    # --- Helper Methods ---
-
     def __repr__(self):
-        """
-        Developer-friendly string representation.
-        Makes debugging easier — when you print a User object you'll see:
-        <User id=1 email=jane@example.com>
-        """
+        """String representation for debugging."""
         return f'<User id={self.id} email={self.email}>'
 
     def to_dict(self):
         """
-        Converts this User object into a plain Python dictionary
-        so it can be serialised to JSON and returned in API responses.
-
-        NOTE: We deliberately exclude password_hash — never send it to the client!
+        Converts the User object into a Python dictionary for JSON responses.
+        Excludes sensitive fields like password_hash.
         """
         return {
             'id':         self.id,

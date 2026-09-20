@@ -1,26 +1,17 @@
-# ============================================================
 # app/services/admin_service.py — Admin Business Logic
 #
-# This is the BUSINESS LOGIC LAYER for admin operations.
 # Called by routes in admin_routes.py.
+# Admin actions are the most powerful in the system — they can permanently
+# delete user accounts, company profiles, and job listings, as well as
+# approve companies so they can start posting jobs.
 #
-# SECURITY & ROLE PRIVILEGE NOTICE:
-# Admin actions are the most destructive operations in the system.
-# Admins can permanently delete user accounts, company profiles, and
-# job listings, as well as authorize pending company accounts to access
-# the employer portal.
+# For this reason, the @role_required('admin') decorator on every admin route
+# is critical — it prevents any non-admin account from reaching these functions.
 #
-# Therefore, strictly enforcing @role_required('admin') on all admin
-# endpoints is CRITICAL to prevent privilege escalation, unauthorized
-# data deletion, and unapproved company activations.
-#
-# DATA INTEGRITY & CASCADE BEHAVIOR:
-# Cascading deletes are implemented via SQLAlchemy model relationships
-# (cascade="all, delete-orphan") to guarantee relational data integrity.
-# Hard-deleting parent entities (Company, Job, User) automatically cleans
-# up all associated child records (Jobs, Applications) in MySQL, ensuring
-# zero orphaned rows remain in the database.
-# ============================================================
+# When a parent record (Company, Job, or User) is deleted, all connected child
+# records (jobs, applications) are automatically deleted too. This is configured
+# via SQLAlchemy's cascade="all, delete-orphan" setting on the model relationships,
+# so no orphaned rows are left behind in the database.
 
 from app.extensions import db, bcrypt
 from app.models.user import User
@@ -32,15 +23,14 @@ from app.models.admin import Admin
 
 def get_pending_companies(search: str = None):
     """
-    Retrieve companies with status = 'pending'. Optionally filter by a search
-    term matching `company_name` or `email` (case-insensitive substring match).
+    Return all companies that are still waiting for admin approval.
+    Optionally filter by company name or email using a search term.
 
     Args:
-        search (str, optional): Search term to filter company_name or email.
+        search (str, optional): Text to search for in company_name or email.
 
     Returns:
         tuple: (response_dict, http_status_code)
-               200 OK with list of pending company dicts (including name, email, description, created_at).
     """
     q = Company.query.filter_by(status='pending')
     if search:
@@ -55,14 +45,13 @@ def get_pending_companies(search: str = None):
 
 def approve_company(company_id: int):
     """
-    Approve a pending company account.
+    Approve a company account so it can log in and post job listings.
 
     Args:
         company_id (int): The ID of the company to approve.
 
     Returns:
         tuple: (response_dict, http_status_code)
-               200 OK on success, 404 Not Found if company doesn't exist.
     """
     company = db.session.get(Company, company_id)
     if not company:
@@ -79,14 +68,13 @@ def approve_company(company_id: int):
 
 def reject_company(company_id: int):
     """
-    Reject a pending company account.
+    Reject a company account. The company will not be allowed to post jobs.
 
     Args:
         company_id (int): The ID of the company to reject.
 
     Returns:
         tuple: (response_dict, http_status_code)
-               200 OK on success, 404 Not Found if company doesn't exist.
     """
     company = db.session.get(Company, company_id)
     if not company:
@@ -103,7 +91,8 @@ def reject_company(company_id: int):
 
 def update_company_status(company_id: int, new_status: str):
     """
-    Helper function to update company status to either 'approved' or 'rejected'.
+    Approve or reject a company by passing in the desired status string.
+    A convenience wrapper around approve_company() and reject_company().
 
     Args:
         company_id (int): The company ID.
@@ -122,23 +111,15 @@ def update_company_status(company_id: int, new_status: str):
 
 def delete_job(job_id: int):
     """
-    Admin: Permanently delete any job listing by ID.
-
-    CASCADE DECISION & EXPLANATION:
-    When a Job is deleted, all Applications associated with that job are also
-    automatically deleted via SQLAlchemy's `cascade="all, delete-orphan"` defined
-    on the `Job.applications` relationship.
-    
-    Why: An application to a deleted job has no target listing or context, making
-    it useless historical noise. Deleting related applications ensures data integrity
-    and prevents orphaned foreign key references in the `applications` table.
+    Permanently delete any job listing by ID.
+    All applications for this job are automatically removed at the same time,
+    because an application to a deleted job no longer makes sense.
 
     Args:
         job_id (int): The ID of the job to delete.
 
     Returns:
         tuple: (response_dict, http_status_code)
-               200 OK on success, 404 Not Found if job doesn't exist.
     """
     job = db.session.get(Job, job_id)
     if not job:
@@ -152,23 +133,15 @@ def delete_job(job_id: int):
 
 def delete_user(user_id: int):
     """
-    Admin: Permanently delete a user (job seeker) account by ID.
-
-    CASCADE DECISION & EXPLANATION:
-    When a User is deleted, all job Applications submitted by that user are also
-    automatically deleted via SQLAlchemy's `cascade="all, delete-orphan"` defined
-    on the `User.applications` relationship.
-
-    Why: An application without an applicant user record is invalid and would break
-    employer application review workflows. Deleting related applications preserves
-    database referential integrity.
+    Permanently delete a job-seeker account.
+    All applications submitted by this user are automatically removed too,
+    because their applications have no valid applicant once the account is gone.
 
     Args:
         user_id (int): The ID of the user to delete.
 
     Returns:
         tuple: (response_dict, http_status_code)
-               200 OK on success, 404 Not Found if user doesn't exist.
     """
     user = db.session.get(User, user_id)
     if not user:
@@ -182,24 +155,15 @@ def delete_user(user_id: int):
 
 def delete_company(company_id: int):
     """
-    Admin: Permanently delete a company account by ID.
-
-    CASCADE DECISION & EXPLANATION:
-    When a Company is deleted, all Jobs posted by that company AND all Applications
-    submitted for those jobs are automatically deleted. This cascade is handled by
-    SQLAlchemy's `cascade="all, delete-orphan"` on `Company.jobs`, which in turn cascades
-    to `Job.applications`.
-
-    Why: If a company account is deleted (e.g., fraudulent employer), all their active
-    job postings and candidate applications lose their organizational context.
-    Cascading deletes across all 3 levels cleans up all related records cleanly.
+    Permanently delete a company account.
+    All jobs posted by this company — and all applications for those jobs — are removed too.
+    This three-level cascade keeps the database free of orphaned records.
 
     Args:
         company_id (int): The ID of the company to delete.
 
     Returns:
         tuple: (response_dict, http_status_code)
-               200 OK on success, 404 Not Found if company doesn't exist.
     """
     company = db.session.get(Company, company_id)
     if not company:
@@ -213,50 +177,42 @@ def delete_company(company_id: int):
 
 def update_admin_profile(admin_id: int, name: str = None, email: str = None, password: str = None):
     """
-    Allow a logged-in admin to update their own profile (name, email, password).
+    Let a logged-in admin update their own name, email, or password.
+    Any field left blank (or omitted) will not be changed.
 
     Args:
         admin_id (int): The ID of the admin to update.
         name (str, optional): New display name.
-        email (str, optional): New email address (must be unique).
-        password (str, optional): New password (plain text; will be hashed).
-                                 If empty/None, password is not changed.
+        email (str, optional): New email address (must be unique among admins).
+        password (str, optional): New plain text password (will be hashed before saving).
 
     Returns:
         tuple: (response_dict, http_status_code)
-               200 OK on success with updated admin details.
-               400 Bad Request if no fields provided.
-               404 Not Found if admin doesn't exist.
-               409 Conflict if new email already exists.
     """
     admin = db.session.get(Admin, admin_id)
     if not admin:
         return {'error': 'Admin not found'}, 404
 
-    # Track if any updates were made
     updates_made = False
 
-    # Update name if provided
     if name is not None:
         name = (name or '').strip()
         if name:
             admin.name = name
             updates_made = True
 
-    # Update email if provided
     if email is not None:
         email = (email or '').strip().lower()
         if email:
-            # Check if the new email is already in use by another admin
+            # Check that the new email is not already taken by another admin
             existing_admin = Admin.query.filter_by(email=email).first()
             if existing_admin and existing_admin.id != admin_id:
                 return {'error': 'Email is already registered'}, 409
             admin.email = email
             updates_made = True
 
-    # Update password if provided
     if password is not None and password.strip():
-        # Hash the new password using bcrypt
+        # Scramble the new password before storing it
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         admin.password_hash = hashed_password
         updates_made = True
@@ -264,7 +220,6 @@ def update_admin_profile(admin_id: int, name: str = None, email: str = None, pas
     if not updates_made:
         return {'error': 'No fields to update'}, 400
 
-    # Commit changes to database
     db.session.commit()
 
     return {
@@ -275,11 +230,11 @@ def update_admin_profile(admin_id: int, name: str = None, email: str = None, pas
 
 def get_admin_stats():
     """
-    Get platform statistics for admin dashboard.
+    Return platform-wide totals for the admin dashboard:
+    total users, companies, jobs, applications, and pending company count.
 
     Returns:
         tuple: (response_dict, http_status_code)
-               200 OK with stats including total users, companies, jobs, applications
     """
     total_users = User.query.count()
     total_companies = Company.query.count()
@@ -300,24 +255,21 @@ def get_admin_stats():
 
 def get_users(page: int = 1, per_page: int = 10, search: str = None):
     """
-    Retrieve a combined list of users and companies for the admin user directory.
-
-    Supports pagination and optional case-insensitive search against name/company_name and email.
+    Return a combined, paginated list of all users and companies for the admin user directory.
+    Both types are merged into one list and sorted from newest to oldest.
 
     Args:
-        page (int): 1-based page number.
-        per_page (int): Number of items per page.
-        search (str, optional): Search term to filter by name or email.
+        page (int): Page number starting at 1.
+        per_page (int): How many items to return per page.
+        search (str, optional): Filter by name or email (case-insensitive).
 
     Returns:
         tuple: (response_dict, http_status_code)
-               200 OK with paginated list and total count:
-               { 'users': [...], 'total': N, 'page': page, 'per_page': per_page }
     """
     page = max(1, int(page or 1))
     per_page = max(1, int(per_page or 10))
 
-    # Query Users (job seekers)
+    # Fetch matching users (job seekers)
     u_q = User.query
     if search:
         term = f"%{search}%"
@@ -335,7 +287,7 @@ def get_users(page: int = 1, per_page: int = 10, search: str = None):
         for u in u_q.all()
     ]
 
-    # Query Companies (employers)
+    # Fetch matching companies (employers)
     c_q = Company.query
     if search:
         term = f"%{search}%"
@@ -353,7 +305,7 @@ def get_users(page: int = 1, per_page: int = 10, search: str = None):
         for c in c_q.all()
     ]
 
-    # Combine and sort by created_at desc (newest first)
+    # Merge both lists and sort newest first
     combined = users + companies
     combined.sort(key=lambda x: x.get('created_at') or '', reverse=True)
 
@@ -372,12 +324,12 @@ def get_users(page: int = 1, per_page: int = 10, search: str = None):
 
 def create_admin(name: str, email: str, password: str):
     """
-    Create a new Admin account. Protected admin-only action.
+    Create a new admin account. Only existing admins can trigger this action.
 
     Args:
-        name (str): Admin display name
-        email (str): Admin email
-        password (str): Plain text password
+        name (str): Admin display name.
+        email (str): Admin login email.
+        password (str): Plain text password (will be hashed before saving).
 
     Returns:
         tuple: (response_dict, http_status_code)
@@ -403,7 +355,8 @@ def create_admin(name: str, email: str, password: str):
 
 def revoke_user(user_id: int):
     """
-    Set user's is_active = False
+    Suspend a user account by setting is_active to False.
+    The user's data stays in the database; they just cannot log in anymore.
     """
     user = db.session.get(User, user_id)
     if not user:
@@ -414,6 +367,7 @@ def revoke_user(user_id: int):
 
 
 def restore_user(user_id: int):
+    """Reinstate a previously suspended user account so they can log in again."""
     user = db.session.get(User, user_id)
     if not user:
         return {'error': 'User not found'}, 404
@@ -423,6 +377,10 @@ def restore_user(user_id: int):
 
 
 def revoke_company(company_id: int):
+    """
+    Suspend a company account by setting is_active to False.
+    The company cannot log in or post jobs, but their data is not deleted.
+    """
     company = db.session.get(Company, company_id)
     if not company:
         return {'error': 'Company not found'}, 404
@@ -432,6 +390,7 @@ def revoke_company(company_id: int):
 
 
 def restore_company(company_id: int):
+    """Reinstate a previously suspended company account so they can log in again."""
     company = db.session.get(Company, company_id)
     if not company:
         return {'error': 'Company not found'}, 404
