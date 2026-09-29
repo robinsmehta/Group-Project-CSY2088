@@ -18,6 +18,8 @@
 from flask import Blueprint, request, jsonify, session
 from app.services import auth_service
 from app.utils.decorators import role_required
+from app.extensions import db
+from app.models.user import User
 
 auth_bp = Blueprint('auth', __name__)
 
